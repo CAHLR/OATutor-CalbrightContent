@@ -1,18 +1,18 @@
 {
   "files": {
-    "main.css": "/OATutor-CalbrightContent/static/css/main.b5b17c41.css",
-    "main.js": "/OATutor-CalbrightContent/static/js/main.103a30cb.js",
+    "main.css": "/OATutor-CalbrightContent/static/css/main.e8cd3102.css",
+    "main.js": "/OATutor-CalbrightContent/static/js/main.a91853b0.js",
     "static/media/Symbola.svg": "/OATutor-CalbrightContent/static/media/Symbola.f647c9292a2da02d9ae8.svg",
     "static/media/Symbola.eot": "/OATutor-CalbrightContent/static/media/Symbola.d25fbd520f6558203fb4.eot",
     "static/media/Symbola.ttf": "/OATutor-CalbrightContent/static/media/Symbola.1ac5fa7f9b82ed4ce3f3.ttf",
     "static/media/Symbola.woff": "/OATutor-CalbrightContent/static/media/Symbola.353fd9bde3c87711f5fc.woff",
     "static/media/Symbola.woff2": "/OATutor-CalbrightContent/static/media/Symbola.080d8bb6a36e8bd8966b.woff2",
     "index.html": "/OATutor-CalbrightContent/index.html",
-    "main.b5b17c41.css.map": "/OATutor-CalbrightContent/static/css/main.b5b17c41.css.map",
-    "main.103a30cb.js.map": "/OATutor-CalbrightContent/static/js/main.103a30cb.js.map"
+    "main.e8cd3102.css.map": "/OATutor-CalbrightContent/static/css/main.e8cd3102.css.map",
+    "main.a91853b0.js.map": "/OATutor-CalbrightContent/static/js/main.a91853b0.js.map"
   },
   "entrypoints": [
-    "static/css/main.b5b17c41.css",
-    "static/js/main.103a30cb.js"
+    "static/css/main.e8cd3102.css",
+    "static/js/main.a91853b0.js"
   ]
 }
