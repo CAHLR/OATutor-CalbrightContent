@@ -52,12 +52,12 @@ class ProblemCard extends React.Component {
         this.giveHintOnIncorrect = props.giveHintOnIncorrect
         this.keepMCOrder = props.keepMCOrder;
         this.keyboardType = props.keyboardType;
-        this.allowRetry = this.giveStuFeedback;
-
+        this.allowMultipleSubmits = !!props.allowMultipleSubmits;
         this.giveStuBottomHint = props.giveStuBottomHint;
         this.giveDynamicHint = props.giveDynamicHint;
         this.showHints = this.giveStuHints == null || this.giveStuHints;
         this.showCorrectness = this.giveStuFeedback;
+        this.allowRetry = this.allowMultipleSubmits || this.showCorrectness;
         this.expandFirstIncorrect = false;
 
         this.problemTitle = props.problemTitle;

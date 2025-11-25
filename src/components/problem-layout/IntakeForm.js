@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import {
   AppBar,
@@ -19,7 +19,6 @@ import BrandLogoNav from "@components/BrandLogoNav";
 import Popup from "@components/Popup/Popup";
 import About from "../../pages/Posts/About";
 import {
-  findLessonById,
   SHOW_COPYRIGHT,
   SITE_NAME,
   USER_ID_STORAGE_KEY,
@@ -79,7 +78,7 @@ export default function IntakeForm() {
     q3: "",
   });
   // DOM-visible stored payload used for test assertions
-  const [stored, setStored] = useState(null);
+  // const [stored, setStored] = useState(null);
 
   const headerTitle = `Course Intake Form`;
 

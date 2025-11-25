@@ -100,6 +100,27 @@ class LessonSelection extends React.Component {
                                     IS_STAGING_OR_DEVELOPMENT && <BuildTimeIndicator/>
                                 }
                             </center>
+                            {selectionMode === "course" && (
+                                <center>
+                                    <Spacer height={24 * 1}/>
+                                    <div style={{ display: "flex", gap: "16px", justifyContent: "center", flexWrap: "wrap", marginBottom: 24 }}>
+                                        <Button
+                                            variant="contained"
+                                            color="primary"
+                                            onClick={() => this.props.history.push("/query/5point")}
+                                        >
+                                            Test Query Form (5-point scale)
+                                        </Button>
+                                        <Button
+                                            variant="contained"
+                                            color="secondary"
+                                            onClick={() => this.props.history.push("/query/7point")}
+                                        >
+                                            Test Query Form (7-point scale)
+                                        </Button>
+                                    </div>
+                                </center>
+                            )}
                             <Divider/>
                             <Spacer/>
                             <Grid container spacing={3}>

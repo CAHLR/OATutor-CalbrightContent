@@ -7,6 +7,7 @@
             {
                 "id": "1cSXQ5Df-5PHn-jeatrYLxjl",
                 "name": "Lesson Terminology",
+                "isSurvey": true,
                 "topics": "",
                 "allowRecycle": true,
                 "learningObjectives": {

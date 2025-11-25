@@ -40,6 +40,7 @@ import TabFocusTrackerWrapper from "./components/TabFocusTrackerWrapper";
 import ViewAllProblems from "./components/problem-layout/ViewAllProblems";
 import LessonConfirmation from "./components/problem-layout/LessonConfirmation";
 import IntakeForm from "./components/problem-layout/IntakeForm";
+import QueryForm, { QueryForm5Point, QueryForm7Point } from "./components/problem-layout/QueryForm";
 
 // ### BEGIN CUSTOMIZABLE IMPORTS ###
 import config from "./config/firebaseConfig.js";
@@ -361,6 +362,26 @@ class App extends React.Component {
                                         path="/intake/course/:courseNum"
                                         component={IntakeForm}
                                         />
+                                    <Route
+                                        exact
+                                        path="/query/scale/:scaleType"
+                                        render={(props) => (
+                                            <QueryForm
+                                                scaleType={parseInt(props.match.params.scaleType, 10)}
+                                                {...props}
+                                            />
+                                        )}
+                                    />
+                                    <Route
+                                        exact
+                                        path="/query/5point"
+                                        component={QueryForm5Point}
+                                    />
+                                    <Route
+                                        exact
+                                        path="/query/7point"
+                                        component={QueryForm7Point}
+                                    />
                                     <Route
                                     exact
                                         path="/lessons/:lessonID"

@@ -23,7 +23,7 @@ import About from '../../pages/Posts/About';
 import styles from "./common-styles.js";
 import { findLessonById, SHOW_COPYRIGHT, SITE_NAME } from '../../config/config.js';
 
-const DURATION_MS = 15000;
+const DURATION_MS = 1000;
 const TICK_MS = 100;
 
 function LessonConfirmation({ classes, onConfirm, onCancel }) {
