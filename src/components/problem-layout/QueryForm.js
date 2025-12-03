@@ -29,6 +29,9 @@ import {
   SITE_NAME,
   USER_ID_STORAGE_KEY,
 } from "../../config/config.js";
+import { useContext } from "react";
+import { ThemeContext } from "../../config/config.js";
+import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -124,30 +127,50 @@ const useStyles = makeStyles((theme) => ({
 // First page statements (default questions)
 const PAGE1_STATEMENTS = [
   "My aim is to completely master the material presented in this class.",
-  "I am striving to understand the content of this course as thoroughly as possible.",
-  "My goal is to learn as much as possible.",
-  "My aim is to avoid learning less than I possibly could.",
-  "I am striving to avoid an incomplete understanding of the course material.",
-  "My goal is to avoid learning less than it is possible to learn.",
-  "My aim is to perform well relative to other students.",
   "I am striving to do well compared to other students.",
-  "My goal is to perform better than the other students.",
-  "My aim is to avoid doing worse than other students.",
-  "I am striving to avoid performing worse than others.",
+  "My goal is to learn as much as possible.",
+  "My aim is to perform well relative to other students.",
+  "My aim is to avoid learning less than I possibly could.",
   "My goal is to avoid performing poorly compared to others.",
+  "I am striving to understand the content of this course as thoroughly as possible.",
+  "My goal is to perform better than the other students.",
+  "My goal is to avoid learning less than it is possible to learn.",
+  "My aim is to avoid doing worse than other students.",
+  "I am striving to avoid an incomplete understanding of the course material.",
+  "I am striving to avoid performing worse than others.",
 ];
 
 // Second page statements (different questions)
 const PAGE2_STATEMENTS = [
-  "I prefer learning in a structured environment with clear guidelines.",
-  "I enjoy exploring topics on my own without strict boundaries.",
-  "I learn best when I can see practical applications of the material.",
-  "I prefer theoretical concepts over hands-on practice.",
-  "I work better when I have deadlines to meet.",
-  "I prefer flexible timelines that allow me to work at my own pace.",
-  "I benefit most from visual aids like diagrams and charts.",
-  "I learn better through listening and discussion.",
+  "In a class like this, I prefer course material that really challenges me so I can learn new things.",
+  "If I study in appropriate ways, then I will be able to learn the material in this course.",
+  "I think I will be able to use what I learn in this course in other courses.",
+  "I believe I will receive an excellent grade in this class.",
+  "I'm certain I can understand the most difficult material presented in the readings for this course.",
+  "Getting a good grade in this class is the most satisfying thing for me right now.",
+  "It is my own fault if I don't learn the material in this course.",
+  "It is important for me to learn the course material in this class.",
+  "The most important thing for me right now is improving my overall grade point average, so my main concern in this class is getting a good grade.",
+  "I'm confident I can understand the basic concepts taught in this course.",
+  "If I can, I want to get better grades in this class than most of the other students.",
+  "I'm confident I can understand the most complex material presented by the instructor in this course.",
+  "I am very interested in the content area of this course.",
+  "If I try hard enough, then I will understand the course material.",
+  "I'm confident I can do an excellent job on the assignments and tests in this course.",
+  "I expect to do well in this class.",
+  "The most satisfying thing for me in this course is trying to understand the content as thoroughly as possible.",
+  "I think the course material in this class is useful for me to learn.",
+  "When I have the opportunity in this class, I choose course assignments that I can learn from even if they don't guarantee a good grade.",
+  "If I don't understand the course material, it is because I didn't try hard enough.",
+  "I like the subject matter of this course.",
+  "Understanding the subject matter of this course is very important to me.",
+  "I'm certain I can master the skills being taught in this class.",
+  "I want to do well in this class because it is important to show my ability to my family, friends, employer, or others.",
+  "Considering the difficulty of this course, the teacher, and my skills, I think I will do well in this class.",
 ];
+
+const PAGE1_INTRO = "The following statements are about your goals for this course. There is no right or wrong answer! Please indicate your level of agreement or disagreement with each item by choosing an option from the list below."
+const PAGE2_INTRO = "This survey asks about your study habits, learning skills, and motivation for work in this course. There are no right or wrong answers to this questionnaire. This is not a test! We want you to respond as accurately as possible, reflecting your own attitudes and behaviors. Please rate each statement based on how true it is of you."
 
 // 5-point scale labels (with line breaks for wrapping)
 const SCALE_5_POINT = [
@@ -169,7 +192,9 @@ const SCALE_7_POINT = [
   "Very true of me",
 ];
 
-export default function QueryForm({ scaleType = 5, statements, title = "Learning Preferences Form", introText, page = 1 }) {
+export default function QueryForm({ scaleType = 5, statements, title = "Learning Preferences Form", introText = "", page = 1 }) {
+  const theme = useContext(ThemeContext)
+  const firebase = theme?.firebase;
   const classes = useStyles();
   const history = useHistory();
   const { courseNum } = useParams();
@@ -179,19 +204,18 @@ export default function QueryForm({ scaleType = 5, statements, title = "Learning
   const [page2Responses, setPage2Responses] = useState({});
   const [currentPage, setCurrentPage] = useState(page);
 
-  // Determine which statements to use based on current page
-  const currentStatements = statements || (currentPage === 1 ? PAGE1_STATEMENTS : PAGE2_STATEMENTS);
-  const currentResponses = currentPage === 1 ? page1Responses : page2Responses;
-  const setCurrentResponses = currentPage === 1 ? setPage1Responses : setPage2Responses;
-
-  // Default intro text if not provided
-  const defaultIntroText = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.";
-  const intro = introText || defaultIntroText;
-
-  const headerTitle = title;
-  
-  // Use 5-point scale for page 1, 7-point scale for page 2
   const isFirstPage = currentPage === 1;
+
+  // Determine which statements to use based on current page
+  const currentStatements = isFirstPage ? PAGE1_STATEMENTS : PAGE2_STATEMENTS;
+  const currentResponses = isFirstPage ? page1Responses : page2Responses;
+  const setCurrentResponses = isFirstPage ? setPage1Responses : setPage2Responses;
+
+  // Different intros for each page
+  const intro = isFirstPage ? PAGE1_INTRO : PAGE2_INTRO;
+
+  // Use 5-point scale for page 1, 7-point scale for page 2
+  
   const scaleLabels = isFirstPage ? SCALE_5_POINT : SCALE_7_POINT;
   const scaleValues = isFirstPage ? [1, 2, 3, 4, 5] : [1, 2, 3, 4, 5, 6, 7];
 
@@ -228,35 +252,67 @@ export default function QueryForm({ scaleType = 5, statements, title = "Learning
     window.scrollTo(0, 0);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!allAnswered) return;
     
     try {
-      // Prefer an app-exposed Firebase instance id, otherwise fall back to stored user id.
-      const userId =
-        (window?.appFirebase?.oats_user_id) ||
-        localStorage.getItem(USER_ID_STORAGE_KEY);
+      if (firebase && firebase.db) {
+          const userId = firebase.lms_user_id || firebase.oats_user_id;
 
-      // Save both pages of responses
-      const allResponses = {
-        page1: page1Responses,
-        page2: page2Responses,
-        ts: Date.now()
-      };
+          if (!userId) {
+            throw new Error("User ID not available");
+          }
 
-      const storageKey = `query:${userId}:course:${courseNum || 'default'}:scale:${scaleType}`;
-      localStorage.setItem(
-        storageKey,
-        JSON.stringify(allResponses)
-      );
-    } catch {}
-    
-    // After submission, navigate back
-    if (courseNum) {
-      history.push(`/courses/${courseNum}`);
-    } else {
-      history.push("/");
+          const allResponses = {
+              completed: true,
+              completedAt: serverTimestamp(),
+              time_stamp: Date.now(),
+              page1: page1Responses,
+              page2: page2Responses
+          };
+
+          // Firestore path: users/{id}/surveys/initialQueryForm
+          const surveyRef = doc(
+              firebase.db,
+              "users",
+              userId,
+              "surveys",
+              "initialQueryForm"
+          );
+
+          await setDoc(surveyRef, allResponses, { merge: true });
+
+          console.debug("Survey saved to Firestore for user:", userId);
+          // After submission, navigate back
+          if (courseNum) {
+            history.push(`/courses/${courseNum}`);
+          } else {
+            history.push("/");
+          }
+      } else {
+          console.warn("Firebase not available, fallback to localStorage");
+          const userId =
+              (window?.appFirebase?.oats_user_id) ||
+              localStorage.getItem(USER_ID_STORAGE_KEY);
+
+          localStorage.setItem(
+              `query:${userId}:fallback`,
+              JSON.stringify({
+                  page1: page1Responses,
+                  page2: page2Responses,
+                  ts: Date.now()
+              })
+          );
+          // After submission, navigate back
+          if (courseNum) {
+            history.push(`/courses/${courseNum}`);
+          } else {
+            history.push("/");
+          }
+      }
+    } catch (err) {
+        console.error("Failed to save survey:", err);
     }
   };
 

@@ -23,6 +23,7 @@ import { cleanArray } from "../util/cleanObject";
 import ErrorBoundary from "@components/ErrorBoundary";
 import { CONTENT_SOURCE } from "@common/global-config";
 import withTranslation from '../util/withTranslation';
+import { doc, getDoc } from "firebase/firestore"
 
 let problemPool = require(`@generated/processed-content-pool/${CONTENT_SOURCE}.json`);
 
@@ -78,6 +79,31 @@ class Platform extends React.Component {
 
     componentDidMount() {
         this._isMounted = true;
+        // Firestore userID fetch
+        (async () => {
+            const { firebase } = this.context;
+            if (firebase && firebase.db) {
+                try {
+                    const lmsUserId = firebase.lms_user_id;
+
+                    if (lmsUserId) {
+                        const surveyRef = doc(firebase.db, "users", lmsUserId, "surveys", "initialQueryForm");
+                        const surveySnap = await getDoc(surveyRef);
+
+                        if (!surveySnap.exists()) {
+                            console.debug("LMS user missing query form → redirecting to /query/5point");
+                            this.props.history.push("/query/5point");
+                            return;
+                        }
+                    } else {
+                        // Not an LMS user → skip the survey requirement
+                        console.debug("No lms_user_id detected → skipping QueryForm requirement");
+                    }
+                } catch (err) {
+                    console.error("Error checking survey status:", err);
+                }
+            }
+        })();
         if (this.props.lessonID != null) {
             console.log("calling selectLesson from componentDidMount...") 
             const lesson = findLessonById(this.props.lessonID)
