@@ -31,7 +31,7 @@ import {
 } from "../../config/config.js";
 import { useContext } from "react";
 import { ThemeContext } from "../../config/config.js";
-import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+// import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -253,43 +253,41 @@ export default function QueryForm({ scaleType = 5, statements, title = "Learning
   };
 
   const handleSubmit = async (e) => {
+    console.log("firebase.db:", firebase.db);
+    console.log("lms_user_id:", firebase.lms_user_id, "oats_user_id:", firebase.oats_user_id);
+    console.log("handleSubmit");
     e.preventDefault();
     if (!allAnswered) return;
-    
+    console.log("allAnswered");
     try {
       if (firebase && firebase.db) {
-          const userId = firebase.lms_user_id || firebase.oats_user_id;
+        console.log("firebase");
+        // const userId = firebase.ltiContext?.user_id || firebase.oats_user_id;
+        // console.log("userId: ", userId)
 
-          if (!userId) {
-            throw new Error("User ID not available");
-          }
+        // if (!userId) {
+        //   console.log("no ID")
+        //   throw new Error("User ID not available");
+        // }
 
-          const allResponses = {
-              completed: true,
-              completedAt: serverTimestamp(),
-              time_stamp: Date.now(),
-              page1: page1Responses,
-              page2: page2Responses
-          };
+        const surveyData = {
+            completed: true,
+            page1: page1Responses,
+            page2: page2Responses
+        };
 
-          // Firestore path: users/{id}/surveys/initialQueryForm
-          const surveyRef = doc(
-              firebase.db,
-              "users",
-              userId,
-              "surveys",
-              "initialQueryForm"
-          );
+        console.log("surveyData:", surveyData)
 
-          await setDoc(surveyRef, allResponses, { merge: true });
+        console.log("Calling firebase.submitSurvey...");
+        await firebase.submitSurvey(surveyData);
+        console.log("Survey submission completed");
 
-          console.debug("Survey saved to Firestore for user:", userId);
-          // After submission, navigate back
-          if (courseNum) {
-            history.push(`/courses/${courseNum}`);
-          } else {
-            history.push("/");
-          }
+        // After submission, navigate back
+        if (courseNum) {
+          history.push(`/courses/${courseNum}`);
+        } else {
+          history.push("/");
+        }
       } else {
           console.warn("Firebase not available, fallback to localStorage");
           const userId =

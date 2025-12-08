@@ -84,20 +84,27 @@ class Platform extends React.Component {
             const { firebase } = this.context;
             if (firebase && firebase.db) {
                 try {
-                    const lmsUserId = firebase.lms_user_id;
+                    const userId = firebase.ltiContext?.user_id || firebase.oats_user_id;
 
-                    if (lmsUserId) {
-                        const surveyRef = doc(firebase.db, "users", lmsUserId, "surveys", "initialQueryForm");
+                    if (userId) {
+                        // Check the new survey location: users/{userId}/surveys/initialQueryForm
+                        const surveyRef = doc(
+                            firebase.db, 
+                            "users", 
+                            userId, 
+                            "surveys", 
+                            "initialQueryForm"
+                        );
                         const surveySnap = await getDoc(surveyRef);
 
                         if (!surveySnap.exists()) {
-                            console.debug("LMS user missing query form → redirecting to /query/5point");
+                            console.debug("User missing query form → redirecting to /query/5point");
                             this.props.history.push("/query/5point");
                             return;
                         }
                     } else {
-                        // Not an LMS user → skip the survey requirement
-                        console.debug("No lms_user_id detected → skipping QueryForm requirement");
+                        // No user ID detected → skip the survey requirement
+                        console.debug("No user ID detected → skipping QueryForm requirement");
                     }
                 } catch (err) {
                     console.error("Error checking survey status:", err);

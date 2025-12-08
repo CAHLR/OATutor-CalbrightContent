@@ -405,6 +405,47 @@ class Firebase {
         };
         return this.writeData(feedbackOutput, data);
     }
+
+    async submitSurvey(surveyData) {
+        if (!ENABLE_FIREBASE) return;
+        
+        // 1. Determine the correct User ID using internal class properties
+        // Priority: LTI Context ID -> OATS User ID
+        const userId = this.ltiContext?.user_id || this.oats_user_id;
+
+        if (!userId) {
+            console.error("Cannot submit survey: No valid User ID found.");
+            return;
+        }
+
+        // 2. Prepare the payload
+        // We handle the timestamps here to ensure import consistency
+        const payload = {
+            ...surveyData,
+            completedAt: serverTimestamp(),
+            time_stamp: Date.now(),
+        };
+
+        // 3. Construct the reference using the class's OWN db instance
+        const surveyRef = doc(
+            this.db, 
+            "users", 
+            userId, 
+            "surveys", 
+            "initialQueryForm"
+        );
+
+        console.debug(`Submitting survey for user ${userId}...`);
+
+        // 4. Write data
+        try {
+            await setDoc(surveyRef, payload, { merge: true });
+            console.debug("Survey submitted successfully.");
+        } catch (error) {
+            console.error("Error submitting survey:", error);
+            throw error; // Re-throw so the UI can handle it if needed
+        }
+    }
 }
 
 export default Firebase;
