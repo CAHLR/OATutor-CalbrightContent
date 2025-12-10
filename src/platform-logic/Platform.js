@@ -82,9 +82,11 @@ class Platform extends React.Component {
         // Firestore userID fetch
         (async () => {
             const { firebase } = this.context;
+            const placeholderId = "1234567890";
             if (firebase && firebase.db) {
                 try {
-                    const userId = firebase.ltiContext?.user_id || firebase.oats_user_id;
+                    const userId = firebase.ltiContext?.user_id || placeholderId; // || firebase.oats_user_id;
+                    console.log("userId: ", userId, "ltiContext?.user_id: ", firebase.ltiContext?.user_id, "oats_user_id: ", firebase.oats_user_id)
 
                     if (userId) {
                         // Check the new survey location: users/{userId}/surveys/initialQueryForm

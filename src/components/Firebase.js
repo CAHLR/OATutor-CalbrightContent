@@ -411,7 +411,8 @@ class Firebase {
         
         // 1. Determine the correct User ID using internal class properties
         // Priority: LTI Context ID -> OATS User ID
-        const userId = this.ltiContext?.user_id || this.oats_user_id;
+        const placeholderId = "1234567890"
+        const userId = this.ltiContext?.user_id || placeholderId;
 
         if (!userId) {
             console.error("Cannot submit survey: No valid User ID found.");
