@@ -133,14 +133,31 @@ class App extends React.Component {
                 additionalContext["studentName"] = user.full_name;
             }
 
+            const existingLtiContext = this.firebase?.ltiContext;
+            const nextLtiContext = additionalContext.user || existingLtiContext;
+
+            if (!this.firebase) {
+                this.firebase = new Firebase(
+                    this.userID,
+                    config,
+                    this.getTreatment(),
+                    SITE_VERSION,
+                    nextLtiContext
+                );
+            } else {
+                if (additionalContext.user) {
+                    this.firebase.ltiContext = additionalContext.user;
+                }
+            }
+
             // Firebase creation
-            this.firebase = new Firebase(
-                this.userID,
-                config,
-                this.getTreatment(),
-                SITE_VERSION,
-                additionalContext.user
-            );
+            // this.firebase = new Firebase(
+            //     this.userID,
+            //     config,
+            //     this.getTreatment(),
+            //     SITE_VERSION,
+            //     additionalContext.user
+            // );
 
             let targetLocation = window.location.href.split("?")[0];
 

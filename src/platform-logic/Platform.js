@@ -82,7 +82,7 @@ class Platform extends React.Component {
         // Firestore userID fetch
         (async () => {
             const { firebase } = this.context;
-            const placeholderId = "1234567891";
+            const placeholderId = "1234567892";
             if (firebase && firebase.db) {
                 try {
                     const userId = firebase.ltiContext?.user_id || placeholderId; // || firebase.oats_user_id;
@@ -100,12 +100,14 @@ class Platform extends React.Component {
                         const surveySnap = await getDoc(surveyRef);
 
                         if (!surveySnap.exists()) {
+                            console.log("User missing query form → redirecting to /query/5point");
                             console.debug("User missing query form → redirecting to /query/5point");
                             this.props.history.push("/query/5point");
                             return;
                         }
                     } else {
                         // No user ID detected → skip the survey requirement
+                        console.log("No user ID detected → skipping QueryForm requirement");
                         console.debug("No user ID detected → skipping QueryForm requirement");
                     }
                 } catch (err) {

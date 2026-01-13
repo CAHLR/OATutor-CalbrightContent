@@ -411,7 +411,7 @@ class Firebase {
         
         // 1. Determine the correct User ID using internal class properties
         // Priority: LTI Context ID -> OATS User ID
-        const placeholderId = "1234567891"
+        const placeholderId = "1234567892"
         const userId = this.ltiContext?.user_id || placeholderId;
 
         if (!userId) {
