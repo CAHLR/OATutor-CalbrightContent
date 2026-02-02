@@ -30,7 +30,7 @@ const consumerKeySecretMap = {
   key: "secret",
 };
 
-const oatsHost = "https://cahlr.github.io/OATutor/#";
+const oatsHost = "https://dragoknight777.github.io/dlin-oatutor-test/#"; // "https://cahlr.github.io/OATutor/#";
 const stagingHost = "https://cahlr.github.io/OATutor-Staging/#";
 const unlinkedPage = "assignment-not-linked";
 const alreadyLinkedPage = "assignment-already-linked";
@@ -40,26 +40,13 @@ const scorePrecision = 3; // how many decimal points to keep
 const client = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(client);
 
-/**
- * Firebase Admin initialization with graceful fallback for local development.
- * Allows the server to run without Firebase credentials in local environments.
- * 
- * @author Aritro Datta
- */
-let firestoredb = null;
+const serviceAccount = require("./oatutor-firebase-adminsdk.json");
 
-try {
-  const serviceAccount = require("./oatutor-firebase-adminsdk.json");
+firebaseAdmin.initializeApp({
+  credential: firebaseAdmin.credential.cert(serviceAccount),
+});
 
-  firebaseAdmin.initializeApp({
-    credential: firebaseAdmin.credential.cert(serviceAccount),
-  });
-
-  firestoredb = firebaseAdmin.firestore();
-  console.log("Firebase admin initialized.");
-} catch (err) {
-  console.warn("Firebase admin SDK missing. Skipping Firebase for local dev.");
-}
+const firestoredb = firebaseAdmin.firestore();
 
 
 

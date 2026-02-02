@@ -1,5 +1,5 @@
 // src/pages/LessonConfirmation.js
-import React, { useEffect, useMemo, useRef, useState, useCallback } from "react";
+import React, { useEffect, useMemo, useRef, useState, useCallback, useContext } from "react";
 import {
   AppBar,
   Toolbar,
@@ -22,7 +22,22 @@ import Popup from "@components/Popup/Popup";
 import About from '../../pages/Posts/About';
 
 import styles from "./common-styles.js";
-import { findLessonById, SHOW_COPYRIGHT, SITE_NAME, USER_ID_STORAGE_KEY, MIDDLEWARE_URL, coursePlans } from '../../config/config.js';
+import { findLessonById, SHOW_COPYRIGHT, SITE_NAME, USER_ID_STORAGE_KEY, MIDDLEWARE_URL, coursePlans, ThemeContext } from '../../config/config.js';
+import { doc, getDoc } from "firebase/firestore"
+
+const decodeJWT = (token) => {
+  try {
+    if (!token) return null;
+    const payload = token.split(".")[1];
+    if (!payload) return null;
+    const b64 = payload.replace(/-/g, "+").replace(/_/g, "/");
+    const padded = b64 + "===".slice((b64.length + 3) % 4);
+    return JSON.parse(atob(padded));
+  } catch (err) {
+    console.warn("Failed to decode JWT:", err);
+    return null;
+  }
+};
 
 const DURATION_MS = 1000;
 const TICK_MS = 100;
@@ -30,6 +45,7 @@ const TICK_MS = 100;
 function LessonConfirmation({ classes, onConfirm, onCancel }) {
   const history = useHistory();
   const { lessonID } = useParams();
+  const theme = useContext(ThemeContext);
 
   const lesson = useMemo(() => {
     try {
@@ -63,42 +79,44 @@ function LessonConfirmation({ classes, onConfirm, onCancel }) {
 
   const canStart = ack && timerDone;
 
-  const resolveCourseKey = () => {
-    if (!lesson?.courseName) return null;
-    const idx = coursePlans.findIndex(
-      (course) => course.courseName === lesson.courseName
-    );
-    return idx > -1 ? String(idx) : null;
-  };
-
   const loadIntakeResponses = async () => {
     if (typeof window === "undefined") return null;
     try {
       const userId =
+        theme?.firebase?.ltiContext?.user_id ||
         window?.appFirebase?.oats_user_id ||
         localStorage.getItem(USER_ID_STORAGE_KEY);
       if (!userId) return null;
-      const courseKey = resolveCourseKey();
-      if (courseKey == null) return null;
+
+      // IMPORTANT: App.js strips `token` from the URL and stores it in ThemeContext as `jwt`
+      const token =
+        theme?.jwt || new URLSearchParams(window.location.search).get("token");
+      const decoded = theme?.user || decodeJWT(token);
+      const courseId = decoded?.course_id;
+      if (!courseId) return null;
 
       // Try to load from Firebase first
       /* eslint-disable no-undef */
       if (theme?.firebase && theme.firebase.db) {
         try {
-          const intakeRef = theme.firebase.db.collection('intakeForms')
-            .where('userId', '==', userId)
-            .where('courseId', '==', courseKey)
-            .limit(1);
-          const snapshot = await intakeRef.get();
-          if (!snapshot.empty) {
-            const doc = snapshot.docs[0];
-            const data = doc.data();
-            return {
-              motivation: data.q1 || "",
-              enrollmentReason: data.q2 || "",
-              personalChoice: data.q2 || "",
-              desiredField: data.q3 || "",
-            };
+          const intakeRef = doc(
+            theme.firebase.db,
+            "users",
+            userId,
+            "surveys",
+            `intakeForm_course_${courseId}`
+          );
+          const snap = await getDoc(intakeRef);
+          if (snap.exists()) {
+            const data = snap.data();
+            if (data.completed) {
+              return {
+                motivation: data.q1 || "",
+                enrollmentReason: data.q2 || "",
+                personalChoice: data.q2 || "",
+                desiredField: data.q3 || "",
+              };
+            }
           }
         } catch (err) {
           console.debug("Unable to load intake responses from Firebase", err);
@@ -107,7 +125,7 @@ function LessonConfirmation({ classes, onConfirm, onCancel }) {
       /* eslint-enable no-undef */
 
       // Fallback to localStorage
-      const storageKey = `intake:${userId}:course:${courseKey}`;
+      const storageKey = `intake:${userId}:course:${courseId}`;
       const stored = localStorage.getItem(storageKey);
       if (!stored) return null;
       const parsed = JSON.parse(stored);
@@ -297,11 +315,13 @@ function LessonConfirmation({ classes, onConfirm, onCancel }) {
         >
           <Box textAlign="center" mb={1}>
             <Typography variant="h5" gutterBottom>
-              Lesson x.x
+              {lesson?.name || `Lesson ${lessonID}`}
             </Typography>
-            <Typography variant="h4" style={{ fontWeight: 700 }} gutterBottom>
-              Title
-            </Typography>
+            {lesson?.topics && (
+              <Typography variant="h4" style={{ fontWeight: 700 }} gutterBottom>
+                {lesson.topics}
+              </Typography>
+            )}
           </Box>
 
           <Box maxWidth={640} mx="auto" mb={2}>
@@ -310,7 +330,7 @@ function LessonConfirmation({ classes, onConfirm, onCancel }) {
               align="center"
               style={{ fontWeight: 700, marginBottom: 8 }}
             >
-              How This Lesson Supports Your Career in {extractedIndustry}
+              How This Lesson Supports Your Career in {extractedIndustry ? ` in ${extractedIndustry}` : ""}
             </Typography>
             {personalizationLoading ? (
               <Box display="flex" alignItems="center" justifyContent="center" py={2}>
