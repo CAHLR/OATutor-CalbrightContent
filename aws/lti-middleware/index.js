@@ -98,24 +98,6 @@ const setLinkedLesson = async (resource_link_id, lesson_num) => {
   }
 };
 
-// const coursePlans = require("./coursePlans.json");
-
-// /**
-//  * Finds the course index for a given lesson ID
-//  * @param {string} lessonId - The lesson ID to find the course for
-//  * @returns {number|null} - The course index, or null if not found
-//  */
-// const findCourseIndexByLessonId = (lessonId) => {
-//   if (!lessonId) return null;
-//   for (let i = 0; i < coursePlans.length; i++) {
-//     const course = coursePlans[i];
-//     if (course.lessons && course.lessons.some(lesson => lesson.id === lessonId)) {
-//       return i;
-//     }
-//   }
-//   return null;
-// };
-
 /**
  * Checks if a user has submitted the queryform
  * @param {string} userId - The user ID
@@ -276,39 +258,6 @@ app.post("/launch", async (req, res) => {
         });
       } else {
         // Queryform submitted, check intakeform
-        // const courseNum = provider.body.context_id;
-        // console.log(`[INTAKE CHECK] userId=${userId}, linkedLesson=${linkedLesson}, courseNum=${courseNum}`);
-        
-        // if (!courseNum) {
-        //   // Course code not available - this shouldn't happen for valid launches
-        //   // Log error and redirect to lesson confirmation as fallback
-        //   console.log(`[INTAKE CHECK ERROR] Could not find course code for lesson ${linkedLesson}. This may indicate a data issue.`);
-        //   const lessonConfirmUrl = `${host}/lessons/${linkedLesson}/confirm?token=${token}`;
-        //   res.writeHead(302, {
-        //     Location: lessonConfirmUrl,
-        //   });
-        // } else {
-        //   // We have a valid courseNum, so we MUST check intake form
-        //   const hasIntakeForm = await hasSubmittedIntakeForm(userId, courseNum);
-        //   console.log(`[INTAKE CHECK] hasIntakeForm=${hasIntakeForm} for courseNum=${courseNum}, userId=${userId}`);
-          
-        //   if (!hasIntakeForm) {
-        //     // Intake form NOT submitted - redirect to intake form
-        //     const lessonConfirmUrl = `${host}/lessons/${linkedLesson}/confirm?token=${token}`;
-        //     const intakeFormUrl = `${host}/intake/${courseNum}?returnTo=${encodeURIComponent(lessonConfirmUrl)}&token=${token}`;
-        //     console.log(`[INTAKE CHECK] Intake form missing - redirecting to: ${intakeFormUrl}`);
-        //     res.writeHead(302, {
-        //       Location: intakeFormUrl,
-        //     });
-        //   } else {
-        //     // Both forms submitted, redirect to lesson confirmation
-        //     const lessonConfirmUrl = `${host}/lessons/${linkedLesson}/confirm?token=${token}`;
-        //     console.log(`[INTAKE CHECK] Both forms completed - redirecting to: ${lessonConfirmUrl}`);
-        //     res.writeHead(302, {
-        //       Location: lessonConfirmUrl,
-        //     });
-        //   }
-        // }
         const courseId = provider.body.context_id;  // <-- course_id
         console.log(`[INTAKE CHECK] userId=${userId}, linkedLesson=${linkedLesson}, courseId=${courseId}`);
 
