@@ -94,6 +94,13 @@ export default function IntakeForm() {
   // DOM-visible stored payload used for test assertions
   // const [stored, setStored] = useState(null);
 
+  /**
+   * Handles form submission by saving intake responses to localStorage
+   * and showing a confirmation modal before navigating to course selection.
+   * 
+   * @author Aritro Datta
+   */
+
   const headerTitle = `Course Intake Form`;
 
   const allFilled =
@@ -266,7 +273,7 @@ export default function IntakeForm() {
               placeholder="Enter your response..."
               value={form.q3}
               onChange={onChange("q3")}
-            />
+            />   
           </Box>
 
           <Box display="flex" justifyContent="center" mt={1}>
@@ -282,7 +289,7 @@ export default function IntakeForm() {
             {/* Test button: save to localStorage and render stored JSON into the DOM for easy test assertions */}
             {/* <Box ml={2}>
               <Button
-                type="button"
+                type="button  "
                 variant="outlined"
                 color="default"
                 disabled={!allFilled}

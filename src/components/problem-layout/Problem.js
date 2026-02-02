@@ -90,11 +90,12 @@ class Problem extends React.Component {
             showFeedback: false,
             feedback: "",
             feedbackSubmitted: false,
-            showPopup: false
+            showPopup: false,
         };
     }
 
     componentDidMount() {
+        this._isMounted = true;
         const { lesson } = this.props;
         document["oats-meta-courseName"] = lesson?.courseName || "";
         document["oats-meta-textbookName"] =
@@ -110,6 +111,7 @@ class Problem extends React.Component {
     }
 
     componentWillUnmount() {
+        this._isMounted = false;
         document["oats-meta-courseName"] = "";
         document["oats-meta-textbookName"] = "";
     }

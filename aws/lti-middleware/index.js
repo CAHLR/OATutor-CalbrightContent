@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const express = require("express");
 const lti = require("ims-lti");
 const jwt = require("jsonwebtoken");
@@ -12,7 +14,6 @@ const to = require("await-to-js").default;
 const firebaseAdmin = require("firebase-admin");
 const { getFirestore } = require("firebase-admin/firestore");
 const serverless = require("serverless-http");
-const serviceAccount = require("./oatutor-firebase-adminsdk.json");
 const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
 const { DynamoDBDocumentClient, PutCommand, GetCommand} = require("@aws-sdk/lib-dynamodb");
 
@@ -39,10 +40,30 @@ const scorePrecision = 3; // how many decimal points to keep
 const client = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(client);
 
-firebaseAdmin.initializeApp({
-  credential: firebaseAdmin.credential.cert(serviceAccount),
-});
-const firestoredb = firebaseAdmin.firestore()
+/**
+ * Firebase Admin initialization with graceful fallback for local development.
+ * Allows the server to run without Firebase credentials in local environments.
+ * 
+ * @author Aritro Datta
+ */
+let firestoredb = null;
+
+try {
+  const serviceAccount = require("./oatutor-firebase-adminsdk.json");
+
+  firebaseAdmin.initializeApp({
+    credential: firebaseAdmin.credential.cert(serviceAccount),
+  });
+
+  firestoredb = firebaseAdmin.firestore();
+  console.log("Firebase admin initialized.");
+} catch (err) {
+  console.warn("Firebase admin SDK missing. Skipping Firebase for local dev.");
+}
+
+
+
+const personalizedMessageRoute = require("./routes/personalizedMessage");
 
 const app = express();
 app.use(express.json());
@@ -60,6 +81,8 @@ app.use((req, res, next) => {
 
 // trust that the reverse proxy has the correct protocol
 app.enable("trust proxy");
+
+app.use(personalizedMessageRoute);
 
 const getLinkedLesson = async (resource_link_id) => {
   console.log("getting linked lesson");
@@ -738,3 +761,10 @@ async function catchLegacyLessonID(linkedLesson, provider) {
 }
 
 module.exports.handler = serverless(app);
+
+if (require.main === module) {
+  const port = process.env.PORT || 3000;
+  app.listen(port, () => {
+    console.log("Backend running locally on port", port);
+  });
+}
