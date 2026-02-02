@@ -376,9 +376,14 @@ class App extends React.Component {
 
                                     <Route
                                         exact
-                                        path="/intake/course/:courseNum"
+                                        path="/intake/:courseNum"
                                         component={IntakeForm}
                                         />
+                                    <Route
+                                        exact
+                                        path="/lessons/:lessonID/confirm"
+                                        component={require('./components/problem-layout/LessonConfirmation').default}
+                                    />
                                     <Route
                                         exact
                                         path="/query/scale/:scaleType"

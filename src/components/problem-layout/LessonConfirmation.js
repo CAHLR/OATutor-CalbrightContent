@@ -82,8 +82,8 @@ function LessonConfirmation({ classes, onConfirm, onCancel }) {
 
   const handleStart = () => {
     if (!canStart) return;
-    if (onConfirm) onConfirm(lessonID);
-    else history.push(`/lessons/${lessonID}`);
+    if (onConfirm) onConfirm(lessonID, window.location.search);
+    else history.push(`/lessons/${lessonID}${window.location.search}`);
   };
 
   const handleBack = () => {

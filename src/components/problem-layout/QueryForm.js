@@ -28,10 +28,22 @@ import {
   SHOW_COPYRIGHT,
   SITE_NAME,
   USER_ID_STORAGE_KEY,
+  coursePlans,
 } from "../../config/config.js";
 import { useContext } from "react";
 import { ThemeContext } from "../../config/config.js";
-// import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+
+const decodeJWT = (token) => {
+  try {
+    const payload = token.split('.')[1];
+    const decoded = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
+    return decoded;
+  } catch (err) {
+    console.warn("Failed to decode JWT:", err);
+    return null;
+  }
+};
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -259,6 +271,10 @@ export default function QueryForm({ scaleType = 5, statements, title = "Learning
     e.preventDefault();
     if (!allAnswered) return;
     console.log("allAnswered");
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token') || theme?.jwt;
+    
     try {
       if (firebase && firebase.db) {
         console.log("firebase");
@@ -282,12 +298,7 @@ export default function QueryForm({ scaleType = 5, statements, title = "Learning
         await firebase.submitSurvey(surveyData);
         console.log("Survey submission completed");
 
-        // After submission, navigate back
-        if (courseNum) {
-          history.push(`/courses/${courseNum}`);
-        } else {
-          history.push("/");
-        }
+        // submission saved; next-step routing handled after try/catch
       } else {
           console.warn("Firebase not available, fallback to localStorage");
           const userId =
@@ -302,15 +313,231 @@ export default function QueryForm({ scaleType = 5, statements, title = "Learning
                   ts: Date.now()
               })
           );
-          // After submission, navigate back
-          if (courseNum) {
-            history.push(`/courses/${courseNum}`);
-          } else {
-            history.push("/");
-          }
+          // submission saved locally; next-step routing handled after try/catch
       }
     } catch (err) {
         console.error("Failed to save survey:", err);
+    }
+    // After submission, determine next step: only two options
+    // 1. If IntakeForm not submitted → redirect to IntakeForm
+    // 2. If IntakeForm already submitted → redirect to Lesson Confirmation
+    try {
+      const returnTo = new URLSearchParams(window.location.search).get('returnTo');
+      console.log("QueryForm returnTo:", returnTo);
+      
+      // Determine courseIndex and lessonId
+      let courseIndex = null;
+      let lessonId = null;
+      
+      // PRIMARY SOURCE: Get linkedLesson from JWT token (most reliable)
+      // This is set in index.js and should always be available
+      if (firebase?.ltiContext?.linkedLesson) {
+        lessonId = firebase.ltiContext.linkedLesson;
+        console.log("QueryForm: Got lessonId from JWT token (linkedLesson):", lessonId);
+        
+        // Find courseIndex using the same logic as index.js
+        for (let i = 0; i < coursePlans.length; i++) {
+          const course = coursePlans[i];
+          if (course.lessons && course.lessons.some(lesson => lesson.id === lessonId)) {
+            courseIndex = i;
+            console.log("QueryForm: Found courseIndex from linkedLesson:", courseIndex);
+            break;
+          }
+        }
+      }
+      
+      // FALLBACK 1: Try to extract lesson ID from returnTo if not found in JWT
+      if (!lessonId && returnTo) {
+        // Decode the returnTo in case it's URL-encoded
+        const decodedReturnTo = decodeURIComponent(returnTo);
+        console.log("QueryForm decodedReturnTo:", decodedReturnTo);
+        
+        // Extract lesson ID - handle both /lessons/ID/confirm and #/lessons/ID/confirm patterns
+        // Try hash pattern first (#/lessons/ID), then regular pattern (/lessons/ID)
+        let lessonMatch = decodedReturnTo.match(/#\/lessons\/([^\/\?]+)/);
+        if (!lessonMatch) {
+          lessonMatch = decodedReturnTo.match(/\/lessons\/([^\/\?]+)/);
+        }
+        if (lessonMatch) {
+          lessonId = lessonMatch[1];
+          console.log("QueryForm extracted lessonId from returnTo:", lessonId);
+          if (courseIndex === null) {
+            const course = coursePlans.find(c => c.lessons?.some(l => l.id === lessonId));
+            if (course) {
+              courseIndex = coursePlans.indexOf(course);
+              console.log("QueryForm found courseIndex from returnTo:", courseIndex);
+            } else {
+              console.warn("QueryForm: Could not find course for lessonId:", lessonId);
+            }
+          }
+        } else {
+          console.warn("QueryForm: Could not extract lessonId from returnTo:", decodedReturnTo);
+        }
+      }
+      
+      // FALLBACK 2: If we don't have courseIndex yet, try to get it from courseNum
+      if (courseIndex === null && courseNum) {
+        courseIndex = parseInt(courseNum, 10);
+        console.log("QueryForm: Using courseNum for courseIndex:", courseIndex);
+        if (courseIndex !== null && !lessonId) {
+          lessonId = coursePlans?.[courseIndex]?.lessons?.[0]?.id;
+          console.log("QueryForm: Extracted lessonId from courseIndex:", lessonId);
+        }
+      }
+      
+      // FALLBACK 3: If we still don't have courseIndex, try harder to find it or use fallback
+      // NEVER use history.goBack() in LTI context as it sends users back to Canvas
+      if (courseIndex === null) {
+        console.error("QueryForm: Could not determine courseIndex. returnTo:", returnTo, "courseNum:", courseNum, "lessonId:", lessonId, "ltiContext.linkedLesson:", firebase?.ltiContext?.linkedLesson);
+        
+        // If we have lessonId, try a more thorough search for the course
+        if (lessonId) {
+          console.log("QueryForm: Attempting thorough course search for lessonId:", lessonId);
+          for (let i = 0; i < coursePlans.length; i++) {
+            const course = coursePlans[i];
+            if (course.lessons) {
+              const foundLesson = course.lessons.find(l => l.id === lessonId);
+              if (foundLesson) {
+                courseIndex = i;
+                console.log("QueryForm: Found courseIndex through thorough search:", courseIndex);
+                break;
+              }
+            }
+          }
+        }
+        
+        // If we still don't have courseIndex but have returnTo, extract path and redirect
+        // This ensures we stay within the app and don't go back to Canvas
+        if (courseIndex === null && returnTo) {
+          const decodedReturnTo = decodeURIComponent(returnTo);
+          // Extract just the path part after the hash if it's a full URL
+          const hashMatch = decodedReturnTo.match(/#(.+)$/);
+          const pathToUse = hashMatch ? hashMatch[1] : decodedReturnTo;
+          console.log("QueryForm: No courseIndex found, redirecting to returnTo path:", pathToUse);
+          
+          // Extract token for the redirect
+          const urlParams = new URLSearchParams(window.location.search);
+          const token = urlParams.get('token') || theme?.jwt;
+          const search = token ? `?token=${token}` : "";
+          
+          // If pathToUse already has query params, append token; otherwise add it
+          const finalPath = pathToUse.includes('?') 
+            ? `${pathToUse}&token=${token || ''}` 
+            : `${pathToUse}${search}`;
+          
+          history.push(finalPath);
+          return;
+        }
+        
+        // Last resort: if we have lessonId, try to redirect to lesson confirmation directly
+        // This is safer than going back to Canvas
+        if (lessonId) {
+          const search = token ? `?token=${token}` : "";
+          console.log("QueryForm: Last resort - redirecting to lesson confirmation with lessonId:", lessonId);
+          history.push(`/lessons/${lessonId}/confirm${search}`);
+          return;
+        }
+        
+        // Absolute last resort: redirect to a safe page (query form again with error handling)
+        // This should never happen if middleware is working correctly
+        console.error("QueryForm: CRITICAL - No courseIndex, returnTo, or lessonId. This should not happen.");
+        const search = token ? `?token=${token}` : "";
+        // Redirect back to query form - better than going to Canvas
+        history.push(`/query/5point${search}`);
+        return;
+      }
+      
+      // Check if IntakeForm has been submitted
+      let hasIntake = false;
+      const userId = firebase?.ltiContext?.user_id || (window?.appFirebase?.oats_user_id) || localStorage.getItem(USER_ID_STORAGE_KEY);
+      
+      // Get course code from JWT
+      let courseId = null;
+      if (token) {
+        const decoded = decodeJWT(token);
+        courseId = decoded?.course_id || null;
+      }
+      if (!courseId) {
+        console.error("QueryForm: Missing course_id in token; cannot route to IntakeForm reliably.");
+      }
+      
+      if (userId) {
+        // Check Firebase first
+        if (firebase && firebase.db) {
+          try {
+            const intakeRef = doc(firebase.db, "users", userId, "surveys", `intakeForm_course_${courseId}`);
+            const intakeSnap = await getDoc(intakeRef);
+            hasIntake = intakeSnap.exists() && intakeSnap.data().completed === true;
+          } catch (err) {
+            console.error("Error checking intakeform in Firebase:", err);
+          }
+        }
+        
+        // Also check localStorage as fallback
+        if (!hasIntake) {
+          const intakeKey = `intake:${userId}:course:${courseId}`;
+          hasIntake = !!localStorage.getItem(intakeKey);
+        }
+      }
+      
+      // Prepare search params for redirects (extract token, excluding returnTo)
+      const search = token ? `?token=${token}` : "";
+      
+      // Two possible redirects:
+      if (!hasIntake) {
+        // Option 1: IntakeForm not submitted → redirect to IntakeForm
+        const confirmUrl = lessonId ? `/lessons/${lessonId}/confirm${search}` : null;
+        let intakeFormUrl = `/intake/${encodeURIComponent(courseId)}`;
+        if (confirmUrl) {
+          intakeFormUrl += `?returnTo=${encodeURIComponent(confirmUrl)}`;
+          if (token) {
+            intakeFormUrl += `&token=${token}`;
+          }
+        } else if (search) {
+          intakeFormUrl += search;
+        }
+        history.push(intakeFormUrl);
+      } else {
+        // Option 2: IntakeForm already submitted → redirect to Lesson Confirmation
+        if (lessonId) {
+          history.push(`/lessons/${lessonId}/confirm${search}`);
+        } else {
+          // Fallback if we don't have lessonId
+          history.push(`/courses/${courseIndex}${search}`);
+        }
+      }
+    } catch (err) {
+      console.error("Error in QueryForm redirect logic:", err);
+      // NEVER use history.goBack() in LTI context - it sends users back to Canvas
+      // Try to extract returnTo and redirect there, or redirect to a safe page
+      try {
+        const returnTo = new URLSearchParams(window.location.search).get('returnTo');
+        if (returnTo) {
+          const decodedReturnTo = decodeURIComponent(returnTo);
+          const hashMatch = decodedReturnTo.match(/#(.+)$/);
+          const pathToUse = hashMatch ? hashMatch[1] : decodedReturnTo;
+          const urlParams = new URLSearchParams(window.location.search);
+          const token = urlParams.get('token') || theme?.jwt;
+          const search = token ? `?token=${token}` : "";
+          const finalPath = pathToUse.includes('?') 
+            ? `${pathToUse}&token=${token || ''}` 
+            : `${pathToUse}${search}`;
+          history.push(finalPath);
+        } else {
+          // Last resort: redirect to query form again
+          const urlParams = new URLSearchParams(window.location.search);
+          const token = urlParams.get('token') || theme?.jwt;
+          const search = token ? `?token=${token}` : "";
+          history.push(`/query/5point${search}`);
+        }
+      } catch (fallbackErr) {
+        console.error("Error in fallback redirect:", fallbackErr);
+        // Absolute last resort - redirect to root with token if available
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token') || theme?.jwt;
+        const search = token ? `?token=${token}` : "";
+        history.push(`/${search}`);
+      }
     }
   };
 

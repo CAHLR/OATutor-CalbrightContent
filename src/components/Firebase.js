@@ -411,8 +411,8 @@ class Firebase {
         
         // 1. Determine the correct User ID using internal class properties
         // Priority: LTI Context ID -> OATS User ID
-        const placeholderId = "1234567892"
-        const userId = this.ltiContext?.user_id || placeholderId;
+        // const placeholderId = "1234567892"
+        const userId = this.ltiContext?.user_id // || placeholderId;
 
         if (!userId) {
             console.error("Cannot submit survey: No valid User ID found.");
@@ -444,6 +444,53 @@ class Firebase {
             console.debug("Survey submitted successfully.");
         } catch (error) {
             console.error("Error submitting survey:", error);
+            throw error; // Re-throw so the UI can handle it if needed
+        }
+    }
+
+    async submitIntakeForm(intakeData, courseCode) {
+        if (!ENABLE_FIREBASE) return;
+        
+        // 1. Determine the correct User ID using internal class properties
+        // Priority: LTI Context ID -> OATS User ID
+        // const placeholderId = "1234567892"
+        const userId = this.ltiContext?.user_id // || placeholderId;
+
+        if (!userId) {
+            console.error("Cannot submit intake form: No valid User ID found.");
+            return;
+        }
+
+        if (!courseCode) {
+            console.error("Cannot submit intake form: Course code is required.");
+            return;
+        }
+
+        // 2. Prepare the payload
+        const payload = {
+            ...intakeData,
+            completed: true,
+            completedAt: serverTimestamp(),
+            time_stamp: Date.now(),
+        };
+
+        // 3. Construct the reference using the class's OWN db instance
+        const intakeRef = doc(
+            this.db, 
+            "users", 
+            userId, 
+            "surveys", 
+            `intakeForm_course_${courseCode}`
+        );
+
+        console.debug(`Submitting intake form for user ${userId}, course ${courseCode}...`);
+
+        // 4. Write data
+        try {
+            await setDoc(intakeRef, payload, { merge: true });
+            console.debug("Intake form submitted successfully.");
+        } catch (error) {
+            console.error("Error submitting intake form:", error);
             throw error; // Re-throw so the UI can handle it if needed
         }
     }

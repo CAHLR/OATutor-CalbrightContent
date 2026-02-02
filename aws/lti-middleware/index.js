@@ -98,6 +98,78 @@ const setLinkedLesson = async (resource_link_id, lesson_num) => {
   }
 };
 
+// const coursePlans = require("./coursePlans.json");
+
+// /**
+//  * Finds the course index for a given lesson ID
+//  * @param {string} lessonId - The lesson ID to find the course for
+//  * @returns {number|null} - The course index, or null if not found
+//  */
+// const findCourseIndexByLessonId = (lessonId) => {
+//   if (!lessonId) return null;
+//   for (let i = 0; i < coursePlans.length; i++) {
+//     const course = coursePlans[i];
+//     if (course.lessons && course.lessons.some(lesson => lesson.id === lessonId)) {
+//       return i;
+//     }
+//   }
+//   return null;
+// };
+
+/**
+ * Checks if a user has submitted the queryform
+ * @param {string} userId - The user ID
+ * @returns {Promise<boolean>} - True if queryform is submitted
+ */
+const hasSubmittedQueryForm = async (userId) => {
+  if (!userId) return false;
+  try {
+    const surveyRef = firestoredb.collection("users").doc(userId).collection("surveys").doc("initialQueryForm");
+    const surveySnap = await surveyRef.get();
+    return surveySnap.exists && surveySnap.data().completed === true;
+  } catch (error) {
+    console.log("hasSubmittedQueryForm error: ", error);
+    return false;
+  }
+};
+
+/**
+ * Checks if a user has submitted the intakeform for a specific course
+ * @param {string} userId - The user ID
+ * @param {string} courseId - The course code
+ * @returns {Promise<boolean>} - True if intakeform is submitted
+ */
+const hasSubmittedIntakeForm = async (userId, courseId) => {
+  if (!userId || !courseId) {
+    console.log(
+      `[hasSubmittedIntakeForm] Invalid params: userId=${userId}, courseId=${courseId}`
+    );
+    return false;
+  }
+
+  try {
+    const intakeRef = firestoredb
+      .collection("users")
+      .doc(userId)
+      .collection("surveys")
+      .doc(`intakeForm_course_${courseId}`);
+
+    const intakeSnap = await intakeRef.get();
+
+    const exists = intakeSnap.exists;
+    const completed = exists ? intakeSnap.data()?.completed === true : false;
+
+    console.log(
+      `[hasSubmittedIntakeForm] Firebase check: userId=${userId}, courseId=${courseId}, exists=${exists}, completed=${completed}`
+    );
+
+    return completed;
+  } catch (error) {
+    console.error("[hasSubmittedIntakeForm] Error checking intake form:", error);
+    return false;
+  }
+};
+
 /**
  * Generates a JWT for the requested user (provider)
  * @param provider
@@ -187,10 +259,74 @@ app.post("/launch", async (req, res) => {
       });
     } else {
       console.log("student, and linked");
-      console.log(`${host}/lessons/${linkedLesson}?token=${token}`);
-      res.writeHead(302, {
-        Location: `${host}/lessons/${linkedLesson}?token=${token}`,
-      });
+      const userId = provider.userId;
+      
+      // Check queryform submission
+      const hasQueryForm = await hasSubmittedQueryForm(userId);
+      
+      if (!hasQueryForm) {
+        // Redirect to queryform, with returnTo pointing to lesson confirmation
+        // QueryForm will check intakeform: if not submitted, redirects to IntakeForm;
+        // if already submitted, redirects to Lesson Confirmation
+        const returnToUrl = `${host}/lessons/${linkedLesson}/confirm?token=${token}`;
+        const queryFormUrl = `${host}/query/5point?returnTo=${encodeURIComponent(returnToUrl)}&token=${token}`;
+        console.log("student missing queryform, redirecting to:", queryFormUrl);
+        res.writeHead(302, {
+          Location: queryFormUrl,
+        });
+      } else {
+        // Queryform submitted, check intakeform
+        // const courseNum = provider.body.context_id;
+        // console.log(`[INTAKE CHECK] userId=${userId}, linkedLesson=${linkedLesson}, courseNum=${courseNum}`);
+        
+        // if (!courseNum) {
+        //   // Course code not available - this shouldn't happen for valid launches
+        //   // Log error and redirect to lesson confirmation as fallback
+        //   console.log(`[INTAKE CHECK ERROR] Could not find course code for lesson ${linkedLesson}. This may indicate a data issue.`);
+        //   const lessonConfirmUrl = `${host}/lessons/${linkedLesson}/confirm?token=${token}`;
+        //   res.writeHead(302, {
+        //     Location: lessonConfirmUrl,
+        //   });
+        // } else {
+        //   // We have a valid courseNum, so we MUST check intake form
+        //   const hasIntakeForm = await hasSubmittedIntakeForm(userId, courseNum);
+        //   console.log(`[INTAKE CHECK] hasIntakeForm=${hasIntakeForm} for courseNum=${courseNum}, userId=${userId}`);
+          
+        //   if (!hasIntakeForm) {
+        //     // Intake form NOT submitted - redirect to intake form
+        //     const lessonConfirmUrl = `${host}/lessons/${linkedLesson}/confirm?token=${token}`;
+        //     const intakeFormUrl = `${host}/intake/${courseNum}?returnTo=${encodeURIComponent(lessonConfirmUrl)}&token=${token}`;
+        //     console.log(`[INTAKE CHECK] Intake form missing - redirecting to: ${intakeFormUrl}`);
+        //     res.writeHead(302, {
+        //       Location: intakeFormUrl,
+        //     });
+        //   } else {
+        //     // Both forms submitted, redirect to lesson confirmation
+        //     const lessonConfirmUrl = `${host}/lessons/${linkedLesson}/confirm?token=${token}`;
+        //     console.log(`[INTAKE CHECK] Both forms completed - redirecting to: ${lessonConfirmUrl}`);
+        //     res.writeHead(302, {
+        //       Location: lessonConfirmUrl,
+        //     });
+        //   }
+        // }
+        const courseId = provider.body.context_id;  // <-- course_id
+        console.log(`[INTAKE CHECK] userId=${userId}, linkedLesson=${linkedLesson}, courseId=${courseId}`);
+
+        if (!courseId) {
+          const lessonConfirmUrl = `${host}/lessons/${linkedLesson}/confirm?token=${token}`;
+          res.writeHead(302, { Location: lessonConfirmUrl });
+        } else {
+          const hasIntakeForm = await hasSubmittedIntakeForm(userId, courseId);
+          if (!hasIntakeForm) {
+            const lessonConfirmUrl = `${host}/lessons/${linkedLesson}/confirm?token=${token}`;
+            const intakeFormUrl = `${host}/intake/${courseId}?returnTo=${encodeURIComponent(lessonConfirmUrl)}&token=${token}`;
+            res.writeHead(302, { Location: intakeFormUrl });
+          } else {
+            const lessonConfirmUrl = `${host}/lessons/${linkedLesson}/confirm?token=${token}`;
+            res.writeHead(302, { Location: lessonConfirmUrl });
+          }
+        }
+      }
     }
   } else if (privileged) {
     // privileged, let them assign a lesson to the canvas assignment

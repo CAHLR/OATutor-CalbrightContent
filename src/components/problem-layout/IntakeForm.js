@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import {
   AppBar,
@@ -23,6 +23,18 @@ import {
   SITE_NAME,
   USER_ID_STORAGE_KEY,
 } from "../../config/config.js";
+import { coursePlans, ThemeContext } from "../../config/config.js";
+
+const decodeJWT = (token) => {
+  try {
+    const payload = token.split('.')[1];
+    const decoded = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
+    return decoded;
+  } catch (err) {
+    console.warn("Failed to decode JWT:", err);
+    return null;
+  }
+};
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -70,6 +82,8 @@ export default function IntakeForm() {
   const classes = useStyles();
   const history = useHistory();
   const { courseNum } = useParams();
+  const theme = useContext(ThemeContext);
+  const firebase = theme?.firebase;
 
   const [showPopup, setShowPopup] = useState(false);
   const [form, setForm] = useState({
@@ -89,22 +103,89 @@ export default function IntakeForm() {
       const { value } = e.target;
       setForm((f) => ({ ...f, [k]: value }));
   };
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
     if (!allFilled) return;
+    
+    // Get course code from JWT
+    const token = theme?.jwt || new URLSearchParams(window.location.search).get('token');
+    let courseNumFromJWT = courseNum;
+    if (token) {
+      const decoded = decodeJWT(token);
+      courseNumFromJWT = decoded?.course_id || courseNum;
+    }
+    
     try {
-      // Prefer an app-exposed Firebase instance id, otherwise fall back to stored user id.
+      // Use the same userId that Firebase expects (ltiContext.user_id)
+      // This ensures consistency between Firebase storage and middleware checks
       const userId =
+        firebase?.ltiContext?.user_id ||
         (window?.appFirebase?.oats_user_id) ||
         localStorage.getItem(USER_ID_STORAGE_KEY);
 
+      if (!userId) {
+        console.error("Cannot submit intake form: No user ID found");
+        return;
+      }
+
+      // Store in Firebase FIRST (primary storage)
+      if (firebase && firebase.db && firebase.submitIntakeForm) {
+        try {
+          await firebase.submitIntakeForm(form, courseNumFromJWT);
+          console.log("Intake form submitted to Firebase successfully");
+        } catch (err) {
+          console.error("Failed to submit intake form to Firebase:", err);
+          // Don't return - still save to localStorage as fallback
+        }
+      }
+
+      // Also store in localStorage as fallback (for backwards compatibility)
       localStorage.setItem(
-        `intake:${userId}:course:${courseNum}`,
-        JSON.stringify({ ...form, ts: Date.now() })
+        `intake:${userId}:course:${courseNumFromJWT}`,
+        JSON.stringify({ ...form, ts: Date.now(), completed: true })
       );
-    } catch {}
-    // After submission, go back to course selection (parent will handle navigation)
-    history.push(`/courses/${courseNum}`);
+    } catch (err) {
+      console.error("Error saving intake form:", err);
+    }
+    
+    // After submission, always navigate to Lesson Confirmation
+    // Try to extract lesson ID from returnTo if provided, otherwise use courseNum
+    let lessonId = null;
+    const returnTo = new URLSearchParams(window.location.search).get('returnTo');
+    
+    if (returnTo) {
+      // Extract lesson ID from returnTo URL (e.g., /lessons/123/confirm)
+      const lessonMatch = returnTo.match(/\/lessons\/([^\/\?]+)/);
+      if (lessonMatch) {
+        lessonId = lessonMatch[1];
+      }
+    }
+    
+    // If we couldn't get lessonId from returnTo, try to get it from courseNum
+    if (!lessonId && courseNum) {
+      // const idx = parseInt(courseNum, 10);
+      // lessonId = coursePlans?.[idx]?.lessons?.[0]?.id;
+      const token = new URLSearchParams(window.location.search).get('token') || theme?.jwt;
+      if (token) {
+        const decoded = decodeJWT(token);
+        // best fallback: linkedLesson is explicit
+        lessonId = decoded?.linkedLesson || lessonId;
+      }
+    }
+    
+    if (lessonId) {
+      // Extract token from search params (excluding returnTo)
+      const urlParams = new URLSearchParams(window.location.search);
+      const token = urlParams.get('token') || theme?.jwt;
+      const search = token ? `?token=${token}` : "";
+      history.push(`/lessons/${lessonId}/confirm${search}`);
+    } else if (courseNum) {
+      // Fallback to course page if we can't find lesson
+      history.push(`/courses/${courseNum}`);
+    } else {
+      // Last resort: go back
+      history.goBack();
+    }
   };
 
   return (
