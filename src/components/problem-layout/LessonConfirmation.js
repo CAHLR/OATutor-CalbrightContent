@@ -39,7 +39,7 @@ const decodeJWT = (token) => {
   }
 };
 
-const DURATION_MS = 1000;
+const DURATION_MS = 10000;
 const TICK_MS = 100;
 
 function LessonConfirmation({ classes, onConfirm, onCancel }) {

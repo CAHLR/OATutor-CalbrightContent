@@ -30,7 +30,7 @@ const consumerKeySecretMap = {
   key: "secret",
 };
 
-const oatsHost = "https://cahlr.github.io/OATutor/#"; //"https://dragoknight777.github.io/dlin-oatutor-test/#";
+const oatsHost = "https://cahlr.github.io/OATutor/#"; //"https://dragoknight777.github.io/dlin-oatutor-test/#"; 
 const stagingHost = "https://cahlr.github.io/OATutor-Staging/#";
 const unlinkedPage = "assignment-not-linked";
 const alreadyLinkedPage = "assignment-already-linked";
