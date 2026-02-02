@@ -46,6 +46,7 @@ function LessonConfirmation({ classes, onConfirm, onCancel }) {
   const [extractedIndustry, setExtractedIndustry] = useState("");
   const [personalizationLoading, setPersonalizationLoading] = useState(false);
   const [personalizationError, setPersonalizationError] = useState(null);
+  const [hasIntakeData, setHasIntakeData] = useState(false);
 
   const rafRef = useRef(null);
   const startRef = useRef(null);
@@ -70,7 +71,7 @@ function LessonConfirmation({ classes, onConfirm, onCancel }) {
     return idx > -1 ? String(idx) : null;
   };
 
-  const loadIntakeResponses = () => {
+  const loadIntakeResponses = async () => {
     if (typeof window === "undefined") return null;
     try {
       const userId =
@@ -79,6 +80,33 @@ function LessonConfirmation({ classes, onConfirm, onCancel }) {
       if (!userId) return null;
       const courseKey = resolveCourseKey();
       if (courseKey == null) return null;
+
+      // Try to load from Firebase first
+      /* eslint-disable no-undef */
+      if (theme?.firebase && theme.firebase.db) {
+        try {
+          const intakeRef = theme.firebase.db.collection('intakeForms')
+            .where('userId', '==', userId)
+            .where('courseId', '==', courseKey)
+            .limit(1);
+          const snapshot = await intakeRef.get();
+          if (!snapshot.empty) {
+            const doc = snapshot.docs[0];
+            const data = doc.data();
+            return {
+              motivation: data.q1 || "",
+              enrollmentReason: data.q2 || "",
+              personalChoice: data.q2 || "",
+              desiredField: data.q3 || "",
+            };
+          }
+        } catch (err) {
+          console.debug("Unable to load intake responses from Firebase", err);
+        }
+      }
+      /* eslint-enable no-undef */
+
+      // Fallback to localStorage
       const storageKey = `intake:${userId}:course:${courseKey}`;
       const stored = localStorage.getItem(storageKey);
       if (!stored) return null;
@@ -122,7 +150,8 @@ function LessonConfirmation({ classes, onConfirm, onCancel }) {
    */
   const fetchPersonalizedMessage = useCallback(async () => {
     if (!lesson) return;
-    const intakePayload = loadIntakeResponses();
+    const intakePayload = await loadIntakeResponses();
+    setHasIntakeData(intakePayload !== null);
     if (!intakePayload) {
       setPersonalizedMessage("");
       setExtractedIndustry("");
@@ -176,7 +205,7 @@ function LessonConfirmation({ classes, onConfirm, onCancel }) {
     } finally {
       setPersonalizationLoading(false);
     }
-  }, [lesson]);
+  }, [lesson]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (lesson) {
@@ -192,9 +221,7 @@ function LessonConfirmation({ classes, onConfirm, onCancel }) {
     }
 
     // Check if we have intake data that would generate messages
-    const hasIntake = loadIntakeResponses() !== null;
-    
-    if (hasIntake) {
+    if (hasIntakeData) {
       // If we have intake data, wait for both personalizedMessage and extractedIndustry
       // to be available (both must be non-empty) OR wait for error state
       if (!personalizationError && (!personalizedMessage || !extractedIndustry)) {
@@ -227,7 +254,7 @@ function LessonConfirmation({ classes, onConfirm, onCancel }) {
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, [personalizationLoading, personalizedMessage, extractedIndustry, personalizationError]);
+  }, [personalizationLoading, personalizedMessage, extractedIndustry, personalizationError, hasIntakeData]);
 
   const handleStart = () => {
     if (!canStart) return;
