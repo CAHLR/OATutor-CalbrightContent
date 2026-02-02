@@ -11,7 +11,7 @@
                 "topics": "",
                 "allowRecycle": true,
                 "learningObjectives": {
-                    "https://docs.google.com/document/d/1k0gig7mvlwpjpjbfuzwba2hxpgena4wuyshqabeo5du/edit": 0.85
+                    "terminology": 0.85
                 }
             },
             {
@@ -38,7 +38,7 @@
                 "topics": "Presentation Skills",
                 "allowRecycle": true,
                 "learningObjectives": {
-                    "https://docs.google.com/document/d/1k0gig7mvlwpjpjbfuzwba2hxpgena4wuyshqabeo5du/edit": 0.85
+                    "professional_presentation_skills": 0.85
                 }
             },
             {
@@ -47,8 +47,7 @@
                 "topics": "",
                 "allowRecycle": true,
                 "learningObjectives": {
-                    "https://docs.google.com/document/d/1npjkyq6yryts_uie54c9vuo5ghxcb3rpiyza1wq_wck/edit": 0.85,
-                    "https://docs.google.com/document/d/1yezsl4_xmk_emjsp6igwyjd0hvimwo0tol8pdayoxmc/edit": 0.85
+                    "research": 0.85
                 }
             },
             {
@@ -57,7 +56,7 @@
                 "topics": "Validity",
                 "allowRecycle": true,
                 "learningObjectives": {
-                    "https://docs.google.com/document/d/1k0gig7mvlwpjpjbfuzwba2hxpgena4wuyshqabeo5du/edit": 0.85
+                    "data_validity": 0.85
                 }
             },
             {
@@ -87,7 +86,7 @@
                 "topics": "Presentation Skills",
                 "allowRecycle": true,
                 "learningObjectives": {
-                    "https://docs.google.com/document/d/1k0gig7mvlwpjpjbfuzwba2hxpgena4wuyshqabeo5du/edit": 0.85
+                    "data_presentation_skills": 0.85
                 }
             },
             {
@@ -96,7 +95,7 @@
                 "topics": "Ethics",
                 "allowRecycle": true,
                 "learningObjectives": {
-                    "https://docs.google.com/document/d/1k0gig7mvlwpjpjbfuzwba2hxpgena4wuyshqabeo5du/edit": 0.85
+                    "data_ethics": 0.85
                 }
             },
             {
@@ -122,7 +121,7 @@
                 "topics": "",
                 "allowRecycle": true,
                 "learningObjectives": {
-                    "https://docs.google.com/document/d/1k0gig7mvlwpjpjbfuzwba2hxpgena4wuyshqabeo5du/edit": 0.85
+                    "terminology": 0.85
                 }
             },
             {
@@ -149,7 +148,7 @@
                 "topics": "Presentation Skills",
                 "allowRecycle": true,
                 "learningObjectives": {
-                    "https://docs.google.com/document/d/1k0gig7mvlwpjpjbfuzwba2hxpgena4wuyshqabeo5du/edit": 0.85
+                    "professional_presentation_skills": 0.85
                 }
             },
             {
@@ -159,7 +158,7 @@
                 "allowRecycle": true,
                 "learningObjectives": {
                     "https://docs.google.com/document/d/1npjkyq6yryts_uie54c9vuo5ghxcb3rpiyza1wq_wck/edit": 0.85,
-                    "https://docs.google.com/document/d/1yezsl4_xmk_emjsp6igwyjd0hvimwo0tol8pdayoxmc/edit": 0.85
+                    "research": 0.85
                 }
             },
             {
@@ -168,7 +167,7 @@
                 "topics": "Validity",
                 "allowRecycle": true,
                 "learningObjectives": {
-                    "https://docs.google.com/document/d/1k0gig7mvlwpjpjbfuzwba2hxpgena4wuyshqabeo5du/edit": 0.85
+                    "data_validity": 0.85
                 }
             },
             {
@@ -198,7 +197,7 @@
                 "topics": "Presentation",
                 "allowRecycle": true,
                 "learningObjectives": {
-                    "https://docs.google.com/document/d/1k0gig7mvlwpjpjbfuzwba2hxpgena4wuyshqabeo5du/edit": 0.85
+                    "data_presentation": 0.85
                 }
             },
             {
@@ -207,7 +206,7 @@
                 "topics": "Ethics",
                 "allowRecycle": true,
                 "learningObjectives": {
-                    "https://docs.google.com/document/d/1k0gig7mvlwpjpjbfuzwba2hxpgena4wuyshqabeo5du/edit": 0.85
+                    "data_ethics": 0.85
                 }
             },
             {
@@ -222,7 +221,7 @@
         ]
     },
     {
-        "courseName": "Copy of [GenAI] Calbright Data Content",
+        "courseName": "[GenAI] Calbright Data Content",
         "courseOER": "<Calbright & OATutor>",
         "courseLicense": "https://www.calbright.edu/ <Copyright Calbright & OATutor 2025>",
         "lessons": [
@@ -232,7 +231,7 @@
                 "topics": "Terminology",
                 "allowRecycle": true,
                 "learningObjectives": {
-                    "https://docs.google.com/document/d/1k0gig7mvlwpjpjbfuzwba2hxpgena4wuyshqabeo5du/edit": 0.85
+                    "terminology": 0.85
                 }
             },
             {
@@ -241,7 +240,7 @@
                 "topics": "Spreadsheets",
                 "allowRecycle": true,
                 "learningObjectives": {
-                    "https://docs.google.com/document/d/1k0gig7mvlwpjpjbfuzwba2hxpgena4wuyshqabeo5du/edit": 0.85
+                    "spreadsheets": 0.85
                 }
             },
             {
@@ -250,7 +249,7 @@
                 "topics": "SQL",
                 "allowRecycle": true,
                 "learningObjectives": {
-                    "https://docs.google.com/document/d/1k0gig7mvlwpjpjbfuzwba2hxpgena4wuyshqabeo5du/edit": 0.85
+                    "sql": 0.85
                 }
             },
             {
@@ -259,7 +258,7 @@
                 "topics": "Professional Presentation Skills",
                 "allowRecycle": true,
                 "learningObjectives": {
-                    "https://docs.google.com/document/d/1k0gig7mvlwpjpjbfuzwba2hxpgena4wuyshqabeo5du/edit": 0.85
+                    "professional_presentation_skills": 0.85
                 }
             },
             {
@@ -268,7 +267,7 @@
                 "topics": "Research",
                 "allowRecycle": true,
                 "learningObjectives": {
-                    "https://docs.google.com/document/d/1k0gig7mvlwpjpjbfuzwba2hxpgena4wuyshqabeo5du/edit": 0.85
+                    "research": 0.85
                 }
             },
             {
@@ -277,7 +276,7 @@
                 "topics": "Data Validity",
                 "allowRecycle": true,
                 "learningObjectives": {
-                    "https://docs.google.com/document/d/1k0gig7mvlwpjpjbfuzwba2hxpgena4wuyshqabeo5du/edit": 0.85
+                    "data_validity": 0.85
                 }
             },
             {
@@ -295,7 +294,7 @@
                 "topics": "Intermediate SQL Queries",
                 "allowRecycle": true,
                 "learningObjectives": {
-                    "https://docs.google.com/document/d/1k0gig7mvlwpjpjbfuzwba2hxpgena4wuyshqabeo5du/edit": 0.85
+                    "intermediate_sql_queries": 0.85
                 }
             },
             {
@@ -304,7 +303,7 @@
                 "topics": "Data Presentation Skills",
                 "allowRecycle": true,
                 "learningObjectives": {
-                    "https://docs.google.com/document/d/1k0gig7mvlwpjpjbfuzwba2hxpgena4wuyshqabeo5du/edit": 0.85
+                    "data_presentation_skills": 0.85
                 }
             },
             {
@@ -313,8 +312,8 @@
                 "topics": "Data Ethics",
                 "allowRecycle": true,
                 "learningObjectives": {
-                    "foundational_math": 0.85,
-                    "https://docs.google.com/document/d/1k0gig7mvlwpjpjbfuzwba2hxpgena4wuyshqabeo5du/edit": 0.85
+                    "data_ethics": 0.85,
+                    "foundational_math": 0.85
                 }
             },
             {
@@ -323,7 +322,6 @@
                 "topics": "Professional Learning",
                 "allowRecycle": true,
                 "learningObjectives": {
-                    "https://docs.google.com/document/d/1k0gig7mvlwpjpjbfuzwba2hxpgena4wuyshqabeo5du/edit": 0.85,
                     "professioanal_learning": 0.85,
                     "professional_learning": 0.85
                 }

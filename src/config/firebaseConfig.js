@@ -9,4 +9,24 @@ const config = {
     measurementId: "G-44V1SE1GEF",
 };
 
+
+const config = JSON.parse(process.env.REACT_APP_FIREBASE_CONFIG || "{}");
 export default config;
+
+
+// import { initializeApp, getApps } from "firebase/app";
+
+// let config = {};
+// try {
+//   config = JSON.parse(process.env.REACT_APP_FIREBASE_CONFIG || "{}");
+// } catch (err) {
+//   console.error("Invalid Firebase config:", err);
+// }
+
+// let app;
+// if (!getApps().length) {
+//   app = initializeApp(config);
+// }
+
+// export default config;
+// export { app };
