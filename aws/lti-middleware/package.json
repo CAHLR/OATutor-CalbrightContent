@@ -4,9 +4,12 @@
   "description": "LTI server",
   "main": "server.js",
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.932.0",
+    "@aws-sdk/lib-dynamodb": "^3.932.0",
     "@common/global-config": "file:../common",
     "await-to-js": "~3.0.0",
     "aws-serverless-express": "^3.4.0",
+    "dotenv": "^17.2.3",
     "express": "~4.17.1",
     "express-jwt": "~6.1.0",
     "firebase-admin": "^11.0.0",
@@ -14,6 +17,8 @@
     "jsonwebtoken": "~8.5.1",
     "level": "~7.0.1",
     "lodash.memoize": "^4.1.2",
+    "openai": "^6.9.0",
+    "pino": "^10.1.0",
     "serverless-http": "^3.2.0"
   },
   "scripts": {

@@ -25,11 +25,11 @@ class LessonSelection extends React.Component {
         super(props);
         const { courseNum, setLanguage } = this.props;
 
-        if (courseNum == 6) {
+        if (courseNum === 6) {
             setLanguage('se')
         } 
         
-        if (props.history.location.pathname == '/') {
+        if (props.history.location.pathname === '/') {
             const defaultLocale = localStorage.getItem('defaultLocale');
             setLanguage(defaultLocale)
         }
@@ -100,6 +100,20 @@ class LessonSelection extends React.Component {
                                     IS_STAGING_OR_DEVELOPMENT && <BuildTimeIndicator/>
                                 }
                             </center>
+                            {selectionMode === "course" && (
+                                <center>
+                                    <Spacer height={24 * 1}/>
+                                    <div style={{ marginBottom: 24 }}>
+                                        <Button
+                                            variant="contained"
+                                            color="primary"
+                                            onClick={() => this.props.history.push("/query/5point")}
+                                        >
+                                            Test Learning Preferences Form
+                                        </Button>
+                                    </div>
+                                </center>
+                            )}
                             <Divider/>
                             <Spacer/>
                             <Grid container spacing={3}>
@@ -152,7 +166,7 @@ class LessonSelection extends React.Component {
           variant="contained"
           color="primary"
           className={classes.button}
-          onClick={() => this.props.history.push(`/lessons/${lesson.id}`)}
+          onClick={() => this.props.history.push(`/confirm/${lesson.id}`)}
         >
           {translate('lessonSelection.onlyselect')}
         </Button>

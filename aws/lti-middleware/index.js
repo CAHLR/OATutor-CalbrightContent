@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const express = require("express");
 const lti = require("ims-lti");
 const jwt = require("jsonwebtoken");
@@ -12,7 +14,6 @@ const to = require("await-to-js").default;
 const firebaseAdmin = require("firebase-admin");
 const { getFirestore } = require("firebase-admin/firestore");
 const serverless = require("serverless-http");
-const serviceAccount = require("./oatutor-firebase-adminsdk.json");
 const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
 const { DynamoDBDocumentClient, PutCommand, GetCommand} = require("@aws-sdk/lib-dynamodb");
 
@@ -29,7 +30,7 @@ const consumerKeySecretMap = {
   key: "secret",
 };
 
-const oatsHost = "https://cahlr.github.io/OATutor/#";
+const oatsHost = "https://cahlr.github.io/OATutor/#"; //"https://dragoknight777.github.io/dlin-oatutor-test/#"; 
 const stagingHost = "https://cahlr.github.io/OATutor-Staging/#";
 const unlinkedPage = "assignment-not-linked";
 const alreadyLinkedPage = "assignment-already-linked";
@@ -39,10 +40,17 @@ const scorePrecision = 3; // how many decimal points to keep
 const client = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(client);
 
+const serviceAccount = require("./oatutor-firebase-adminsdk.json");
+
 firebaseAdmin.initializeApp({
   credential: firebaseAdmin.credential.cert(serviceAccount),
 });
-const firestoredb = firebaseAdmin.firestore()
+
+const firestoredb = firebaseAdmin.firestore();
+
+
+
+const personalizedMessageRoute = require("./routes/personalizedMessage");
 
 const app = express();
 app.use(express.json());
@@ -60,6 +68,8 @@ app.use((req, res, next) => {
 
 // trust that the reverse proxy has the correct protocol
 app.enable("trust proxy");
+
+app.use(personalizedMessageRoute);
 
 const getLinkedLesson = async (resource_link_id) => {
   console.log("getting linked lesson");
@@ -94,6 +104,60 @@ const setLinkedLesson = async (resource_link_id, lesson_num) => {
     return true;
   } catch (error) {
     console.log("setLinkedLesson error: ", error)
+    return false;
+  }
+};
+
+/**
+ * Checks if a user has submitted the queryform
+ * @param {string} userId - The user ID
+ * @returns {Promise<boolean>} - True if queryform is submitted
+ */
+const hasSubmittedQueryForm = async (userId) => {
+  if (!userId) return false;
+  try {
+    const surveyRef = firestoredb.collection("users").doc(userId).collection("surveys").doc("initialQueryForm");
+    const surveySnap = await surveyRef.get();
+    return surveySnap.exists && surveySnap.data().completed === true;
+  } catch (error) {
+    console.log("hasSubmittedQueryForm error: ", error);
+    return false;
+  }
+};
+
+/**
+ * Checks if a user has submitted the intakeform for a specific course
+ * @param {string} userId - The user ID
+ * @param {string} courseId - The course code
+ * @returns {Promise<boolean>} - True if intakeform is submitted
+ */
+const hasSubmittedIntakeForm = async (userId, courseId) => {
+  if (!userId || !courseId) {
+    console.log(
+      `[hasSubmittedIntakeForm] Invalid params: userId=${userId}, courseId=${courseId}`
+    );
+    return false;
+  }
+
+  try {
+    const intakeRef = firestoredb
+      .collection("users")
+      .doc(userId)
+      .collection("surveys")
+      .doc(`intakeForm_course_${courseId}`);
+
+    const intakeSnap = await intakeRef.get();
+
+    const exists = intakeSnap.exists;
+    const completed = exists ? intakeSnap.data()?.completed === true : false;
+
+    console.log(
+      `[hasSubmittedIntakeForm] Firebase check: userId=${userId}, courseId=${courseId}, exists=${exists}, completed=${completed}`
+    );
+
+    return completed;
+  } catch (error) {
+    console.error("[hasSubmittedIntakeForm] Error checking intake form:", error);
     return false;
   }
 };
@@ -187,10 +251,41 @@ app.post("/launch", async (req, res) => {
       });
     } else {
       console.log("student, and linked");
-      console.log(`${host}/lessons/${linkedLesson}?token=${token}`);
-      res.writeHead(302, {
-        Location: `${host}/lessons/${linkedLesson}?token=${token}`,
-      });
+      const userId = provider.userId;
+      
+      // Check queryform submission
+      const hasQueryForm = await hasSubmittedQueryForm(userId);
+      
+      if (!hasQueryForm) {
+        // Redirect to queryform, with returnTo pointing to lesson confirmation
+        // QueryForm will check intakeform: if not submitted, redirects to IntakeForm;
+        // if already submitted, redirects to Lesson Confirmation
+        const returnToUrl = `${host}/lessons/${linkedLesson}/confirm?token=${token}`;
+        const queryFormUrl = `${host}/query/5point?returnTo=${encodeURIComponent(returnToUrl)}&token=${token}`;
+        console.log("student missing queryform, redirecting to:", queryFormUrl);
+        res.writeHead(302, {
+          Location: queryFormUrl,
+        });
+      } else {
+        // Queryform submitted, check intakeform
+        const courseId = provider.body.context_id;  // <-- course_id
+        console.log(`[INTAKE CHECK] userId=${userId}, linkedLesson=${linkedLesson}, courseId=${courseId}`);
+
+        if (!courseId) {
+          const lessonConfirmUrl = `${host}/lessons/${linkedLesson}/confirm?token=${token}`;
+          res.writeHead(302, { Location: lessonConfirmUrl });
+        } else {
+          const hasIntakeForm = await hasSubmittedIntakeForm(userId, courseId);
+          if (!hasIntakeForm) {
+            const lessonConfirmUrl = `${host}/lessons/${linkedLesson}/confirm?token=${token}`;
+            const intakeFormUrl = `${host}/intake/${courseId}?returnTo=${encodeURIComponent(lessonConfirmUrl)}&token=${token}`;
+            res.writeHead(302, { Location: intakeFormUrl });
+          } else {
+            const lessonConfirmUrl = `${host}/lessons/${linkedLesson}/confirm?token=${token}`;
+            res.writeHead(302, { Location: lessonConfirmUrl });
+          }
+        }
+      }
     }
   } else if (privileged) {
     // privileged, let them assign a lesson to the canvas assignment
@@ -653,3 +748,10 @@ async function catchLegacyLessonID(linkedLesson, provider) {
 }
 
 module.exports.handler = serverless(app);
+
+if (require.main === module) {
+  const port = process.env.PORT || 3000;
+  app.listen(port, () => {
+    console.log("Backend running locally on port", port);
+  });
+}

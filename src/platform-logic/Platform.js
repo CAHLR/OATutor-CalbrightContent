@@ -13,6 +13,7 @@ import {
     SITE_NAME,
     ThemeContext,
     MASTERY_THRESHOLD,
+    USER_ID_STORAGE_KEY,
 } from "../config/config.js";
 import to from "await-to-js";
 import { toast } from "react-toastify";
@@ -22,6 +23,7 @@ import { cleanArray } from "../util/cleanObject";
 import ErrorBoundary from "@components/ErrorBoundary";
 import { CONTENT_SOURCE } from "@common/global-config";
 import withTranslation from '../util/withTranslation';
+import { doc, getDoc } from "firebase/firestore"
 
 let problemPool = require(`@generated/processed-content-pool/${CONTENT_SOURCE}.json`);
 
@@ -77,26 +79,83 @@ class Platform extends React.Component {
 
     componentDidMount() {
         this._isMounted = true;
-        if (this.props.lessonID != null) {
-            console.log("calling selectLesson from componentDidMount...") 
-            const lesson = findLessonById(this.props.lessonID)
-            console.debug("lesson: ", lesson)
-            this.selectLesson(lesson).then(
-                (_) => {
-                    console.debug(
-                        "loaded lesson " + this.props.lessonID,
-                        this.lesson
-                    );
-                }
-            );
+        // Firestore userID fetch
+        (async () => {
+            const { firebase } = this.context;
+            // const placeholderId = "1234567892";
+            if (firebase && firebase.db) {
+                try {
+                    const userId = firebase.ltiContext?.user_id // || placeholderId; // || firebase.oats_user_id;
+                    console.log("userId: ", userId, "ltiContext?.user_id: ", firebase.ltiContext?.user_id, "oats_user_id: ", firebase.oats_user_id)
 
-            const { setLanguage } = this.props;
-            if (lesson.courseName == 'Matematik 4') {
-                setLanguage('se')
-            } else {
-                const defaultLocale = localStorage.getItem('defaultLocale');
-                setLanguage(defaultLocale)
+                    if (userId) {
+                        // Check the new survey location: users/{userId}/surveys/initialQueryForm
+                        const surveyRef = doc(
+                            firebase.db, 
+                            "users", 
+                            userId, 
+                            "surveys", 
+                            "initialQueryForm"
+                        );
+                        const surveySnap = await getDoc(surveyRef);
+
+                    if (!surveySnap.exists()) {
+                        console.log("User missing query form → redirecting to /query/5point");
+                        console.debug("User missing query form → redirecting to /query/5point");
+                        // If there's a returnTo param, use it, otherwise go to query form
+                        // const returnTo = new URLSearchParams(window.location.search).get('returnTo');
+                        // if (returnTo) {
+                        //     this.props.history.push(`/query/5point?returnTo=${encodeURIComponent(returnTo)}`);
+                        // } else {
+                        //     this.props.history.push("/query/5point");
+                        // }
+                        const token = new URLSearchParams(window.location.search).get("token") || this.context?.jwt; 
+                        const current = window.location.href;
+                        const qs = new URLSearchParams();
+                        if (current) qs.set("returnTo", current);
+                        if (token) qs.set("token", token);
+                        this.props.history.push(`/query/5point?${qs.toString()}`);
+                        return;
+                    }
+                    } else {
+                        // No user ID detected → skip the survey requirement
+                        console.log("No user ID detected → skipping QueryForm requirement");
+                    }
+                } catch (err) {
+                    console.error("Error checking survey status:", err);
+                }
             }
+        })();
+        if (this.props.lessonID != null) {
+            // NOTE: Intake form check is handled by middleware before reaching this point
+            // We should NOT check intake form here, as it causes redirects after lesson confirmation
+            // The middleware ensures intake form is completed before redirecting to lesson confirmation
+            (async () => {
+                let lesson = findLessonById(this.props.lessonID);
+                
+                // Ensure lesson is loaded
+                if (!lesson) {
+                    lesson = findLessonById(this.props.lessonID);
+                }
+                console.log("calling selectLesson from componentDidMount...") 
+                console.debug("lesson: ", lesson)
+                this.selectLesson(lesson).then(
+                    (_) => {
+                        console.debug(
+                            "loaded lesson " + this.props.lessonID,
+                            this.lesson
+                        );
+                    }
+                );
+
+                const { setLanguage } = this.props;
+                if (lesson && lesson.courseName == 'Matematik 4') {
+                    setLanguage('se')
+                } else {
+                    const defaultLocale = localStorage.getItem('defaultLocale');
+                    setLanguage(defaultLocale)
+                }
+            })();
         } else if (this.props.courseNum != null) {
             this.selectCourse(coursePlans[parseInt(this.props.courseNum)]);
         }
@@ -268,6 +327,9 @@ class Platform extends React.Component {
 
     selectCourse = (course, context) => {
         this.course = course;
+        // NOTE: Intake form check for course selection is handled by middleware when launching lessons
+        // We proceed directly to lesson selection - middleware will ensure intake form is completed
+        // before allowing access to lesson confirmation
         this.setState({
             status: "lessonSelection",
         });
@@ -504,6 +566,7 @@ class Platform extends React.Component {
                             lesson={this.lesson}
                             seed={this.state.seed}
                             lessonID={this.props.lessonID}
+                            courseNum={this.props.courseNum}
                             displayMastery={this.displayMastery}
                         />
                     </ErrorBoundary>

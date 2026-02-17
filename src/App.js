@@ -38,6 +38,9 @@ import GlobalErrorBoundary from "./components/GlobalErrorBoundary";
 import { IS_STAGING_OR_DEVELOPMENT } from "./util/getBuildType";
 import TabFocusTrackerWrapper from "./components/TabFocusTrackerWrapper";
 import ViewAllProblems from "./components/problem-layout/ViewAllProblems";
+import LessonConfirmation from "./components/problem-layout/LessonConfirmation";
+import IntakeForm from "./components/problem-layout/IntakeForm";
+import QueryForm, { QueryForm5Point, QueryForm7Point } from "./components/problem-layout/QueryForm";
 
 // ### BEGIN CUSTOMIZABLE IMPORTS ###
 import config from "./config/firebaseConfig.js";
@@ -130,14 +133,31 @@ class App extends React.Component {
                 additionalContext["studentName"] = user.full_name;
             }
 
+            const existingLtiContext = this.firebase?.ltiContext;
+            const nextLtiContext = additionalContext.user || existingLtiContext;
+
+            if (!this.firebase) {
+                this.firebase = new Firebase(
+                    this.userID,
+                    config,
+                    this.getTreatment(),
+                    SITE_VERSION,
+                    nextLtiContext
+                );
+            } else {
+                if (additionalContext.user) {
+                    this.firebase.ltiContext = additionalContext.user;
+                }
+            }
+
             // Firebase creation
-            this.firebase = new Firebase(
-                this.userID,
-                config,
-                this.getTreatment(),
-                SITE_VERSION,
-                additionalContext.user
-            );
+            // this.firebase = new Firebase(
+            //     this.userID,
+            //     config,
+            //     this.getTreatment(),
+            //     SITE_VERSION,
+            //     additionalContext.user
+            // );
 
             let targetLocation = window.location.href.split("?")[0];
 
@@ -214,6 +234,11 @@ class App extends React.Component {
         await Promise.allSettled(
             lessonStorageKeys.map(async (key) => await removeByKey(key))
         );
+        
+        // Also clear all intake-related localStorage entries
+        const intakeKeys = Object.keys(localStorage).filter(key => key.startsWith('intake:'));
+        intakeKeys.forEach(key => localStorage.removeItem(key));
+        
         this.bktParams = this.getTreatmentObject(treatmentMapping.bktParams);
         window.location.reload();
     };
@@ -347,6 +372,38 @@ class App extends React.Component {
                                       path="/lessons/:lessonID/problems"
                                         component={ViewAllProblems}
                                        />
+
+
+                                    <Route
+                                        exact
+                                        path="/intake/:courseNum"
+                                        component={IntakeForm}
+                                        />
+                                    <Route
+                                        exact
+                                        path="/lessons/:lessonID/confirm"
+                                        component={require('./components/problem-layout/LessonConfirmation').default}
+                                    />
+                                    <Route
+                                        exact
+                                        path="/query/scale/:scaleType"
+                                        render={(props) => (
+                                            <QueryForm
+                                                scaleType={parseInt(props.match.params.scaleType, 10)}
+                                                {...props}
+                                            />
+                                        )}
+                                    />
+                                    <Route
+                                        exact
+                                        path="/query/5point"
+                                        component={QueryForm5Point}
+                                    />
+                                    <Route
+                                        exact
+                                        path="/query/7point"
+                                        component={QueryForm7Point}
+                                    />
                                     <Route
                                     exact
                                         path="/lessons/:lessonID"
@@ -425,6 +482,17 @@ class App extends React.Component {
                                         render={(props) => (
                                             <SessionExpired
                                                 key={Date.now()}
+                                                {...props}
+                                            />
+                                        )}
+                                    />
+                                    <Route
+                                        exact
+                                        path = "/confirm/:lessonID"
+                                        render = {(props) => (
+                                            <LessonConfirmation
+                                                onConfirm = {(id) => props.history.push(`/lessons/${id}`)}
+                                                onCancel={() => props.history.goBack()}
                                                 {...props}
                                             />
                                         )}

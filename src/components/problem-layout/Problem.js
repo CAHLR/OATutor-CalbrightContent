@@ -54,6 +54,7 @@ class Problem extends React.Component {
 
         const giveStuFeedback = this.props.lesson?.giveStuFeedback;
         const giveStuHints = this.props.lesson?.giveStuHints;
+        const isSurvey = this.props.lesson?.isSurvey;
         const keepMCOrder = this.props.lesson?.keepMCOrder;
         const giveHintOnIncorrect = this.props.lesson?.giveHintOnIncorrect;
         const keyboardType = this.props.lesson?.keyboardType;
@@ -66,13 +67,21 @@ class Problem extends React.Component {
         this.keepMCOrder = keepMCOrder != null && keepMCOrder;
         this.keyboardType = keyboardType != null && keyboardType;
         this.giveStuHints = giveStuHints == null || giveStuHints;
+        this.isSurvey = isSurvey == null || isSurvey;
         this.doMasteryUpdate = doMasteryUpdate == null || doMasteryUpdate;
         this.unlockFirstHint = unlockFirstHint != null && unlockFirstHint;
         this.giveStuBottomHint = giveStuBottomHint == null || giveStuBottomHint;
         this.giveDynamicHint = this.props.lesson?.allowDynamicHint;
+        this.allowMultipleSubmits = false;
         this.prompt_template = this.props.lesson?.prompt_template
             ? this.props.lesson?.prompt_template
             : "";
+
+        if (this.isSurvey) {
+            this.allowMultipleSubmits = true;
+            this.giveStuFeedback = false;
+            this.giveStuHints = false;
+        }
 
         this.state = {
             stepStates: {},
@@ -81,11 +90,12 @@ class Problem extends React.Component {
             showFeedback: false,
             feedback: "",
             feedbackSubmitted: false,
-            showPopup: false
+            showPopup: false,
         };
     }
 
     componentDidMount() {
+        this._isMounted = true;
         const { lesson } = this.props;
         document["oats-meta-courseName"] = lesson?.courseName || "";
         document["oats-meta-textbookName"] =
@@ -97,9 +107,11 @@ class Problem extends React.Component {
         for (const annotation of document.querySelectorAll("annotation")) {
             annotation.ariaLabel = annotation.textContent;
         }
+
     }
 
     componentWillUnmount() {
+        this._isMounted = false;
         document["oats-meta-courseName"] = "";
         document["oats-meta-textbookName"] = "";
     }
@@ -579,6 +591,7 @@ class Problem extends React.Component {
                                     giveStuBottomHint={this.giveStuBottomHint}
                                     giveDynamicHint={this.giveDynamicHint}
                                     prompt_template={this.prompt_template}
+                                    allowMultipleSubmits={this.allowMultipleSubmits}
                                 />
                             </Element>
                         ))}
