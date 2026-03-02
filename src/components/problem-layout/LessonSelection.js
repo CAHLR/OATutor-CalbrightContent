@@ -166,7 +166,15 @@ class LessonSelection extends React.Component {
           variant="contained"
           color="primary"
           className={classes.button}
-          onClick={() => this.props.history.push(`/confirm/${lesson.id}`)}
+          onClick={() => {
+            // Instructors are selecting a lesson to link to an LMS assignment.
+            // They should NOT be routed through the learner "LessonConfirmation" flow.
+            if (this.isPrivileged) {
+              this.props.history.push(`/lessons/${lesson.id}`);
+            } else {
+              this.props.history.push(`/confirm/${lesson.id}`);
+            }
+          }}
         >
           {translate('lessonSelection.onlyselect')}
         </Button>

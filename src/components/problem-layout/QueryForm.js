@@ -264,13 +264,29 @@ export default function QueryForm({ scaleType = 5, statements, title = "Learning
     window.scrollTo(0, 0);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e, { skip = false } = {}) => {
     console.log("firebase.db:", firebase.db);
     console.log("lms_user_id:", firebase.lms_user_id, "oats_user_id:", firebase.oats_user_id);
     console.log("handleSubmit");
-    e.preventDefault();
-    if (!allAnswered) return;
-    console.log("allAnswered");
+    if (e) {
+      e.preventDefault();
+    }
+    if (!skip && !allAnswered) return;
+    console.log("allAnswered or skip");
+
+    // When skipping, construct full response objects filled with -1 so that
+    // it looks like the student answered every question, but with a sentinel value.
+    const buildSkippedResponses = (statements) => {
+      const responses = {};
+      statements.forEach((_, index) => {
+        const key = `q${index + 1}`;
+        responses[key] = -1;
+      });
+      return responses;
+    };
+
+    const finalPage1Responses = skip ? buildSkippedResponses(PAGE1_STATEMENTS) : page1Responses;
+    const finalPage2Responses = skip ? buildSkippedResponses(PAGE2_STATEMENTS) : page2Responses;
     
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token') || theme?.jwt;
@@ -288,8 +304,8 @@ export default function QueryForm({ scaleType = 5, statements, title = "Learning
 
         const surveyData = {
             completed: true,
-            page1: page1Responses,
-            page2: page2Responses
+            page1: finalPage1Responses,
+            page2: finalPage2Responses
         };
 
         console.log("surveyData:", surveyData)
@@ -308,8 +324,8 @@ export default function QueryForm({ scaleType = 5, statements, title = "Learning
           localStorage.setItem(
               `query:${userId}:fallback`,
               JSON.stringify({
-                  page1: page1Responses,
-                  page2: page2Responses,
+                  page1: finalPage1Responses,
+                  page2: finalPage2Responses,
                   ts: Date.now()
               })
           );
@@ -541,6 +557,15 @@ export default function QueryForm({ scaleType = 5, statements, title = "Learning
     }
   };
 
+  const handleSkip = (e) => {
+    if (e) {
+      e.preventDefault();
+    }
+    // Submit a survey where all responses are -1 instead of 1–5 / 1–7,
+    // but otherwise follow the exact same submission and routing flow.
+    handleSubmit(null, { skip: true });
+  };
+
   return (
     <Box className={classes.root}>
       <AppBar position="fixed" className={classes.headerBar}>
@@ -569,7 +594,12 @@ export default function QueryForm({ scaleType = 5, statements, title = "Learning
         </Paper>
 
         {/* Form table in separate box */}
-        <Paper className={classes.formCard} elevation={3} component="form" onSubmit={isFirstPage ? handleNext : handleSubmit}>
+        <Paper
+          className={classes.formCard}
+          elevation={3}
+          component="form"
+          onSubmit={isFirstPage ? handleNext : handleSubmit}
+        >
           <TableContainer className={classes.tableContainer}>
             <Table className={classes.table} size="small">
               <TableHead>
@@ -641,6 +671,15 @@ export default function QueryForm({ scaleType = 5, statements, title = "Learning
               disabled={!allAnswered}
             >
               {isFirstPage ? "Next" : "Submit"}
+            </Button>
+            <Button
+              type="button"
+              variant="text"
+              color="default"
+              onClick={handleSkip}
+              style={{ marginLeft: 16 }}
+            >
+              Skip
             </Button>
           </Box>
         </Paper>
