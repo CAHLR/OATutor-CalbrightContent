@@ -1,78 +1,36 @@
 [
     {
         "id": "a4c01b9intersql4a-h1",
-        "type": "scaffold",
-        "problemType": "MultipleChoice",
-        "answerType": "string",
-        "hintAnswer": [
-            "SELECT"
-        ],
+        "type": "hint",
         "dependencies": [],
-        "title": "Confirm the syntax of the SQL query clauses",
-        "text": "Which clause usually comes first in an SQL query?",
+        "title": "First Clause in a SQL Query",
+        "text": "The SELECT clause of a SQL statement that defines what kind of data is being drawn, must always come first.",
         "variabilization": {},
-        "oer": "openai",
-        "license": "",
-        "choices": [
-            "SELECT",
-            "FROM",
-            "WHERE"
-        ]
+        "oer": "https://OATutor.io <OATutor>",
+        "license": ""
     },
     {
         "id": "a4c01b9intersql4a-h2",
-        "type": "scaffold",
-        "problemType": "MultipleChoice",
-        "answerType": "string",
-        "hintAnswer": [
-            "SELECT, FROM"
-        ],
+        "type": "hint",
         "dependencies": [
             "a4c01b9intersql4a-h1"
         ],
-        "title": "Identify the foundational structure of an SQL query",
-        "text": "What is the basic structure needed to extract data from a database in SQL?",
+        "title": "Ordering of WHERE",
+        "text": "The WHERE clause can never come first in a SQL query.",
         "variabilization": {},
-        "oer": "openai",
-        "license": "",
-        "choices": [
-            "SELECT, FROM",
-            "WHERE, SELECT",
-            "FROM, WHERE"
-        ]
+        "oer": "https://OATutor.io <OATutor>",
+        "license": ""
     },
     {
         "id": "a4c01b9intersql4a-h3",
-        "type": "scaffold",
-        "problemType": "MultipleChoice",
-        "answerType": "string",
-        "hintAnswer": [
-            "SELECT, FROM, WHERE"
-        ],
+        "type": "hint",
         "dependencies": [
             "a4c01b9intersql4a-h2"
         ],
-        "title": "Determine the correct placement of the WHERE clause",
-        "text": "When using a condition to filter results, where is the WHERE clause placed in relation to SELECT and FROM?",
+        "title": "Standard SQL Clause Ordering",
+        "text": "In SQL, the clauses always follow the order where SELECT always comes first, then the FROM clause, then the WHERE condition comes last. In the SELECT clause, the user specifies the columns of interest from the specified dataset (FROM) and WHERE to aggregate rows based on conditions.",
         "variabilization": {},
-        "oer": "openai",
-        "license": "",
-        "choices": [
-            "SELECT, FROM, WHERE",
-            "WHERE, SELECT, FROM",
-            "SELECT, WHERE, FROM"
-        ]
-    },
-    {
-        "id": "a4c01b9intersql4a-h4",
-        "type": "hint",
-        "dependencies": [
-            "a4c01b9intersql4a-h3"
-        ],
-        "title": "Final Hint",
-        "text": "In SQL, the logical processing order of clauses is critical to arrive at the correct data extraction process. The WHERE clause helps filter records after the data table is identified, but before the result set is selected. Remember: The query is executed FROM the base tables, then WHERE conditions are applied, and finally, the SELECT fields are populated from the dataset.",
-        "variabilization": {},
-        "oer": "openai",
+        "oer": "https://OATutor.io <OATutor>",
         "license": ""
     }
 ]

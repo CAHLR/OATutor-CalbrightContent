@@ -3,32 +3,22 @@
         "id": "a2064cbsql5a-h1",
         "type": "hint",
         "dependencies": [],
-        "title": "Understand Variable Comparisons",
-        "text": "Remember, when you're comparing dates or amounts within a SQL statement, make sure you're checking if one thing is either less than or greater than another. You do this by using the < or > operators.",
+        "title": "Comparison Operator for Amount",
+        "text": "To find values more than a certain number for amount, the greater than > symbol is used. Can you rule out any answer options that do not use the > symbol for amount?",
         "variabilization": {},
-        "oer": "openai",
+        "oer": "https://OATutor.io <OATutor>",
         "license": ""
     },
     {
         "id": "a2064cbsql5a-h2",
         "type": "hint",
-        "dependencies": [],
-        "title": "Combine Conditions with AND",
-        "text": "To meet both criteria at once (date before a certain day and amount greater than a value), you'll need to use the AND operator.",
-        "variabilization": {},
-        "oer": "openai",
-        "license": ""
-    },
-    {
-        "id": "a2064cbsql5a-h3",
-        "type": "hint",
         "dependencies": [
-            "a2064cbsql5a-h2"
+            "a2064cbsql5a-h1"
         ],
-        "title": "Combining Both Conditions",
-        "text": "How do you combine the two conditions: one for the date and another for the amount, to ensure both must be true for the record? A specific keyword used to ensure multiple conditions are true.",
+        "title": "Comparing Date Values",
+        "text": "To select a record with a Day entry type, use the DATE function to make the clause more robust.",
         "variabilization": {},
-        "oer": "openai",
+        "oer": "https://OATutor.io <OATutor>",
         "license": ""
     }
 ]

@@ -3,10 +3,10 @@
         "id": "a21d278data5a-h1",
         "type": "hint",
         "dependencies": [],
-        "title": "Understanding Data Alignment",
-        "text": "When working with data, how numbers and text are aligned in cells can vary. The alignment is controlled by how the software or table is set up.",
+        "title": "Strings",
+        "text": "Texts and numbers are aligned on the same side.",
         "variabilization": {},
-        "oer": "openai",
+        "oer": "",
         "license": ""
     },
     {
@@ -15,10 +15,10 @@
         "dependencies": [
             "a21d278data5a-h1"
         ],
-        "title": "Right Alignment",
-        "text": "By default, numbers are typically aligned to the right in data tables. This means they are positioned starting from the right margin of the cell.",
+        "title": "Decimals",
+        "text": "What helps align decimals the best? Consider how you might align $$2.34$$ and $$12.68$$ when adding them together.",
         "variabilization": {},
-        "oer": "openai",
+        "oer": "",
         "license": ""
     }
 ]

@@ -32,49 +32,5 @@
         "variabilization": {},
         "oer": "https://OATutor.io <OATutor>",
         "license": ""
-    },
-    {
-        "id": "a4c01b9intersql15a-h4",
-        "type": "scaffold",
-        "problemType": "MultipleChoice",
-        "answerType": "string",
-        "hintAnswer": [
-            "$$Customers.Phone=Contacts.Number1$$"
-        ],
-        "dependencies": [
-            "a4c01b9intersql15a-h3"
-        ],
-        "title": "Specify the fields",
-        "text": "Which fields should be specified when joining the tables?",
-        "variabilization": {},
-        "oer": "openai",
-        "license": "",
-        "choices": [
-            "$$Customers.Phone=Contacts.Number1$$",
-            "$$Contacts.Number1=Customers.ID$$",
-            "$$Contacts.Name=Customers.Phone$$"
-        ]
-    },
-    {
-        "id": "a4c01b9intersql15a-h5",
-        "type": "scaffold",
-        "problemType": "MultipleChoice",
-        "answerType": "string",
-        "hintAnswer": [
-            "JOIN"
-        ],
-        "dependencies": [
-            "a4c01b9intersql15a-h4"
-        ],
-        "title": "Select the SQL clause",
-        "text": "To connect two tables based on a common column, which of these SQL clauses can be used in this scenario?",
-        "variabilization": {},
-        "oer": "openai",
-        "license": "",
-        "choices": [
-            "JOIN",
-            "CONNECT",
-            "LINK"
-        ]
     }
 ]

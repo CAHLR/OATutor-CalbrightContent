@@ -3,8 +3,8 @@
         "id": "a439352validity2a-h1",
         "type": "hint",
         "dependencies": [],
-        "title": "Definition of SLA",
-        "text": "SLA stands for Service Level Agreement. It's a contract or agreement that outlines the expected level of service, response times, uptime, and procedures between service providers and clients. In terms of data governance, an SLA might specify the timeframe within which data quality issues should be resolved.",
+        "title": "Understanding Data Governance",
+        "text": "Consider the role of the data governance team in maintaining data quality. What are their primary responsibilities when a data quality issue is identified?",
         "variabilization": {},
         "oer": "openai",
         "license": ""
@@ -15,8 +15,8 @@
         "dependencies": [
             "a439352validity2a-h1"
         ],
-        "title": "Role of the Data Governance Team",
-        "text": "The data governance team plays a critical role in maintaining and monitoring data quality, establishing data standards, guidelines, and policies. They also facilitate the resolution of data issues and ensure compliance with established standards.",
+        "title": "Data Quality Issue Escalation",
+        "text": "Think about the process that follows when a data quality issue is identified. What steps are taken if the issue persists beyond a certain time frame?",
         "variabilization": {},
         "oer": "openai",
         "license": ""
@@ -27,34 +27,32 @@
         "dependencies": [
             "a439352validity2a-h2"
         ],
-        "title": "Is Remediation Data Governance Team's Task",
-        "text": "The data governance team is not directly responsible for remediating data quality issues. Remediation usually involves identifying, diagnosing, and resolving these issues, typically performed by data analysts or IT departments.",
+        "title": "Service Level Agreement (SLA)",
+        "text": "What is an SLA, and how does it relate to the time frame for resolving data quality issues?",
         "variabilization": {},
         "oer": "openai",
         "license": ""
     },
     {
         "id": "a439352validity2a-h4",
-        "type": "hint",
+        "type": "scaffold",
+        "problemType": "MultipleChoice",
+        "answerType": "string",
+        "hintAnswer": [
+            "Escalating the resolution of the data quality issue that the data scientist found. Once the time the issue has existed exceeds the remediation SLA defined in the data quality policy, it is time to escalate."
+        ],
         "dependencies": [
             "a439352validity2a-h3"
         ],
-        "title": "Is Rule Defining Data Governance Team's Task",
-        "text": "While the data governance team may help define data quality rules and guidelines initially, the specific task of defining rules for a given dataset is generally the responsibility of subject matter experts who understand the data's context.",
+        "title": "Identifying the Correct Action",
+        "text": "Based on the responsibilities of the data governance team and the concept of SLA, what should be the next step if the issue is not resolved in time?",
         "variabilization": {},
         "oer": "openai",
-        "license": ""
-    },
-    {
-        "id": "a439352validity2a-h5",
-        "type": "hint",
-        "dependencies": [
-            "a439352validity2a-h4"
-        ],
-        "title": "Is Escalating Resolution Data Governance Team's Task",
-        "text": "The data governance team's responsibility encompasses overseeing the adherence to data policies, including escalating unresolved issues past their remediation deadlines. When the timeframe for fixing a data quality issue as outlined by the SLA has passed without resolution, the data governance team is responsible for escalating the matter for higher-level intervention.",
-        "variabilization": {},
-        "oer": "openai",
-        "license": ""
+        "license": "",
+        "choices": [
+            "Remediating all the data quality issues which the data analyst has identified",
+            "Escalating the resolution of the data quality issue that the data scientist found. Once the time the issue has existed exceeds the remediation SLA defined in the data quality policy, it is time to escalate.",
+            "Defining data quality rules for the data that the analyst uses"
+        ]
     }
 ]

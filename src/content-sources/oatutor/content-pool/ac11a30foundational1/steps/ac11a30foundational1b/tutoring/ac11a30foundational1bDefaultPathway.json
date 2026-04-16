@@ -3,10 +3,10 @@
         "id": "ac11a30foundational1b-h1",
         "type": "hint",
         "dependencies": [],
-        "title": "Understanding the Problem",
-        "text": "To solve this problem, we need to identify what 'X' represents in the context of the problem. Think about what 'X' is describing.",
+        "title": "How does X work?",
+        "text": "X represents something that can take on different values depending on the individual being measured.",
         "variabilization": {},
-        "oer": "openai",
+        "oer": "",
         "license": ""
     },
     {
@@ -15,33 +15,22 @@
         "dependencies": [
             "ac11a30foundational1b-h1"
         ],
-        "title": "Defining 'X'",
-        "text": "In the problem, 'X' is defined as the number of days a student is absent. What kind of term is used to describe such a quantity?",
+        "title": "Using X",
+        "text": "We can use the different recorded values of X in an equation to get the total or average number of absences.",
         "variabilization": {},
-        "oer": "openai",
+        "oer": "",
         "license": ""
     },
     {
         "id": "ac11a30foundational1b-h3",
-        "type": "scaffold",
-        "problemType": "MultipleChoice",
-        "answerType": "string",
-        "hintAnswer": [
-            "Variable"
-        ],
+        "type": "hint",
         "dependencies": [
             "ac11a30foundational1b-h2"
         ],
-        "title": "Identifying 'X'",
-        "text": "X' is a term that can take on different values depending on the student. What is this term called?",
+        "title": "Purpose of X",
+        "text": "The purpose of the correst answer is as a placeholder for future values that could be inputted.",
         "variabilization": {},
-        "oer": "openai",
-        "license": "",
-        "choices": [
-            "Variable",
-            "Population",
-            "Statistic",
-            "Data"
-        ]
+        "oer": "",
+        "license": ""
     }
 ]

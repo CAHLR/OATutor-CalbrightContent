@@ -3,58 +3,20 @@
         "id": "a5e2f17visualization6a-h1",
         "type": "hint",
         "dependencies": [],
-        "title": "Understanding the Purpose",
-        "text": "Pie charts are best for showing proportions within a whole.",
+        "title": "Comparing Values",
+        "text": "When comparing precise values between different categories, would a pie chart or a bar chart be more effective?",
         "variabilization": {},
-        "oer": "openai",
+        "oer": "",
         "license": ""
     },
     {
         "id": "a5e2f17visualization6a-h2",
         "type": "hint",
-        "dependencies": [
-            "a5e2f17visualization6a-h1"
-        ],
-        "title": "Category Limitation",
-        "text": "Pie charts are not ideal for displaying many categories.",
+        "dependencies": [],
+        "title": "Numerical Comparisons",
+        "text": "While pie charts help visualize composition and proportions, they are not ideal for detailed numerical comparisons since they lack clear axis measurements like bar charts or line graphs.",
         "variabilization": {},
-        "oer": "openai",
-        "license": ""
-    },
-    {
-        "id": "a5e2f17visualization6a-h3",
-        "type": "hint",
-        "dependencies": [
-            "a5e2f17visualization6a-h2"
-        ],
-        "title": "Visual Clarity",
-        "text": "Pie charts can become cluttered with too many slices.",
-        "variabilization": {},
-        "oer": "openai",
-        "license": ""
-    },
-    {
-        "id": "a5e2f17visualization6a-h4",
-        "type": "hint",
-        "dependencies": [
-            "a5e2f17visualization6a-h3"
-        ],
-        "title": "Comparison Difficulty",
-        "text": "Pie charts make it hard to compare similar-sized slices.",
-        "variabilization": {},
-        "oer": "openai",
-        "license": ""
-    },
-    {
-        "id": "a5e2f17visualization6a-h5",
-        "type": "hint",
-        "dependencies": [
-            "a5e2f17visualization6a-h4"
-        ],
-        "title": "Precision Issues",
-        "text": "Pie charts are not suitable for precise data analysis.",
-        "variabilization": {},
-        "oer": "openai",
+        "oer": "",
         "license": ""
     }
 ]

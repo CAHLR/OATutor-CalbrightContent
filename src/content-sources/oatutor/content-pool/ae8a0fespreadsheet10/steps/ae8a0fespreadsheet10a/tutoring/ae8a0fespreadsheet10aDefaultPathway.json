@@ -3,34 +3,30 @@
         "id": "ae8a0fespreadsheet10a-h1",
         "type": "hint",
         "dependencies": [],
-        "title": "Get to Know Filter Views",
-        "text": "A filter view in Google Sheets is like a temporary setting that lets you sort and filter your data without changing the original layout of the spreadsheet for others. Think of it like a customized $$\\frac{lens}{order}$$ through which you can view your data.",
+        "title": "Filter View",
+        "text": "Filter view hides rows and only shows rows that meet a specific criteria.",
         "variabilization": {},
-        "oer": "openai",
+        "oer": "",
         "license": ""
     },
     {
         "id": "ae8a0fespreadsheet10a-h2",
         "type": "hint",
-        "dependencies": [
-            "ae8a0fespreadsheet10a-h1"
-        ],
-        "title": "Collaboration and Filters",
-        "text": "When working with others on the same sheet, creating a filter view enables you to apply filters without altering how the data appears to your collaborators. This can ensure shared work is uninterrupted.",
+        "dependencies": [],
+        "title": "Saving a File",
+        "text": "Saving a sheet just saves the sheet to your computer and does not change the contents.",
         "variabilization": {},
-        "oer": "openai",
+        "oer": "",
         "license": ""
     },
     {
         "id": "ae8a0fespreadsheet10a-h3",
         "type": "hint",
-        "dependencies": [
-            "ae8a0fespreadsheet10a-h1"
-        ],
-        "title": "Returning to Your Filters Later",
-        "text": "If you know you'll need the same filtered data repeatedly, saving a filter view allows you to access it quickly without reapplying all the filters.",
+        "dependencies": [],
+        "title": "Filter speed",
+        "text": "Saving a filter does not improve its speed.",
         "variabilization": {},
-        "oer": "openai",
+        "oer": "",
         "license": ""
     }
 ]

@@ -28,7 +28,7 @@
             "a4c01b9intersql22a-h2"
         ],
         "title": "Back Ticks",
-        "text": "A common SQL mistake is to forget to put the field name with a space inside back ticks.",
+        "text": "A common SQL mistake is to forget to put the field name with a space inside back ticks. This is because SQL might not register that there are multiple words associated with the field name without the back ticks.",
         "variabilization": {},
         "oer": "https://OATutor.io <OATutor>",
         "license": ""

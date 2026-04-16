@@ -4,7 +4,7 @@
         "type": "hint",
         "dependencies": [],
         "title": "Understanding the Null Hypothesis",
-        "text": "The null hypothesis is a fundamental part of statistical hypothesis testing. It's an initial statement suggesting no effect or no difference, and it helps determine whether there is enough evidence to reject that statement",
+        "text": "The null hypothesis is a fundamental concept in statistics. It serves as a starting point for statistical testing. Think about why researchers might want to assume no effect or no relationship between variables initially.",
         "variabilization": {},
         "oer": "openai",
         "license": ""
@@ -12,9 +12,11 @@
     {
         "id": "abe601dresearch6a-h2",
         "type": "hint",
-        "dependencies": [],
-        "title": "Statistical Testing Explained",
-        "text": "Statistical testing allows researchers to use data to support or refute a hypothesis. It helps validate research findings by determining the likelihood that the observed pattern is due to chance.",
+        "dependencies": [
+            "abe601dresearch6a-h1"
+        ],
+        "title": "Role of Random Chance",
+        "text": "Consider how random chance can influence the results of an experiment. The null hypothesis helps to determine if the observed effects are due to random variation or if there is a significant relationship.",
         "variabilization": {},
         "oer": "openai",
         "license": ""
@@ -22,11 +24,36 @@
     {
         "id": "abe601dresearch6a-h3",
         "type": "hint",
-        "dependencies": [],
-        "title": "Clarifying Random Chance",
-        "text": "In the context of the null hypothesis, 'random chance' is the possibility that the observed results in an experiment occurred purely by coincidence. It implies that no actual impact or relationship exists beyond mere happenstance.",
+        "dependencies": [
+            "abe601dresearch6a-h2"
+        ],
+        "title": "Testing the Null Hypothesis",
+        "text": "When conducting a statistical test, the null hypothesis is what you are trying to disprove. Think about how this process helps in validating the results of a study.",
         "variabilization": {},
         "oer": "openai",
         "license": ""
+    },
+    {
+        "id": "abe601dresearch6a-s1",
+        "type": "scaffold",
+        "problemType": "MultipleChoice",
+        "answerType": "string",
+        "hintAnswer": [
+            "A null hypothesis accounts for random chance as the reason for a perceived relationship between variables"
+        ],
+        "dependencies": [
+            "abe601dresearch6a-h3"
+        ],
+        "title": "Identifying the Correct Answer",
+        "text": "Review the choices and identify which one explains the role of the null hypothesis in accounting for random chance.",
+        "variabilization": {},
+        "oer": "openai",
+        "license": "",
+        "choices": [
+            "There needs to be more than an educated guess about a phenomenon",
+            "Statistics are a soft science and need a different hypothesis than a hard science",
+            "A null hypothesis accounts for random chance as the reason for a perceived relationship between variables",
+            "Quantitative research is about certainty rather than probability. The null hypothesis is not a certainty measure"
+        ]
     }
 ]

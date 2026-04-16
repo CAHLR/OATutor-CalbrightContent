@@ -3,10 +3,10 @@
         "id": "ac11a30foundational2e-h1",
         "type": "hint",
         "dependencies": [],
-        "title": "Understanding Z-score",
-        "text": "The $$z-score$$ is a measure of how many standard deviations a data point is from the mean. It helps in understanding the position of the data point in relation to the rest of the data.",
+        "title": "Standard Deviation and Z-Scores",
+        "text": "Think about how $$z-scores$$ indicate position relative to the mean in terms of standard deviations.",
         "variabilization": {},
-        "oer": "openai",
+        "oer": "",
         "license": ""
     },
     {
@@ -15,10 +15,22 @@
         "dependencies": [
             "ac11a30foundational2e-h1"
         ],
-        "title": "Z-score Formula",
+        "title": "Interpreting Z-Score",
         "text": "If a data point is above the mean, its $$z-score$$ will be positive.",
         "variabilization": {},
-        "oer": "openai",
+        "oer": "",
+        "license": ""
+    },
+    {
+        "id": "ac11a30foundational2e-h3",
+        "type": "hint",
+        "dependencies": [
+            "ac11a30foundational2e-h2"
+        ],
+        "title": "Finding Z-Score",
+        "text": "The number of standard deviations a point is from the mean directly corresponds to its $$z-score$$.",
+        "variabilization": {},
+        "oer": "",
         "license": ""
     }
 ]

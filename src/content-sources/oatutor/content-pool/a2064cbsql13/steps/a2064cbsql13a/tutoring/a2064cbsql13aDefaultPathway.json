@@ -3,10 +3,10 @@
         "id": "a2064cbsql13a-h1",
         "type": "hint",
         "dependencies": [],
-        "title": "Recall the Range Formula",
-        "text": "The range of a set of numbers is the difference between the largest and smallest values.",
+        "title": "Calculating Range",
+        "text": "Calculating range for data values is the difference between the highest and lowest values in a data set.",
         "variabilization": {},
-        "oer": "openai",
+        "oer": "https://OATutor.io <OATutor>",
         "license": ""
     },
     {
@@ -15,32 +15,22 @@
         "dependencies": [
             "a2064cbsql13a-h1"
         ],
-        "title": "Identify the Maximum Data Value",
-        "text": "The MAX() function would return the maximum value of a column.",
+        "title": "Requirements for Range $$1$$",
+        "text": "To calculate range, the sum of all data values is not necessary.",
         "variabilization": {},
-        "oer": "openai",
+        "oer": "https://OATutor.io <OATutor>",
         "license": ""
     },
     {
         "id": "a2064cbsql13a-h3",
         "type": "hint",
         "dependencies": [
-            "a2064cbsql13a-h1"
+            "a2064cbsql13a-h2"
         ],
-        "title": "Identify the Minimum Data Value",
-        "text": "What MIN() function would return the minimum value of a column.",
+        "title": "Requirements for Range $$2$$",
+        "text": "Range does not require the number (count) of data values.",
         "variabilization": {},
-        "oer": "openai",
-        "license": ""
-    },
-    {
-        "id": "a2064cbsql13a-h4",
-        "type": "hint",
-        "dependencies": [],
-        "title": "Understanding SQL Aggregate Functions",
-        "text": "SQL includes several aggregate functions such as MIN(), MAX(), SUM(), AVG(), and COUNT(). These help in summarizing large volumes of data.",
-        "variabilization": {},
-        "oer": "openai",
+        "oer": "https://OATutor.io <OATutor>",
         "license": ""
     }
 ]

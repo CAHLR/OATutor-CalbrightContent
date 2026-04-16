@@ -4,7 +4,7 @@
         "To distinguish Hart in Bell county from Hart in Joshua county"
     ],
     "problemType": "MultipleChoice",
-    "stepTitle": "Jamal has a large database with internet traffic listed by address, city, county, and state. Why would he group aggregate results by both city and county?",
+    "stepTitle": "Jamal has a large database with internet traffic listed by address, city, county, and state. Why would he group aggregate results by both city and county? Which of the following would be the most useful result of aggregating by both city and county?",
     "stepBody": "",
     "answerType": "string",
     "variabilization": {},

@@ -4,7 +4,7 @@
         "type": "hint",
         "dependencies": [],
         "title": "Type Checks",
-        "text": "An SQLite database does not perform strong type checks, and the query will actually be successful.",
+        "text": "An SQLite database does not perform strong type checks, and the query will actually be successful regardless of whether the Description column takes numeric values or not.",
         "variabilization": {},
         "oer": "https://OATutor.io <OATutor>",
         "license": ""

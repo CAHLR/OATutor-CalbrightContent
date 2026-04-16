@@ -4,7 +4,7 @@
         "Sycamore"
     ],
     "problemType": "MultipleChoice",
-    "stepTitle": "The Street field contains Hickory, Elm, and Sycamore. Which occurs first if sorted in descending order?",
+    "stepTitle": "The Street field in a particular SQL dataset takes the values Hickory, Elm, and Sycamore. Which occurs first if sorted in descending order?",
     "stepBody": "",
     "answerType": "string",
     "variabilization": {},

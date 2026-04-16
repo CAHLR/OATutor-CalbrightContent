@@ -3,20 +3,34 @@
         "id": "a2064cbsql14a-h1",
         "type": "hint",
         "dependencies": [],
-        "title": "Understanding the WHERE clause",
-        "text": "The WHERE clause is used to filter records that satisfy a certain condition. It is typically placed before any grouping operations.",
+        "title": "Use of wildcards",
+        "text": "The use of wildcards (in this case the %) is especially useful in WHERE clauses to find any word with \"Lake\" within in regardless of letters that come prior.",
         "variabilization": {},
-        "oer": "openai",
+        "oer": "https://OATutor.io <OATutor>",
         "license": ""
     },
     {
         "id": "a2064cbsql14a-h2",
         "type": "hint",
-        "dependencies": [],
-        "title": "Order of SQL clauses",
-        "text": "In a SQL SELECT statement, the usual order of clauses is FROM, WHERE, GROUP BY, HAVING, SELECT, ORDER BY, LIMIT.",
+        "dependencies": [
+            "a2064cbsql14a-h1"
+        ],
+        "title": "Decimal Place",
+        "text": "The decimal place that HouSiz is rounded to does not need to be specified, any number of decimal places can be rounded to.",
         "variabilization": {},
-        "oer": "openai",
+        "oer": "https://OATutor.io <OATutor>",
+        "license": ""
+    },
+    {
+        "id": "a2064cbsql14a-h3",
+        "type": "hint",
+        "dependencies": [
+            "a2064cbsql14a-h2"
+        ],
+        "title": "Grouping and Filtering",
+        "text": "To group results, it is more logical to first filter the relevant conditions and then group based on the filtered data.",
+        "variabilization": {},
+        "oer": "https://OATutor.io <OATutor>",
         "license": ""
     }
 ]

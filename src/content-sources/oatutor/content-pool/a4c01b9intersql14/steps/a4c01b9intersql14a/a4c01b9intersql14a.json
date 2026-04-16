@@ -4,7 +4,7 @@
         "SELECT * FROM Customer LEFT JOIN CustomerDetail ON Customer.Id $$=$$ CustomerDetail.CustomerId;"
     ],
     "problemType": "MultipleChoice",
-    "stepTitle": "This statement will return a row for every row in the Customer table, and also associated information from the CustomerDetail table if there is any.",
+    "stepTitle": "Which statement will return a row for every row in the Customer table, and also associated information from the CustomerDetail table if there is any.",
     "stepBody": "",
     "answerType": "string",
     "variabilization": {},
