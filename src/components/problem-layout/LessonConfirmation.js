@@ -161,6 +161,17 @@ function LessonConfirmation({ classes, onConfirm, onCancel }) {
   };
 
   /**
+   * Generates a static baseline message for the lesson without an API call.
+   * Used for courses configured with confirmationMode "generic".
+   */
+  const generateBaselineMessage = (lessonObj, description) => {
+    const topic = lessonObj.topics ? ` on ${lessonObj.topics}` : "";
+    const name = lessonObj.name || "this lesson";
+    const descPart = description ? `${description} ` : "";
+    return `In ${name}${topic}, you will build practical skills that support your career goals. ${descPart}Engaging with this material will help you develop a strong foundation for success in your chosen field.`;
+  };
+
+  /**
    * Fetches personalized lesson message and industry from the backend API.
    * Uses student intake responses to generate personalized orientation content.
    * 
@@ -226,10 +237,15 @@ function LessonConfirmation({ classes, onConfirm, onCancel }) {
   }, [lesson]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    if (lesson) {
+    if (!lesson) return;
+    if (lesson.confirmationMode === "generic") {
+      const msg = generateBaselineMessage(lesson, buildLessonSummary());
+      setPersonalizedMessage(msg);
+      setHasIntakeData(false);
+    } else {
       fetchPersonalizedMessage();
     }
-  }, [lesson, fetchPersonalizedMessage]);
+  }, [lesson, fetchPersonalizedMessage]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     // Only start timer after both LLM messages have loaded (or loading is complete)

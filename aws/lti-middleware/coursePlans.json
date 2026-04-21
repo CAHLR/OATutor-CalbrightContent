@@ -3512,5 +3512,53 @@
                 }
             }
         ]
+    },
+    {
+        "courseName": "Section 1",
+        "confirmationMode": "none",
+        "lessons": [
+            { "id": "1cSXQ5Df-5PHn-jeatrYLxjl", "name": "Lesson Terminology", "topics": "" },
+            { "id": "4yd5Xj3p-bYKw-4w9ZXsGcG7", "name": "Lesson Spreadsheets", "topics": "" },
+            { "id": "3WPClNoT-8lKw-bmDLt2aWit", "name": "Lesson SQL", "topics": "" },
+            { "id": "2lJ4xqzD-mhmJ-ea2WQf7PmT", "name": "Lesson Professional", "topics": "Presentation Skills" },
+            { "id": "6mIiqjQC-0COo-RgSElaJaiD", "name": "Lesson Research", "topics": "" },
+            { "id": "2bvUGXc8-FuES-dZLJZt9x1Y", "name": "Lesson Data", "topics": "Validity" },
+            { "id": "58n7OYv3-E7NX-CO0Oxhne7M", "name": "Lesson Intermediate", "topics": "SQL Queries" },
+            { "id": "6ALznjH2-uJQ7-bilsskyTpE", "name": "Lesson Data", "topics": "Presentation Skills" },
+            { "id": "3UEON3lz-mRg8-q8hVcl0zEk", "name": "Lesson Data", "topics": "Ethics" },
+            { "id": "5vUUSAWT-7YT6-eyPqPlEw3T", "name": "Lesson Professional", "topics": "Learning" }
+        ]
+    },
+    {
+        "courseName": "Section 2",
+        "confirmationMode": "generic",
+        "lessons": [
+            { "id": "1cSXQ5Df-5PHn-jeatrYLxjl", "name": "Lesson Terminology", "topics": "" },
+            { "id": "4yd5Xj3p-bYKw-4w9ZXsGcG7", "name": "Lesson Spreadsheets", "topics": "" },
+            { "id": "3WPClNoT-8lKw-bmDLt2aWit", "name": "Lesson SQL", "topics": "" },
+            { "id": "2lJ4xqzD-mhmJ-ea2WQf7PmT", "name": "Lesson Professional", "topics": "Presentation Skills" },
+            { "id": "6mIiqjQC-0COo-RgSElaJaiD", "name": "Lesson Research", "topics": "" },
+            { "id": "2bvUGXc8-FuES-dZLJZt9x1Y", "name": "Lesson Data", "topics": "Validity" },
+            { "id": "58n7OYv3-E7NX-CO0Oxhne7M", "name": "Lesson Intermediate", "topics": "SQL Queries" },
+            { "id": "6ALznjH2-uJQ7-bilsskyTpE", "name": "Lesson Data", "topics": "Presentation Skills" },
+            { "id": "3UEON3lz-mRg8-q8hVcl0zEk", "name": "Lesson Data", "topics": "Ethics" },
+            { "id": "5vUUSAWT-7YT6-eyPqPlEw3T", "name": "Lesson Professional", "topics": "Learning" }
+        ]
+    },
+    {
+        "courseName": "Section 3 ",
+        "confirmationMode": "personalized",
+        "lessons": [
+            { "id": "1cSXQ5Df-5PHn-jeatrYLxjl", "name": "Lesson Terminology", "topics": "" },
+            { "id": "4yd5Xj3p-bYKw-4w9ZXsGcG7", "name": "Lesson Spreadsheets", "topics": "" },
+            { "id": "3WPClNoT-8lKw-bmDLt2aWit", "name": "Lesson SQL", "topics": "" },
+            { "id": "2lJ4xqzD-mhmJ-ea2WQf7PmT", "name": "Lesson Professional", "topics": "Presentation Skills" },
+            { "id": "6mIiqjQC-0COo-RgSElaJaiD", "name": "Lesson Research", "topics": "" },
+            { "id": "2bvUGXc8-FuES-dZLJZt9x1Y", "name": "Lesson Data", "topics": "Validity" },
+            { "id": "58n7OYv3-E7NX-CO0Oxhne7M", "name": "Lesson Intermediate", "topics": "SQL Queries" },
+            { "id": "6ALznjH2-uJQ7-bilsskyTpE", "name": "Lesson Data", "topics": "Presentation Skills" },
+            { "id": "3UEON3lz-mRg8-q8hVcl0zEk", "name": "Lesson Data", "topics": "Ethics" },
+            { "id": "5vUUSAWT-7YT6-eyPqPlEw3T", "name": "Lesson Professional", "topics": "Learning" }
+        ]
     }
 ]

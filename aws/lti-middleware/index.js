@@ -16,6 +16,19 @@ const { getFirestore } = require("firebase-admin/firestore");
 const serverless = require("serverless-http");
 const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
 const { DynamoDBDocumentClient, PutCommand, GetCommand} = require("@aws-sdk/lib-dynamodb");
+const coursePlans = require("./coursePlans.json");
+
+/**
+ * Returns the confirmationMode for a course by matching its name against coursePlans.
+ * Falls back to "personalized" if not found.
+ */
+const getConfirmationModeForCourse = (courseName) => {
+  if (!courseName) return "personalized";
+  const course = coursePlans.find(
+    (c) => c.courseName.trim() === courseName.trim()
+  );
+  return course?.confirmationMode || "personalized";
+};
 
 
 const consumerKeySecretMap = {
@@ -267,22 +280,41 @@ app.post("/launch", async (req, res) => {
           Location: queryFormUrl,
         });
       } else {
-        // Queryform submitted, check intakeform
+        // Queryform submitted — determine confirmationMode for this course
         const courseId = provider.body.context_id;  // <-- course_id
-        console.log(`[INTAKE CHECK] userId=${userId}, linkedLesson=${linkedLesson}, courseId=${courseId}`);
+        const courseName = provider.body.context_title;
+        const confirmationMode = getConfirmationModeForCourse(courseName);
+        console.log(`[CONFIRMATION MODE] courseName=${courseName}, confirmationMode=${confirmationMode}, userId=${userId}, linkedLesson=${linkedLesson}, courseId=${courseId}`);
 
-        if (!courseId) {
-          const lessonConfirmUrl = `${host}/lessons/${linkedLesson}/confirm?token=${token}`;
-          res.writeHead(302, { Location: lessonConfirmUrl });
+        if (confirmationMode === "none") {
+          // Section 1: skip intake form and confirmation screen entirely.
+          // Write dummy intake values so hasSubmittedIntakeForm returns true on future launches.
+          if (courseId) {
+            try {
+              await firestoredb.collection("users").doc(userId)
+                .collection("surveys").doc(`intakeForm_course_${courseId}`)
+                .set({ q1: "-1", q2: "-1", q3: "-1", completed: true, skipped: true });
+              console.log(`[CONFIRMATION MODE] Wrote dummy intake for userId=${userId}, courseId=${courseId}`);
+            } catch (err) {
+              console.warn(`[CONFIRMATION MODE] Failed to write dummy intake: ${err.message}`);
+            }
+          }
+          res.writeHead(302, { Location: `${host}/lessons/${linkedLesson}?token=${token}` });
         } else {
-          const hasIntakeForm = await hasSubmittedIntakeForm(userId, courseId);
-          if (!hasIntakeForm) {
-            const lessonConfirmUrl = `${host}/lessons/${linkedLesson}/confirm?token=${token}`;
-            const intakeFormUrl = `${host}/intake/${courseId}?returnTo=${encodeURIComponent(lessonConfirmUrl)}&token=${token}`;
-            res.writeHead(302, { Location: intakeFormUrl });
-          } else {
+          // Section 2 (generic) or Section 3 (personalized): proceed with intake check then confirmation screen
+          if (!courseId) {
             const lessonConfirmUrl = `${host}/lessons/${linkedLesson}/confirm?token=${token}`;
             res.writeHead(302, { Location: lessonConfirmUrl });
+          } else {
+            const hasIntakeForm = await hasSubmittedIntakeForm(userId, courseId);
+            if (!hasIntakeForm) {
+              const lessonConfirmUrl = `${host}/lessons/${linkedLesson}/confirm?token=${token}`;
+              const intakeFormUrl = `${host}/intake/${courseId}?returnTo=${encodeURIComponent(lessonConfirmUrl)}&token=${token}`;
+              res.writeHead(302, { Location: intakeFormUrl });
+            } else {
+              const lessonConfirmUrl = `${host}/lessons/${linkedLesson}/confirm?token=${token}`;
+              res.writeHead(302, { Location: lessonConfirmUrl });
+            }
           }
         }
       }
@@ -437,7 +469,6 @@ app.post(
     }
 
     // TODO: check if this works properly
-    const coursePlans = require("coursePlans.json");
     const _coursePlansNoEditor = coursePlans.filter(({ editor }) => !!!editor);
     let lessonName = null;
 

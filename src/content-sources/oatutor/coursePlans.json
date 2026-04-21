@@ -1,6 +1,7 @@
 [
     {
         "courseName": "Section 1",
+        "confirmationMode": "none",
         "language": "en",
         "courseOER": "https://docs.google.com/document/d/1k0Gig7mVLWpJpJbfUZWbA2hxpGenA4wUyshqAbeO5dU/edit?tab=t.0",
         "courseLicense": "https://www.calbright.edu/ <Copyright Calbright & OATutor 2025>",
@@ -112,6 +113,7 @@
     },
     {
         "courseName": "Section 2",
+        "confirmationMode": "generic",
         "language": "en",
         "courseOER": "https://docs.google.com/document/d/1k0Gig7mVLWpJpJbfUZWbA2hxpGenA4wUyshqAbeO5dU/edit?tab=t.0",
         "courseLicense": "https://www.calbright.edu/ <Copyright Calbright & OATutor 2025>",
@@ -223,6 +225,7 @@
     },
     {
         "courseName": "Section 3 ",
+        "confirmationMode": "personalized",
         "language": "en",
         "courseOER": "https://docs.google.com/document/d/1k0Gig7mVLWpJpJbfUZWbA2hxpGenA4wUyshqAbeO5dU/edit?tab=t.0",
         "courseLicense": "https://www.calbright.edu/ <Copyright Calbright & OATutor 2025>",
