@@ -53,7 +53,7 @@ const scorePrecision = 3; // how many decimal points to keep
 const client = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(client);
 
-const serviceAccount = require("./oatutor-firebase-adminsdk.json");
+const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON);
 
 firebaseAdmin.initializeApp({
   credential: firebaseAdmin.credential.cert(serviceAccount),
