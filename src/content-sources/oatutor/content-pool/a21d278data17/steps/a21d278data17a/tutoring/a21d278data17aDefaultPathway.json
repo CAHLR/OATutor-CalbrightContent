@@ -3,10 +3,10 @@
         "id": "a21d278data17a-h1",
         "type": "hint",
         "dependencies": [],
-        "title": "Understanding Data Types",
-        "text": "In computing, a 'data type' specifies the kind of data that can be stored and manipulated within a program. Common data types include numbers, text, and logical $$\\frac{true}{false}$$.",
+        "title": "Elimination",
+        "text": "Which of the choices represents a name for a field instead of an actual, official data type?",
         "variabilization": {},
-        "oer": "openai",
+        "oer": "",
         "license": ""
     },
     {
@@ -15,22 +15,10 @@
         "dependencies": [
             "a21d278data17a-h1"
         ],
-        "title": "Familiar Data Types",
-        "text": "Some familiar data types in many programming languages are:\\n- Integer (to store whole numbers)\\n- Float or double (to store decimal numbers)\\n- String (to store text)\\n- Boolean (to store $$\\frac{true}{false}$$ values)",
+        "title": "Data Types",
+        "text": "Boolean, text, and string are all valid and very common data types.",
         "variabilization": {},
-        "oer": "openai",
-        "license": ""
-    },
-    {
-        "id": "a21d278data17a-h3",
-        "type": "hint",
-        "dependencies": [
-            "a21d278data17a-h2"
-        ],
-        "title": "Start Date: An Unusual Data Type",
-        "text": "While the concept of a 'start date' is often used in programming and databases, it is not a standard data type like integer or boolean. Instead, dates might be handled using specific libraries or as a $$\\frac{string}{number}$$ type.",
-        "variabilization": {},
-        "oer": "openai",
+        "oer": "",
         "license": ""
     }
 ]

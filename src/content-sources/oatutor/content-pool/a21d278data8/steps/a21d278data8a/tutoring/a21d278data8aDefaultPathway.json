@@ -3,10 +3,10 @@
         "id": "a21d278data8a-h1",
         "type": "hint",
         "dependencies": [],
-        "title": "Memory Weights",
-        "text": "Consider what processes in digitization take up the most storage space on the computer.",
+        "title": "Distributing Tasks",
+        "text": "When a task is too big for one system, this technique involves breaking it into smaller tasks across multiple systems",
         "variabilization": {},
-        "oer": "openai",
+        "oer": "",
         "license": ""
     },
     {
@@ -15,22 +15,10 @@
         "dependencies": [
             "a21d278data8a-h1"
         ],
-        "title": "Large Data Sets",
-        "text": "When dealing with large files and extensive data, what computing technology would help manage and store this better?",
+        "title": "Multiple Systems",
+        "text": "Instead of relying on just one computer, which approach allows multiple machines to work together to store and process data more efficiently.",
         "variabilization": {},
-        "oer": "openai",
-        "license": ""
-    },
-    {
-        "id": "a21d278data8a-h3",
-        "type": "hint",
-        "dependencies": [
-            "a21d278data8a-h2"
-        ],
-        "title": "Distributed Computing",
-        "text": "\\\"Distributed computing\\\" can mean a system where computing tasks such as storing data are spread out across multiple computers to help manage large tasks. Use this to manage limited storage capacity.",
-        "variabilization": {},
-        "oer": "openai",
+        "oer": "",
         "license": ""
     }
 ]

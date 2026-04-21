@@ -3,10 +3,10 @@
         "id": "a2064cbsql15a-h1",
         "type": "hint",
         "dependencies": [],
-        "title": "Understanding Aggregation",
-        "text": "Aggregation involves summarizing data points. Grouping by a field combines rows with similar values in one field to calculate totals, averages, counts, etc. Usually, aggregation functions like SUM, AVG, COUNT can be applied to grouped data.",
+        "title": "Specifics of GROUP BY clause",
+        "text": "The GROUP BY clause does not change the order of what is grouped first.",
         "variabilization": {},
-        "oer": "openai",
+        "oer": "https://OATutor.io <OATutor>",
         "license": ""
     },
     {
@@ -15,10 +15,22 @@
         "dependencies": [
             "a2064cbsql15a-h1"
         ],
-        "title": "Why Use Multiple Groupings",
-        "text": "When you have data categorized by both cities and counties, grouping by both instead of just one helps preserve details specific to combinations of these fields.",
+        "title": "Eliminating a Field",
+        "text": "The elimination of a field can be achieved using the SELECT clause.",
         "variabilization": {},
-        "oer": "openai",
+        "oer": "https://OATutor.io <OATutor>",
+        "license": ""
+    },
+    {
+        "id": "a2064cbsql15a-h3",
+        "type": "hint",
+        "dependencies": [
+            "a2064cbsql15a-h2"
+        ],
+        "title": "Unique Aggregation",
+        "text": "Aggregating results should differentiate between two cities with the same name that appear in two different counties.",
+        "variabilization": {},
+        "oer": "https://OATutor.io <OATutor>",
         "license": ""
     }
 ]

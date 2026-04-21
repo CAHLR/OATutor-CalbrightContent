@@ -1,13 +1,13 @@
 [
     {
-        "courseName": "Calbright Data Content",
-        "courseOER": "<Calbright & OATutor>",
+        "courseName": "Section 1",
+        "language": "en",
+        "courseOER": "https://docs.google.com/document/d/1k0Gig7mVLWpJpJbfUZWbA2hxpGenA4wUyshqAbeO5dU/edit?tab=t.0",
         "courseLicense": "https://www.calbright.edu/ <Copyright Calbright & OATutor 2025>",
         "lessons": [
             {
                 "id": "1cSXQ5Df-5PHn-jeatrYLxjl",
                 "name": "Lesson Terminology",
-                "isSurvey": true,
                 "topics": "",
                 "allowRecycle": true,
                 "learningObjectives": {
@@ -111,8 +111,9 @@
         ]
     },
     {
-        "courseName": "PromptHive Calbright Content",
-        "courseOER": "<Calbright & OATutor>",
+        "courseName": "Section 2",
+        "language": "en",
+        "courseOER": "https://docs.google.com/document/d/1k0Gig7mVLWpJpJbfUZWbA2hxpGenA4wUyshqAbeO5dU/edit?tab=t.0",
         "courseLicense": "https://www.calbright.edu/ <Copyright Calbright & OATutor 2025>",
         "lessons": [
             {
@@ -125,7 +126,7 @@
                 }
             },
             {
-                "id": "0pN4Od62-gpxo-KdalWFvU2O",
+                "id": "4yd5Xj3p-bYKw-4w9ZXsGcG7",
                 "name": "Lesson Spreadsheets",
                 "topics": "",
                 "allowRecycle": true,
@@ -134,7 +135,7 @@
                 }
             },
             {
-                "id": "7THPNyS6-1S2E-mAgYvQagKe",
+                "id": "3WPClNoT-8lKw-bmDLt2aWit",
                 "name": "Lesson SQL",
                 "topics": "",
                 "allowRecycle": true,
@@ -143,7 +144,7 @@
                 }
             },
             {
-                "id": "4x2LaRQ8-ADAR-qCtErktHOc",
+                "id": "2lJ4xqzD-mhmJ-ea2WQf7PmT",
                 "name": "Lesson Professional",
                 "topics": "Presentation Skills",
                 "allowRecycle": true,
@@ -152,17 +153,16 @@
                 }
             },
             {
-                "id": "3aVznpbC-3kZr-ecRck04GWW",
+                "id": "6mIiqjQC-0COo-RgSElaJaiD",
                 "name": "Lesson Research",
                 "topics": "",
                 "allowRecycle": true,
                 "learningObjectives": {
-                    "https://docs.google.com/document/d/1npjkyq6yryts_uie54c9vuo5ghxcb3rpiyza1wq_wck/edit": 0.85,
                     "research": 0.85
                 }
             },
             {
-                "id": "6BNNEb9i-V1cs-j14JrsFNyp",
+                "id": "2bvUGXc8-FuES-dZLJZt9x1Y",
                 "name": "Lesson Data",
                 "topics": "Validity",
                 "allowRecycle": true,
@@ -171,7 +171,7 @@
                 }
             },
             {
-                "id": "6qIB3UOG-sxNT-jI3YQeSsT9",
+                "id": "4yd5Xj3p-bYKw-4w9ZXsGcG7",
                 "name": "Lesson Foundational",
                 "topics": "Mathematical Principles",
                 "allowRecycle": true,
@@ -192,16 +192,16 @@
                 }
             },
             {
-                "id": "714VNcjx-AOuA-f3AJ3e4gJ8",
+                "id": "6ALznjH2-uJQ7-bilsskyTpE",
                 "name": "Lesson Data",
-                "topics": "Presentation",
+                "topics": "Presentation Skills",
                 "allowRecycle": true,
                 "learningObjectives": {
-                    "data_presentation": 0.85
+                    "data_presentation_skills": 0.85
                 }
             },
             {
-                "id": "4sEupjtN-WCfg-nu5fPKCDvu",
+                "id": "3UEON3lz-mRg8-q8hVcl0zEk",
                 "name": "Lesson Data",
                 "topics": "Ethics",
                 "allowRecycle": true,
@@ -215,175 +215,75 @@
                 "topics": "Learning",
                 "allowRecycle": true,
                 "learningObjectives": {
-                    "professional_learning": 0.85
+                    "professional_learning": 0.85,
+                    "proffesional_learning": 0.85
                 }
             }
         ]
     },
     {
-        "courseName": "[GenAI] Calbright Data Content",
-        "courseOER": "<Calbright & OATutor>",
+        "courseName": "Section 3 ",
+        "language": "en",
+        "courseOER": "https://docs.google.com/document/d/1k0Gig7mVLWpJpJbfUZWbA2hxpGenA4wUyshqAbeO5dU/edit?tab=t.0",
         "courseLicense": "https://www.calbright.edu/ <Copyright Calbright & OATutor 2025>",
         "lessons": [
             {
-                "id": "3OyhKaEi-71y2-m8p0f273oI",
-                "name": "Lesson [GenAI]",
-                "topics": "Terminology",
+                "id": "1cSXQ5Df-5PHn-jeatrYLxjl",
+                "name": "Lesson Terminology",
+                "topics": "",
                 "allowRecycle": true,
                 "learningObjectives": {
                     "terminology": 0.85
                 }
             },
             {
-                "id": "708M6A6B-a57l-uEiWBTHsWX",
-                "name": "Lesson [GenAI]",
-                "topics": "Spreadsheets",
+                "id": "4yd5Xj3p-bYKw-4w9ZXsGcG7",
+                "name": "Lesson Spreadsheets",
+                "topics": "",
                 "allowRecycle": true,
                 "learningObjectives": {
                     "spreadsheets": 0.85
                 }
             },
             {
-                "id": "6p91NIfq-6jWW-Z35yUit4pi",
-                "name": "Lesson [GenAI]",
-                "topics": "SQL",
+                "id": "3WPClNoT-8lKw-bmDLt2aWit",
+                "name": "Lesson SQL",
+                "topics": "",
                 "allowRecycle": true,
                 "learningObjectives": {
                     "sql": 0.85
                 }
             },
             {
-                "id": "3ZxjAfBd-DVji-fuPHdBw2Pq",
-                "name": "Lesson [GenAI]",
-                "topics": "Professional Presentation Skills",
+                "id": "2lJ4xqzD-mhmJ-ea2WQf7PmT",
+                "name": "Lesson Professional",
+                "topics": "Presentation Skills",
                 "allowRecycle": true,
                 "learningObjectives": {
                     "professional_presentation_skills": 0.85
                 }
             },
             {
-                "id": "1yOovqTC-YoRf-EjHJh4B5fk",
-                "name": "Lesson [GenAI]",
-                "topics": "Research",
+                "id": "6mIiqjQC-0COo-RgSElaJaiD",
+                "name": "Lesson Research",
+                "topics": "",
                 "allowRecycle": true,
                 "learningObjectives": {
                     "research": 0.85
                 }
             },
             {
-                "id": "4CCq8iE9-InkP-EAt6EUbiaF",
-                "name": "Lesson [GenAI]",
-                "topics": "Data Validity",
+                "id": "2bvUGXc8-FuES-dZLJZt9x1Y",
+                "name": "Lesson Data",
+                "topics": "Validity",
                 "allowRecycle": true,
                 "learningObjectives": {
                     "data_validity": 0.85
                 }
             },
             {
-                "id": "7C7zXRwl-X973-N4nQF1yk4G",
-                "name": "Lesson [GenAI]",
-                "topics": "Foundational Mathematical Principles",
-                "allowRecycle": true,
-                "learningObjectives": {
-                    "foundational_math": 0.85
-                }
-            },
-            {
-                "id": "62RszRDg-veW5-ngztxVX1bt",
-                "name": "Lesson [GenAI]",
-                "topics": "Intermediate SQL Queries",
-                "allowRecycle": true,
-                "learningObjectives": {
-                    "intermediate_sql_queries": 0.85
-                }
-            },
-            {
-                "id": "3alYow4a-U7J5-ALRNL4E8WY",
-                "name": "Lesson [GenAI]",
-                "topics": "Data Presentation Skills",
-                "allowRecycle": true,
-                "learningObjectives": {
-                    "data_presentation_skills": 0.85
-                }
-            },
-            {
-                "id": "470KFWPc-hAQP-OJNFxBKxJj",
-                "name": "Lesson [GenAI]",
-                "topics": "Data Ethics",
-                "allowRecycle": true,
-                "learningObjectives": {
-                    "data_ethics": 0.85,
-                    "foundational_math": 0.85
-                }
-            },
-            {
-                "id": "3lwraF8i-ZjPX-CHyg6LVufF",
-                "name": "Lesson [GenAI]",
-                "topics": "Professional Learning",
-                "allowRecycle": true,
-                "learningObjectives": {
-                    "professioanal_learning": 0.85,
-                    "professional_learning": 0.85
-                }
-            },
-            {
-                "id": "df0d74c0-b0bd-4d3c-8a35-5a975314b8c4",
-                "name": "[GenAI] Terminology",
-                "topics": "",
-                "allowRecycle": true,
-                "learningObjectives": {
-                    "https://docs.google.com/document/d/1k0gig7mvlwpjpjbfuzwba2hxpgena4wuyshqabeo5du/edit": 0.85
-                }
-            },
-            {
-                "id": "58452507-5a06-4378-b390-bd8992bc890b",
-                "name": "[GenAI] Spreadsheets",
-                "topics": "",
-                "allowRecycle": true,
-                "learningObjectives": {
-                    "spreadsheets": 0.85
-                }
-            },
-            {
-                "id": "fed809f4-3982-493d-8da0-53f6d9e675ee",
-                "name": "[GenAI] SQL",
-                "topics": "",
-                "allowRecycle": true,
-                "learningObjectives": {
-                    "sql": 0.85
-                }
-            },
-            {
-                "id": "bb3a6e26-bafb-480e-8991-99a209294d79",
-                "name": "[GenAI] Professional Presentation Skills",
-                "topics": "Presentation Skills",
-                "allowRecycle": true,
-                "learningObjectives": {
-                    "https://docs.google.com/document/d/1k0gig7mvlwpjpjbfuzwba2hxpgena4wuyshqabeo5du/edit": 0.85
-                }
-            },
-            {
-                "id": "59bd608a-65be-43aa-9e3d-6af0a40b5aaf",
-                "name": "[GenAI] Research",
-                "topics": "",
-                "allowRecycle": true,
-                "learningObjectives": {
-                    "https://docs.google.com/document/d/1npjkyq6yryts_uie54c9vuo5ghxcb3rpiyza1wq_wck/edit": 0.85,
-                    "https://docs.google.com/document/d/1yezsl4_xmk_emjsp6igwyjd0hvimwo0tol8pdayoxmc/edit": 0.85
-                }
-            },
-            {
-                "id": "568773a8-dc2f-4cd8-a43f-3513ea263dff",
-                "name": "[GenAI] Data Validity",
-                "topics": "Validity",
-                "allowRecycle": true,
-                "learningObjectives": {
-                    "https://docs.google.com/document/d/1k0gig7mvlwpjpjbfuzwba2hxpgena4wuyshqabeo5du/edit": 0.85
-                }
-            },
-            {
-                "id": "8831d2f0-d073-4f9e-ad06-704461698b45",
-                "name": "[GenAI] Foundational Mathematical Principles",
+                "id": "4yd5Xj3p-bYKw-4w9ZXsGcG7",
+                "name": "Lesson Foundational",
                 "topics": "Mathematical Principles",
                 "allowRecycle": true,
                 "learningObjectives": {
@@ -394,8 +294,8 @@
                 }
             },
             {
-                "id": "58b7d87a-48d7-4fc8-b9de-8060ad97c197",
-                "name": "[GenAI] Intermediate SQL Queries",
+                "id": "58n7OYv3-E7NX-CO0Oxhne7M",
+                "name": "Lesson Intermediate",
                 "topics": "SQL Queries",
                 "allowRecycle": true,
                 "learningObjectives": {
@@ -403,26 +303,26 @@
                 }
             },
             {
-                "id": "039df8e3-24fb-40d6-b2c4-062ef3ec47a8",
-                "name": "[GenAI] Data Presentation Skills",
+                "id": "6ALznjH2-uJQ7-bilsskyTpE",
+                "name": "Lesson Data",
                 "topics": "Presentation Skills",
                 "allowRecycle": true,
                 "learningObjectives": {
-                    "https://docs.google.com/document/d/1k0gig7mvlwpjpjbfuzwba2hxpgena4wuyshqabeo5du/edit": 0.85
+                    "data_presentation_skills": 0.85
                 }
             },
             {
-                "id": "f7d009d6-118c-48e3-9ddc-e5d24d7432c8",
-                "name": "[GenAI] Data Ethics",
+                "id": "3UEON3lz-mRg8-q8hVcl0zEk",
+                "name": "Lesson Data",
                 "topics": "Ethics",
                 "allowRecycle": true,
                 "learningObjectives": {
-                    "https://docs.google.com/document/d/1k0gig7mvlwpjpjbfuzwba2hxpgena4wuyshqabeo5du/edit": 0.85
+                    "data_ethics": 0.85
                 }
             },
             {
-                "id": "e4d98ea1-8b29-4ac7-a9f5-6d9128a1d1ca",
-                "name": "[GenAI] Professional Learning",
+                "id": "5vUUSAWT-7YT6-eyPqPlEw3T",
+                "name": "Lesson Professional",
                 "topics": "Learning",
                 "allowRecycle": true,
                 "learningObjectives": {

@@ -3,10 +3,10 @@
         "id": "adb4b62ethics19a-h1",
         "type": "hint",
         "dependencies": [],
-        "title": "Understanding the Variables",
-        "text": "When considering the variables for tagging, think about the different aspects that can influence the performance of machine learning models. Consider both the data itself and the metrics used to evaluate the models.",
+        "title": "Volume of Data",
+        "text": "Consider how the size of a dataset might influence the complexity of organizing and tagging information.",
         "variabilization": {},
-        "oer": "openai",
+        "oer": "",
         "license": ""
     },
     {
@@ -15,10 +15,10 @@
         "dependencies": [
             "adb4b62ethics19a-h1"
         ],
-        "title": "Data Volume and Availability",
-        "text": "Reflect on how the volume of data and its availability can impact the training of machine learning models. More data can lead to better model performance, but it's not the only factor to consider.",
+        "title": "Well-structured data",
+        "text": "Think about why machine learning models rely on well-structured data\u2014what happens if key details are missing?",
         "variabilization": {},
-        "oer": "openai",
+        "oer": "",
         "license": ""
     },
     {
@@ -27,10 +27,10 @@
         "dependencies": [
             "adb4b62ethics19a-h2"
         ],
-        "title": "Performance and Accuracy",
-        "text": "Consider how performance and accuracy metrics can be influenced by the data and the model's training process.",
+        "title": "Model Performance",
+        "text": "Beyond just organizing data, what other factors might tagging influence in terms of model performance?",
         "variabilization": {},
-        "oer": "openai",
+        "oer": "",
         "license": ""
     }
 ]

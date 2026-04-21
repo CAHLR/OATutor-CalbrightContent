@@ -3,10 +3,10 @@
         "id": "a5e2f17visualization20a-h1",
         "type": "hint",
         "dependencies": [],
-        "title": "Consider Simplicity",
-        "text": "Keeping things simple helps in understanding the data better.",
+        "title": "Simplifying Numbers",
+        "text": "Consider how simplifying numbers makes it easier for your audience to grasp the scale.",
         "variabilization": {},
-        "oer": "openai",
+        "oer": "",
         "license": ""
     },
     {
@@ -15,46 +15,10 @@
         "dependencies": [
             "a5e2f17visualization20a-h1"
         ],
-        "title": "Think About Consistency",
-        "text": "Consistency in presentation aids in comparing different data sets.",
+        "title": "Representing quantities",
+        "text": "Very precise numbers with decimals can be less intuitive for people to understand quickly, especially when working with large datasets.",
         "variabilization": {},
-        "oer": "openai",
-        "license": ""
-    },
-    {
-        "id": "a5e2f17visualization20a-h3",
-        "type": "hint",
-        "dependencies": [
-            "a5e2f17visualization20a-h2"
-        ],
-        "title": "Avoid Complexity",
-        "text": "Complex scales can make data interpretation difficult.",
-        "variabilization": {},
-        "oer": "openai",
-        "license": ""
-    },
-    {
-        "id": "a5e2f17visualization20a-h4",
-        "type": "hint",
-        "dependencies": [
-            "a5e2f17visualization20a-h3"
-        ],
-        "title": "Focus on Readability",
-        "text": "Readability is key to effective data visualization.",
-        "variabilization": {},
-        "oer": "openai",
-        "license": ""
-    },
-    {
-        "id": "a5e2f17visualization20a-h5",
-        "type": "hint",
-        "dependencies": [
-            "a5e2f17visualization20a-h4"
-        ],
-        "title": "Use Familiar Numbers",
-        "text": "Familiar numbers make it easier for viewers to grasp the scale.",
-        "variabilization": {},
-        "oer": "openai",
+        "oer": "",
         "license": ""
     }
 ]

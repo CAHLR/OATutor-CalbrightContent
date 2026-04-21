@@ -3,10 +3,10 @@
         "id": "ae8a0fespreadsheet5a-h1",
         "type": "hint",
         "dependencies": [],
-        "title": "Understanding Google Drive Interface",
-        "text": "To move files in Google Drive, familiarize yourself with the interface. You'll see a list of your files, and on the left, folders are displayed. This structure is central to either dragging files or using menu options for file movements.",
+        "title": "Shortcuts",
+        "text": "Adding a shortcut does not move a file's location, but only makes it easier to navigate from the Google Drive home screen.",
         "variabilization": {},
-        "oer": "openai",
+        "oer": "",
         "license": ""
     },
     {
@@ -15,10 +15,10 @@
         "dependencies": [
             "ae8a0fespreadsheet5a-h1"
         ],
-        "title": "Exploring File Actions",
-        "text": "When you right-click or CTRL-click on a file, a menu appears. This menu provides various options for managing the file, including potentially moving it.",
+        "title": "Right Clicking",
+        "text": "Right-clicking on the file in Drive will give show your a pop-up of different sheet edit options.",
         "variabilization": {},
-        "oer": "openai",
+        "oer": "",
         "license": ""
     },
     {
@@ -27,33 +27,22 @@
         "dependencies": [
             "ae8a0fespreadsheet5a-h2"
         ],
-        "title": "Navigating Menu Options Within Files",
-        "text": "Inside a Google Sheets file, navigate to the 'File' menu located in the top left corner. This menu gives specific options that apply to the spreadsheet.",
+        "title": "Manual File Manipulation",
+        "text": "A file can be changed by physically moving it to a new location, like you would in real life when filling information.",
         "variabilization": {},
-        "oer": "openai",
+        "oer": "",
         "license": ""
     },
     {
-        "id": "ae8a0fespreadsheet5a-s1",
-        "type": "scaffold",
-        "problemType": "MultipleChoice",
-        "answerType": "string",
-        "hintAnswer": [
-            "A, B, D"
-        ],
+        "id": "ae8a0fespreadsheet5a-h4",
+        "type": "hint",
         "dependencies": [
             "ae8a0fespreadsheet5a-h3"
         ],
-        "title": "Executing a Move Operation",
-        "text": "Combine your understanding of file interactions outside and inside Google Sheets. Use tools like drag and drop, right-click menu options, and File menu options within the spreadsheet to perform file movements.",
+        "title": "Indirectly Move",
+        "text": "The file can also be moved through Drive commands, using \"Move to\" and navigating to the folder for the file to be placed in.",
         "variabilization": {},
-        "oer": "openai",
-        "license": "",
-        "choices": [
-            "A, B, C",
-            "B, C, D",
-            "A, B, C",
-            "B, C, D"
-        ]
+        "oer": "",
+        "license": ""
     }
 ]

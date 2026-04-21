@@ -3,43 +3,34 @@
         "id": "a2064cbsql9a-h1",
         "type": "hint",
         "dependencies": [],
-        "title": "Understanding Joins in Databases",
-        "text": "A join in SQL allows you to combine rows from two or more tables based on a related column between them. By joining tables, you can retrieve data in a way that is meaningful for your analysis.",
+        "title": "Table Storage Size",
+        "text": "When multiple tables are joined together, the same amount of storage is required.",
         "variabilization": {},
-        "oer": "openai",
+        "oer": "https://OATutor.io <OATutor>",
         "license": ""
-    },
-    {
-        "id": "a2064cbsql9a-s1",
-        "type": "scaffold",
-        "problemType": "MultipleChoice",
-        "answerType": "string",
-        "hintAnswer": [
-            "The information you need can only be obtained by using multiple tables."
-        ],
-        "dependencies": [],
-        "title": "Breaking Down the Problem",
-        "text": "When faced with a question about why join tables, think about the necessity of combining data from multiple tables to meet specific criteria. Which of the following scenarios would typically require joining multiple tables?",
-        "variabilization": {},
-        "oer": "openai",
-        "license": "",
-        "choices": [
-            "There are duplicates in your database that need to be merged.",
-            "The information you need can only be obtained by using multiple tables.",
-            "Joins are needed to break down large tables into smaller ones.",
-            "Joins help to convert numerical data to string."
-        ]
     },
     {
         "id": "a2064cbsql9a-h2",
         "type": "hint",
         "dependencies": [
-            "a2064cbsql9a-s1"
+            "a2064cbsql9a-h1"
         ],
-        "title": "Identifying the Need for Data",
-        "text": "Analyzing why you need to join tables involves identifying the data needs of your query. Often, information is spread across multiple tables, and joining them ensures you have access to all necessary details. Remember: a single table might not have all the attributes needed for a comprehensive analysis.",
+        "title": "Use of Central Repository",
+        "text": "A central repository does not need to be made because all of the relevant data is already included in the tables. A central repository doesn't necessarily mean all the tables are joined, just that all the tables are available in a central location.",
         "variabilization": {},
-        "oer": "openai",
+        "oer": "https://OATutor.io <OATutor>",
+        "license": ""
+    },
+    {
+        "id": "a2064cbsql9a-h3",
+        "type": "hint",
+        "dependencies": [
+            "a2064cbsql9a-h2"
+        ],
+        "title": "Complexity of Tables",
+        "text": "Joining tables together does not necessarily decrease the amount of tables in the database as each individual table could still contain important information not reflected in the joined table.",
+        "variabilization": {},
+        "oer": "https://OATutor.io <OATutor>",
         "license": ""
     }
 ]

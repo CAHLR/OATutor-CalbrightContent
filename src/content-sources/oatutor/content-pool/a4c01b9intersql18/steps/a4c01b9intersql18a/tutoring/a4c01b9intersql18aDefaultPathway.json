@@ -1,90 +1,36 @@
 [
     {
         "id": "a4c01b9intersql18a-h1",
-        "type": "scaffold",
-        "problemType": "MultipleChoice",
-        "answerType": "string",
-        "hintAnswer": [
-            "MAX"
-        ],
+        "type": "hint",
         "dependencies": [],
-        "title": "Selecting the Correct Function for a Group Operation",
-        "text": "Which SQL function is used to get the highest value when grouping data?",
+        "title": "Aggregation Syntax",
+        "text": "An aggregation must have a GROUP BY defined.",
         "variabilization": {},
-        "oer": "openai",
-        "license": "",
-        "choices": [
-            "SUM",
-            "AVG",
-            "MIN",
-            "MAX"
-        ]
+        "oer": "https://OATutor.io <OATutor>",
+        "license": ""
     },
     {
         "id": "a4c01b9intersql18a-h2",
-        "type": "scaffold",
-        "problemType": "MultipleChoice",
-        "answerType": "string",
-        "hintAnswer": [
-            "GROUP BY"
+        "type": "hint",
+        "dependencies": [
+            "a4c01b9intersql18a-h1"
         ],
-        "dependencies": [],
-        "title": "Grouping Data in SQL",
-        "text": "Which SQL clause allows you to group data by a specific column?",
+        "title": "Max aggregation",
+        "text": "The MAX aggregation expects a singular argument.",
         "variabilization": {},
-        "oer": "openai",
-        "license": "",
-        "choices": [
-            "SELECT",
-            "WHERE",
-            "GROUP BY",
-            "ORDER BY"
-        ]
+        "oer": "https://OATutor.io <OATutor>",
+        "license": ""
     },
     {
         "id": "a4c01b9intersql18a-h3",
-        "type": "scaffold",
-        "problemType": "MultipleChoice",
-        "answerType": "string",
-        "hintAnswer": [
-            "Office"
-        ],
-        "dependencies": [],
-        "title": "Selecting the Right Columns",
-        "text": "If you want to display the maximum sale amount per office, which column should appear in the SELECT clause along with the MAX function?",
-        "variabilization": {},
-        "oer": "openai",
-        "license": "",
-        "choices": [
-            "Office",
-            "Amount",
-            "$$Sales_{ID}$$",
-            "Date"
-        ]
-    },
-    {
-        "id": "a4c01b9intersql18a-h4",
-        "type": "scaffold",
-        "problemType": "MultipleChoice",
-        "answerType": "string",
-        "hintAnswer": [
-            "SELECT MAX(Amount) FROM Sales GROUP BY Office;"
-        ],
+        "type": "hint",
         "dependencies": [
-            "a4c01b9intersql18a-h1",
-            "a4c01b9intersql18a-h2",
-            "a4c01b9intersql18a-h3"
+            "a4c01b9intersql18a-h2"
         ],
-        "title": "Constructing the SQL Query",
-        "text": "Based on the correct SQL statements, which query returns the highest sale amount by office?",
+        "title": "Grouping",
+        "text": "To find a specific value for each office, the data must be grouped by office.",
         "variabilization": {},
-        "oer": "openai",
-        "license": "",
-        "choices": [
-            "SELECT Office FROM Sales GROUP BY MAX(Amount);",
-            "SELECT MAX(Amount, Office) FROM Sales;",
-            "SELECT MAX(Amount) FROM Sales GROUP BY Office;",
-            "SELECT MAX(Amount), Office FROM Sales;"
-        ]
+        "oer": "https://OATutor.io <OATutor>",
+        "license": ""
     }
 ]

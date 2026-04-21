@@ -3,10 +3,10 @@
         "id": "a2064cbsql7a-h1",
         "type": "hint",
         "dependencies": [],
-        "title": "Understanding IF-THEN-ELSE",
-        "text": "The IF-THEN-ELSE statement is a control flow statement often used in programming and SQL queries to execute different blocks of code or actions depending on whether a certain condition is true or false.",
+        "title": "If-Else Logic",
+        "text": "For an IF-THEN, the possibility that none of the conditions are met are grouped all into ELSE.",
         "variabilization": {},
-        "oer": "openai",
+        "oer": "https://OATutor.io <OATutor>",
         "license": ""
     },
     {
@@ -15,33 +15,34 @@
         "dependencies": [
             "a2064cbsql7a-h1"
         ],
-        "title": "Importance of ELSE",
-        "text": "The ELSE part of the IF-THEN-ELSE statement is crucial as it catches any cases not already handled by specific IF conditions. Think of it as a safety net for unaddressed possibilities.",
+        "title": "Conditions",
+        "text": "To define conditions, the CASE phrase is utilized instead of ELSE.",
         "variabilization": {},
-        "oer": "openai",
+        "oer": "https://OATutor.io <OATutor>",
         "license": ""
     },
     {
-        "id": "a2064cbsql7a-s1",
-        "type": "scaffold",
-        "problemType": "MultipleChoice",
-        "answerType": "string",
-        "hintAnswer": [
-            "It is the ELSE action, performed when neither 'if it rains' nor 'if it snows' conditions are true."
-        ],
+        "id": "a2064cbsql7a-h3",
+        "type": "hint",
         "dependencies": [
             "a2064cbsql7a-h2"
         ],
-        "title": "Creating a Simple IF-THEN-ELSE Flow",
-        "text": "Imagine a situation: If it rains, we'll stay indoors. If it snows, we'll make a snowman. Otherwise, we'll go on a picnic. What is the role of 'Otherwise, we'll go on a picnic' in this scenario?",
+        "title": "Category Name Specification",
+        "text": "The category names are specified by the phrase AS",
         "variabilization": {},
-        "oer": "openai",
-        "license": "",
-        "choices": [
-            "It is the ELSE action, performed when neither 'if it rains' nor 'if it snows' conditions are true.",
-            "It is an IF condition for a picnic",
-            "It is not a part of the $$IF-THEN-ELSE$$ structure",
-            "It acts as an alternate IF condition for no condition"
-        ]
+        "oer": "https://OATutor.io <OATutor>",
+        "license": ""
+    },
+    {
+        "id": "a2064cbsql7a-h4",
+        "type": "hint",
+        "dependencies": [
+            "a2064cbsql7a-h3"
+        ],
+        "title": "Terminating Clause",
+        "text": "To terminate a CASE clause, the correct phrase would instead be END",
+        "variabilization": {},
+        "oer": "https://OATutor.io <OATutor>",
+        "license": ""
     }
 ]

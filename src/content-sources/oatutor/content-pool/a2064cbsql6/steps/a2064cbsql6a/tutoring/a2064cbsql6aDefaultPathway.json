@@ -3,10 +3,10 @@
         "id": "a2064cbsql6a-h1",
         "type": "hint",
         "dependencies": [],
-        "title": "Identify the Function of SQL Keywords",
-        "text": "Each SQL keyword serves a specific function in a query. Review the common ones:\\n- 'SELECT' chooses columns to display.\\n- 'FROM' designates the source table.\\n- 'WHERE' filters results based on a condition.\\n- 'AS' renames a column or table.",
+        "title": "Non Existent Clause",
+        "text": "There does not exist a WHICH clause in SQL.",
         "variabilization": {},
-        "oer": "openai",
+        "oer": "https://OATutor.io <OATutor>",
         "license": ""
     },
     {
@@ -15,10 +15,10 @@
         "dependencies": [
             "a2064cbsql6a-h1"
         ],
-        "title": "Understanding WHERE Clause",
-        "text": "The 'WHERE' clause is used to filter records that meet specific conditions. This is crucial when you want results for specific data points only.",
+        "title": "Clause with a Different Purpose $$1$$",
+        "text": "The FROM starting a clause is not used to filter, and instead is used in SQL to specify the origin of data.",
         "variabilization": {},
-        "oer": "openai",
+        "oer": "https://OATutor.io <OATutor>",
         "license": ""
     },
     {
@@ -27,22 +27,10 @@
         "dependencies": [
             "a2064cbsql6a-h2"
         ],
-        "title": "Use of WHERE Clause",
-        "text": "Try using the 'WHERE' clause in this example:\\nImagine you have a table of employees, and you want to find those who work in the 'Sales' department only. What clause do you apply?",
+        "title": "Clause with a Different Purpose $$2$$",
+        "text": "To filter from a condition, the AS would not be appropriate because AS specifies an alternate name for a field.",
         "variabilization": {},
-        "oer": "openai",
-        "license": ""
-    },
-    {
-        "id": "a2064cbsql6a-h4",
-        "type": "hint",
-        "dependencies": [
-            "a2064cbsql6a-h3"
-        ],
-        "title": "Creating a Complete SQL Query",
-        "text": "Starting with data retrieval, design a basic query. You want all sales employees:\\n$$1$$. Choose columns to display.\\n$$2$$. Identify the correct table.\\n$$3$$. Filter for sales department.",
-        "variabilization": {},
-        "oer": "openai",
+        "oer": "https://OATutor.io <OATutor>",
         "license": ""
     }
 ]

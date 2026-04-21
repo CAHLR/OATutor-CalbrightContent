@@ -3,22 +3,20 @@
         "id": "adb4b62ethics9a-h1",
         "type": "hint",
         "dependencies": [],
-        "title": "Understanding Privacy-Aware Culture",
-        "text": "To foster a privacy-aware culture, it's essential to think about how different teams within an organization interact and share information. Consider the importance of having a unified approach that connects these teams, even if they operate independently.",
+        "title": "What's Needed",
+        "text": "Simply having documents or processes in place isn\u2019t enough, privacy-aware cultures require a combination of things.",
         "variabilization": {},
-        "oer": "openai",
+        "oer": "",
         "license": ""
     },
     {
         "id": "adb4b62ethics9a-h2",
         "type": "hint",
-        "dependencies": [
-            "adb4b62ethics9a-h1"
-        ],
-        "title": "The Role of Communication",
-        "text": "Think about how communication plays a role in creating a privacy-aware culture. How can teams ensure they are on the same page when it comes to privacy, even if they are working in different departments?",
+        "dependencies": [],
+        "title": "Teamwork",
+        "text": "Compliance with regulations is necessary, but true privacy awareness requires internal teamwork.",
         "variabilization": {},
-        "oer": "openai",
+        "oer": "",
         "license": ""
     }
 ]

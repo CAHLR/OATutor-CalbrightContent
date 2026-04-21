@@ -3,8 +3,8 @@
         "id": "a439352validity3a-h1",
         "type": "hint",
         "dependencies": [],
-        "title": "Definition of Data Quality Rules",
-        "text": "Data Quality Rules are guidelines or criteria that ensure the data being used is accurate, consistent, and reliable for its intended purpose. Developing these rules helps in identifying, correcting, and preventing data integrity problems.",
+        "title": "Understand Your Role",
+        "text": "Consider what responsibilities you have when creating a report. Think about the importance of ensuring the data is accurate and reliable.",
         "variabilization": {},
         "oer": "openai",
         "license": ""
@@ -12,9 +12,11 @@
     {
         "id": "a439352validity3a-h2",
         "type": "hint",
-        "dependencies": [],
-        "title": "Understanding the Requirement",
-        "text": "Your report includes calculated fields, and it is essential to ensure the integrity and accuracy of the data used in these fields. This means that you need to implement data quality rules where necessary to detect and remedy any errors that could affect the output of your report.",
+        "dependencies": [
+            "a439352validity3a-h1"
+        ],
+        "title": "Focus on Calculated Fields",
+        "text": "Remember that the calculated fields are unique to your report. What does this imply about your responsibility for their accuracy?",
         "variabilization": {},
         "oer": "openai",
         "license": ""
@@ -25,8 +27,8 @@
         "dependencies": [
             "a439352validity3a-h2"
         ],
-        "title": "Managing Responsibility for Source Data",
-        "text": "This option implies that your responsibility is limited to the source data and not the calculated fields in your report. However, calculated fields, being derivative, can have unique errors that require separate attention beyond the source quality.",
+        "title": "Data Quality Rules",
+        "text": "Think about what steps you can take to ensure the data quality of the calculated fields. What processes can you implement to catch errors?",
         "variabilization": {},
         "oer": "openai",
         "license": ""
@@ -37,20 +39,8 @@
         "dependencies": [
             "a439352validity3a-h3"
         ],
-        "title": "Ensure Accuracy in Calculation",
-        "text": "Although focusing on calculated fields is important, your responsibility also involves ensuring that any errors in the calculations themselves are addressed. Simply monitoring the source data alone won't safeguard the integrity of your report's calculations.",
-        "variabilization": {},
-        "oer": "openai",
-        "license": ""
-    },
-    {
-        "id": "a439352validity3a-h5",
-        "type": "hint",
-        "dependencies": [
-            "a439352validity3a-h4"
-        ],
-        "title": "Comprehensive Responsibility for Quality",
-        "text": "You are responsible for implementing data quality rules and addressing any errors that arise due to your report. This ensures that even if there are issues upstream, the integrity of your report's data is continuously evaluated and maintained through corrective actions.",
+        "title": "Remediation of Issues",
+        "text": "Consider what actions you should take if you discover an error in your report. How can you address and correct these issues?",
         "variabilization": {},
         "oer": "openai",
         "license": ""

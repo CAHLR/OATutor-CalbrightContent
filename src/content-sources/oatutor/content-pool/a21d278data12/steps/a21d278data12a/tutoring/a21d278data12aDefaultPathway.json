@@ -3,10 +3,10 @@
         "id": "a21d278data12a-h1",
         "type": "hint",
         "dependencies": [],
-        "title": "Understanding Data Cleaning",
-        "text": "Data cleaning involves correcting or removing incorrect, corrupted, or irrelevant data from a dataset. This helps improve the accuracy of data analyses and ensures better decision-making.",
+        "title": "VLOOKUP and XLOOKUP",
+        "text": "While VLOOKUP and XLOOKUP involves cleaning data, it is more about data retrieval than transformation or cleaning",
         "variabilization": {},
-        "oer": "openai",
+        "oer": "",
         "license": ""
     },
     {
@@ -15,10 +15,22 @@
         "dependencies": [
             "a21d278data12a-h1"
         ],
-        "title": "Data Transformation Explained",
-        "text": "Data transformation refers to the process of converting data from one format or structure into another. This might involve aggregating data, enriching data with additional fields, or normalizing data for easier analysis.",
+        "title": "Pivot tables",
+        "text": "Pivot tables involvee visualization rather than cleaning or transforming, and data table augmentation.",
         "variabilization": {},
-        "oer": "openai",
+        "oer": "",
+        "license": ""
+    },
+    {
+        "id": "a21d278data12a-h3",
+        "type": "hint",
+        "dependencies": [
+            "a21d278data12a-h2"
+        ],
+        "title": "Deleting Columns and Adding Calculations",
+        "text": "Removing unnecessary columns is a cleaning process, while adding calculations is a transformation process",
+        "variabilization": {},
+        "oer": "",
         "license": ""
     }
 ]

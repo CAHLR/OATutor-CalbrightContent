@@ -3,10 +3,10 @@
         "id": "a2064cbsql11a-h1",
         "type": "hint",
         "dependencies": [],
-        "title": "Understanding Strings in SQL",
-        "text": "In SQL, functions can perform operations on string data types, such as converting to uppercase or extracting a substring.",
+        "title": "Uppercase Word",
+        "text": "We want the output to be an uppercase string.",
         "variabilization": {},
-        "oer": "openai",
+        "oer": "https://OATutor.io <OATutor>",
         "license": ""
     },
     {
@@ -15,22 +15,22 @@
         "dependencies": [
             "a2064cbsql11a-h1"
         ],
-        "title": "The UPPER() Function",
-        "text": "The UPPER() function is used to convert all letters in a string to uppercase. It is often used to standardize text data.",
+        "title": "Letter Indeces",
+        "text": "To get the first letter of the output string to be F, it is the 5th letter. Thus, the second parameter should be $$5$$.",
         "variabilization": {},
-        "oer": "openai",
+        "oer": "https://OATutor.io <OATutor>",
         "license": ""
     },
     {
         "id": "a2064cbsql11a-h3",
         "type": "hint",
         "dependencies": [
-            "a2064cbsql11a-h1"
+            "a2064cbsql11a-h2"
         ],
-        "title": "Understanding substr() Function",
-        "text": "The substr() function is used to extract a part of a string. The typical syntax is substr(column, start, length), where 'start' is the starting position and 'length' is the number of characters to extract.",
+        "title": "Length of Word Output",
+        "text": "To produce a $$4$$ letter output string, the third parameter for the substring function in the field text0 should be $$4$$.",
         "variabilization": {},
-        "oer": "openai",
+        "oer": "https://OATutor.io <OATutor>",
         "license": ""
     }
 ]

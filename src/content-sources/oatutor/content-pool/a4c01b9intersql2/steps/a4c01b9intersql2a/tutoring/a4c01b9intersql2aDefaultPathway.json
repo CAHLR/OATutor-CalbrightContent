@@ -16,7 +16,7 @@
             "a4c01b9intersql2a-h1"
         ],
         "title": "Types of Clauses",
-        "text": "In SQL, all keywords are written in uppercase letters to help identify them and easily show the purpose of the query.",
+        "text": "In SQL, all keywords are written in uppercase letters by convention to help identify them and easily show the purpose of the query.",
         "variabilization": {},
         "oer": "",
         "license": ""

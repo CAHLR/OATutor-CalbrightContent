@@ -3,10 +3,10 @@
         "id": "ae8a0fespreadsheet7a-h1",
         "type": "hint",
         "dependencies": [],
-        "title": "Understanding Image Positioning",
-        "text": "When you insert an image as 'Image over cells', it floats independently of the cells below it.",
+        "title": "Google Images",
+        "text": "You can add an image to your spreadsheet using Google Image Search via \"Image in cell.\"",
         "variabilization": {},
-        "oer": "openai",
+        "oer": "",
         "license": ""
     },
     {
@@ -15,10 +15,10 @@
         "dependencies": [
             "ae8a0fespreadsheet7a-h1"
         ],
-        "title": "Functions of 'Image over cells'",
-        "text": "Think of 'Image over cells' as a layer situated on top of your entire spreadsheet, allowing free movement and resizing.",
+        "title": "Inserting a Chart",
+        "text": "Inserting a chart is a different action in Google Sheets than inserting an image. A chart can be built directly in Google Sheets based on the visualization the user is looking for.",
         "variabilization": {},
-        "oer": "openai",
+        "oer": "",
         "license": ""
     },
     {
@@ -27,10 +27,10 @@
         "dependencies": [
             "ae8a0fespreadsheet7a-h2"
         ],
-        "title": "Interaction with Spreadsheet Data",
-        "text": "This image positioning does not affect the data within the cells. It works like a decal applied to the surface of the sheet.",
+        "title": "Image in Cell",
+        "text": "Use \"Image in cell\" if you want your image to be located in a specific cell on your spreadsheet, which will not move around.",
         "variabilization": {},
-        "oer": "openai",
+        "oer": "",
         "license": ""
     },
     {
@@ -39,10 +39,10 @@
         "dependencies": [
             "ae8a0fespreadsheet7a-h3"
         ],
-        "title": "When to Use 'Image over cells'",
-        "text": "Consider using this option when the image should be visible throughout multiple operations on the data, or when aesthetics is a higher priority than cell-specific anchoring (images are necessary for a particular cell).",
+        "title": "Over Cell",
+        "text": "Without being associated to a specific cell, inserting an image over cells places it freely in the spreadsheet as a visual element.",
         "variabilization": {},
-        "oer": "openai",
+        "oer": "",
         "license": ""
     }
 ]

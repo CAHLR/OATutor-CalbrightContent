@@ -3,45 +3,20 @@
         "id": "adb4b62ethics12a-h1",
         "type": "hint",
         "dependencies": [],
-        "title": "Understanding the Context",
-        "text": "Consider the broader context of your data inventory. What are the different privacy laws that could impact your users and business operations?",
+        "title": "Variance",
+        "text": "Privacy laws vary across regions, and businesses must comply with multiple regulations, not just one.",
         "variabilization": {},
-        "oer": "openai",
+        "oer": "",
         "license": ""
     },
     {
         "id": "adb4b62ethics12a-h2",
         "type": "hint",
-        "dependencies": [
-            "adb4b62ethics12a-h1"
-        ],
-        "title": "Think Beyond a Single Law",
-        "text": "Instead of focusing on a single law, think about how multiple privacy laws might apply to your situation. How do these laws collectively influence your data practices?",
+        "dependencies": [],
+        "title": "Flexibility",
+        "text": "A flexible tagging system ensures compliance with various legal frameworks rather than focusing on a single standard.",
         "variabilization": {},
-        "oer": "openai",
+        "oer": "",
         "license": ""
-    },
-    {
-        "id": "adb4b62ethics12a-h3",
-        "type": "scaffold",
-        "problemType": "MultipleChoice",
-        "answerType": "string",
-        "hintAnswer": [
-            "privacy laws that impact your users and businesses rather than just a specific law"
-        ],
-        "dependencies": [
-            "adb4b62ethics12a-h2"
-        ],
-        "title": "Identify Relevant Privacy Laws",
-        "text": "List the privacy laws that are relevant to your users and business. Consider both local and international regulations.",
-        "variabilization": {},
-        "oer": "openai",
-        "license": "",
-        "choices": [
-            "GDPR only",
-            "CCPA only",
-            "privacy laws that impact your users and businesses rather than just a specific law",
-            "ISO only"
-        ]
     }
 ]

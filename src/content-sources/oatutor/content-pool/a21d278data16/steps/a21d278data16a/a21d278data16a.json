@@ -4,7 +4,7 @@
         "A, B, D"
     ],
     "problemType": "MultipleChoice",
-    "stepTitle": "A. removing unnecessary columns\\nB. changing the case of data (upper, lower, etc.)\\nC. connecting to the data in a database\\nD. removing unnecessary spaces from data",
+    "stepTitle": "A. removing unnecessary columns\\nB. changing the case of data (upper, lower, etc.)\\nC. connecting to the data in a database\\nD. removing unnecessary spaces from data\\n",
     "stepBody": "",
     "answerType": "string",
     "variabilization": {},

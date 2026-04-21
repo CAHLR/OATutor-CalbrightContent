@@ -3,10 +3,10 @@
         "id": "a21d278data2a-h1",
         "type": "hint",
         "dependencies": [],
-        "title": "Clarifying Direct Connection to Data",
-        "text": "A direct connection to data means that your file pulls information in real-time or near-real-time from a live source system (e.g., databases, APIs). This allows for the most current data to be displayed in your file.",
+        "title": "How is it connected?",
+        "text": "Does data get updated automatically or manually?",
         "variabilization": {},
-        "oer": "openai",
+        "oer": "",
         "license": ""
     },
     {
@@ -15,22 +15,10 @@
         "dependencies": [
             "a21d278data2a-h1"
         ],
-        "title": "Understanding Data Updates",
-        "text": "Data updates occur when changes are made to the source system or database your file connects to. In such cases, the file reflects these changes automatically once the data is refreshed.",
+        "title": "Updating Data",
+        "text": "How often is the data updated?",
         "variabilization": {},
-        "oer": "openai",
-        "license": ""
-    },
-    {
-        "id": "a21d278data2a-h3",
-        "type": "hint",
-        "dependencies": [
-            "a21d278data2a-h2"
-        ],
-        "title": "Key Differences from File Updates",
-        "text": "When you receive an updated file, you replace or exchange the entire dataset with new data. This is different from automatic updates via direct connection to the source system.",
-        "variabilization": {},
-        "oer": "openai",
+        "oer": "",
         "license": ""
     }
 ]

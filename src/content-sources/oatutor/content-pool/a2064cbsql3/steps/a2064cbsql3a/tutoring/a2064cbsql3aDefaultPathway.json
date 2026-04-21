@@ -3,42 +3,22 @@
         "id": "a2064cbsql3a-h1",
         "type": "hint",
         "dependencies": [],
-        "title": "Define Descending Order",
-        "text": "Sorting in Descending order is sorting from greatest to least.",
+        "title": "Using Sort",
+        "text": "Using descend sorts the alphabet from Z to A.",
         "variabilization": {},
-        "oer": "openai",
+        "oer": "https://OATutor.io <OATutor>",
         "license": ""
     },
     {
         "id": "a2064cbsql3a-h2",
         "type": "hint",
-        "dependencies": [],
-        "title": "Identify the Lexicographically Greatest String",
-        "text": "Think about which word comes last when arranged alphabetically.",
-        "variabilization": {},
-        "oer": "openai",
-        "license": ""
-    },
-    {
-        "id": "a2064cbsql3a-h3",
-        "type": "scaffold",
-        "problemType": "MultipleChoice",
-        "answerType": "string",
-        "hintAnswer": [
-            "Zebra"
-        ],
         "dependencies": [
-            "a2064cbsql3a-h2"
+            "a2064cbsql3a-h1"
         ],
-        "title": "Test with an Example",
-        "text": "If you sort 'Zebra', 'Apple', and 'Monkey' in descending order, which word comes first?",
+        "title": "Sort Outcome",
+        "text": "The word that occurs first is the one that starts with the letter that occurs last in alphabetical order.",
         "variabilization": {},
-        "oer": "openai",
-        "license": "",
-        "choices": [
-            "Zebra",
-            "Apple",
-            "Monkey"
-        ]
+        "oer": "https://OATutor.io <OATutor>",
+        "license": ""
     }
 ]

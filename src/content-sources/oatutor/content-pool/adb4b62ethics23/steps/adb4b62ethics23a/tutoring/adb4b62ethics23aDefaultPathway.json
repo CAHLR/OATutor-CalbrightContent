@@ -3,8 +3,8 @@
         "id": "adb4b62ethics23a-h1",
         "type": "hint",
         "dependencies": [],
-        "title": "Spending on Security and Storage",
-        "text": "Spending less implies better effectiveness",
+        "title": "Organized Data",
+        "text": "A well-organized data inventory system can reduce costs related to security and storage, making processes more efficient.",
         "variabilization": {},
         "oer": "",
         "license": ""
@@ -15,8 +15,8 @@
         "dependencies": [
             "adb4b62ethics23a-h1"
         ],
-        "title": "Data Collection",
-        "text": "What implications does data collection have for an organization?",
+        "title": "Data Management",
+        "text": "If tagging is centralized effectively, what changes might you observe in data management and accessibility?",
         "variabilization": {},
         "oer": "",
         "license": ""
@@ -28,31 +28,7 @@
             "adb4b62ethics23a-h1"
         ],
         "title": "Company Growth",
-        "text": "Company growth does not directly relate to spending on privacy",
-        "variabilization": {},
-        "oer": "",
-        "license": ""
-    },
-    {
-        "id": "adb4b62ethics23a-h4",
-        "type": "hint",
-        "dependencies": [
-            "adb4b62ethics23a-h1"
-        ],
-        "title": "Inventory Strategy",
-        "text": "If your strategy is working well, you would naturally spend less on security and storage",
-        "variabilization": {},
-        "oer": "",
-        "license": ""
-    },
-    {
-        "id": "adb4b62ethics23a-h5",
-        "type": "hint",
-        "dependencies": [
-            "adb4b62ethics23a-h1"
-        ],
-        "title": "Mission Accomplished",
-        "text": "Does a reduction in costs mean all data management issues are resolved?",
+        "text": "Would stopping data collection or business growth be a logical outcome of improved tagging, or is there a more reasonable conclusion?",
         "variabilization": {},
         "oer": "",
         "license": ""

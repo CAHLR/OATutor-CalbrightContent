@@ -3,10 +3,10 @@
         "id": "a21d278data19a-h1",
         "type": "hint",
         "dependencies": [],
-        "title": "Understanding File Types",
-        "text": "The question refers to a type of file you might receive in a static format. What distinguishes a flat file from other types?",
+        "title": "Updating Data",
+        "text": "What kind of file is received in a static format, meaning it does not automatically update when the source data changes?",
         "variabilization": {},
-        "oer": "openai",
+        "oer": "",
         "license": ""
     },
     {
@@ -15,22 +15,10 @@
         "dependencies": [
             "a21d278data19a-h1"
         ],
-        "title": "Computational Characteristics of Flat Files",
-        "text": "Flat files are considered to be simple and often used for the storage of data without modern database capabilities. They lack inherent relationships between tables.",
+        "title": "File Types",
+        "text": "One of these options describes a request for data, not a file format, and the other can update based on the source instead of being snapshot of the data at the time it was sent.",
         "variabilization": {},
-        "oer": "openai",
-        "license": ""
-    },
-    {
-        "id": "a21d278data19a-h3",
-        "type": "hint",
-        "dependencies": [
-            "a21d278data19a-h2"
-        ],
-        "title": "Flat File Explanation",
-        "text": "A flat file is essentially a single file where all data is stored in a tabular format or plain text. It typically lacks a structural relationship between data elements.",
-        "variabilization": {},
-        "oer": "openai",
+        "oer": "",
         "license": ""
     }
 ]
