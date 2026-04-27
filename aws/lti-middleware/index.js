@@ -25,9 +25,6 @@ const coursePlans = require("./coursePlans.json");
 const getConfirmationModeForCourse = (courseName) => {
   if (!courseName) return "personalized";
   const normalizedCourseName = courseName.trim().toLowerCase();
-  if (normalizedCourseName.includes("section 1")) return "none";
-  if (normalizedCourseName.includes("section 2")) return "generic";
-  if (normalizedCourseName.includes("section 3")) return "personalized";
   const course = coursePlans.find(
     (c) => c.courseName.trim().toLowerCase() === normalizedCourseName
   );
