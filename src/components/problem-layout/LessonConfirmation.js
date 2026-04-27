@@ -15,15 +15,16 @@ import {
 } from "@material-ui/core";
 import HelpOutlineOutlinedIcon from "@material-ui/icons/HelpOutlineOutlined";
 import { withStyles } from "@material-ui/core/styles";
-import { useHistory, useParams } from "react-router-dom";
+import { useHistory, useLocation, useParams } from "react-router-dom";
 
 import BrandLogoNav from "@components/BrandLogoNav";
 import Popup from "@components/Popup/Popup";
 import About from '../../pages/Posts/About';
 
 import styles from "./common-styles.js";
-import { findLessonById, SHOW_COPYRIGHT, SITE_NAME, USER_ID_STORAGE_KEY, MIDDLEWARE_URL, coursePlans, ThemeContext } from '../../config/config.js';
+import { SHOW_COPYRIGHT, SITE_NAME, USER_ID_STORAGE_KEY, MIDDLEWARE_URL, ThemeContext } from '../../config/config.js';
 import { doc, getDoc } from "firebase/firestore"
+import { resolveLessonContext } from "../../util/lessonFlow.js";
 
 const decodeJWT = (token) => {
   try {
@@ -44,16 +45,25 @@ const TICK_MS = 100;
 
 function LessonConfirmation({ classes, onConfirm, onCancel }) {
   const history = useHistory();
-  const { lessonID } = useParams();
+  const location = useLocation();
+  const { lessonID, courseNum } = useParams();
   const theme = useContext(ThemeContext);
+  const token = theme?.jwt || new URLSearchParams(location.search).get("token");
+  const decodedUser = theme?.user?.course_name ? theme.user : decodeJWT(token);
+  const courseName = decodedUser?.course_name || "";
+  const explicitConfirmationMode = decodedUser?.confirmationMode || "";
 
   const lesson = useMemo(() => {
     try {
-      return findLessonById(lessonID);
+      return resolveLessonContext(lessonID, {
+        courseNum,
+        courseName,
+        confirmationMode: explicitConfirmationMode,
+      }).lesson;
     } catch {
       return null;
     }
-  }, [lessonID]);
+  }, [lessonID, courseNum, courseName, explicitConfirmationMode]);
 
   const [ack, setAck] = useState(false);
   const [elapsed, setElapsed] = useState(0);
@@ -89,10 +99,8 @@ function LessonConfirmation({ classes, onConfirm, onCancel }) {
       if (!userId) return null;
 
       // IMPORTANT: App.js strips `token` from the URL and stores it in ThemeContext as `jwt`
-      const token =
-        theme?.jwt || new URLSearchParams(window.location.search).get("token");
-      const decoded = theme?.user || decodeJWT(token);
-      const courseId = decoded?.course_id;
+      const decoded = decodedUser || decodeJWT(token);
+      const courseId = decoded?.course_id || courseNum;
       if (!courseId) return null;
 
       // Try to load from Firebase first
@@ -241,8 +249,11 @@ function LessonConfirmation({ classes, onConfirm, onCancel }) {
     if (lesson.confirmationMode === "generic") {
       const msg = generateBaselineMessage(lesson, buildLessonSummary());
       setPersonalizedMessage(msg);
+      setExtractedIndustry("");
+      setPersonalizationError(null);
+      setPersonalizationLoading(false);
       setHasIntakeData(false);
-    } else {
+    } else if (lesson.confirmationMode === "personalized") {
       fetchPersonalizedMessage();
     }
   }, [lesson, fetchPersonalizedMessage]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -292,8 +303,8 @@ function LessonConfirmation({ classes, onConfirm, onCancel }) {
 
   const handleStart = () => {
     if (!canStart) return;
-    if (onConfirm) onConfirm(lessonID, window.location.search);
-    else history.push(`/lessons/${lessonID}${window.location.search}`);
+    if (onConfirm) onConfirm(lessonID, location.search);
+    else history.push(`/lessons/${lessonID}${location.search}`);
   };
 
   const handleBack = () => {
@@ -349,7 +360,7 @@ function LessonConfirmation({ classes, onConfirm, onCancel }) {
               align="center"
               style={{ fontWeight: 700, marginBottom: 8 }}
             >
-              How This Lesson Supports Your Career in {extractedIndustry ? ` in ${extractedIndustry}` : ""}
+              How This Lesson Supports Your Career{extractedIndustry ? ` in ${extractedIndustry}` : ""}
             </Typography>
             {personalizationLoading ? (
               <Box display="flex" alignItems="center" justifyContent="center" py={2}>

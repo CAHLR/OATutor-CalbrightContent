@@ -38,7 +38,7 @@ import GlobalErrorBoundary from "./components/GlobalErrorBoundary";
 import { IS_STAGING_OR_DEVELOPMENT } from "./util/getBuildType";
 import TabFocusTrackerWrapper from "./components/TabFocusTrackerWrapper";
 import ViewAllProblems from "./components/problem-layout/ViewAllProblems";
-import LessonConfirmation from "./components/problem-layout/LessonConfirmation";
+import LessonConfirmationGate from "./components/problem-layout/LessonConfirmationGate";
 import IntakeForm from "./components/problem-layout/IntakeForm";
 import QueryForm, { QueryForm5Point, QueryForm7Point } from "./components/problem-layout/QueryForm";
 
@@ -347,6 +347,7 @@ class App extends React.Component {
                                         )}
                                     />
                                     <Route
+                                        exact
                                         path="/courses/:courseNum"
                                         render={(props) => (
                                             <Platform
@@ -381,8 +382,13 @@ class App extends React.Component {
                                         />
                                     <Route
                                         exact
+                                        path="/courses/:courseNum/lessons/:lessonID/confirm"
+                                        component={LessonConfirmationGate}
+                                    />
+                                    <Route
+                                        exact
                                         path="/lessons/:lessonID/confirm"
-                                        component={require('./components/problem-layout/LessonConfirmation').default}
+                                        component={LessonConfirmationGate}
                                     />
                                     <Route
                                         exact
@@ -490,8 +496,8 @@ class App extends React.Component {
                                         exact
                                         path = "/confirm/:lessonID"
                                         render = {(props) => (
-                                            <LessonConfirmation
-                                                onConfirm = {(id) => props.history.push(`/lessons/${id}`)}
+                                            <LessonConfirmationGate
+                                                onConfirm = {(id, search = "") => props.history.push(`/lessons/${id}${search}`)}
                                                 onCancel={() => props.history.goBack()}
                                                 {...props}
                                             />

@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useHistory, useParams } from "react-router-dom";
+import React, { useContext, useState } from "react";
+import { useHistory, useLocation, useParams } from "react-router-dom";
 import {
   AppBar,
   Toolbar,
@@ -20,6 +20,7 @@ import {
   makeStyles,
 } from "@material-ui/core";
 import HelpOutlineOutlinedIcon from "@material-ui/icons/HelpOutlineOutlined";
+import { doc, getDoc } from "firebase/firestore";
 
 import BrandLogoNav from "@components/BrandLogoNav";
 import Popup from "@components/Popup/Popup";
@@ -30,14 +31,22 @@ import {
   USER_ID_STORAGE_KEY,
   coursePlans,
 } from "../../config/config.js";
-import { useContext } from "react";
 import { ThemeContext } from "../../config/config.js";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import {
+  buildIntakePath,
+  buildLessonConfirmationPath,
+  buildLessonPath,
+  CONFIRMATION_MODES,
+  findCourseByName,
+  getConfirmationModeForLesson,
+} from "../../util/lessonFlow.js";
 
 const decodeJWT = (token) => {
   try {
-    const payload = token.split('.')[1];
-    const decoded = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
+    const payload = token.split(".")[1];
+    const decoded = JSON.parse(
+      atob(payload.replace(/-/g, "+").replace(/_/g, "/"))
+    );
     return decoded;
   } catch (err) {
     console.warn("Failed to decode JWT:", err);
@@ -55,7 +64,7 @@ const useStyles = makeStyles((theme) => ({
   container: {
     flexGrow: 1,
     padding: theme.spacing(4, 0),
-    paddingTop: theme.spacing(10), // Add padding to account for fixed AppBar
+    paddingTop: theme.spacing(10),
     display: "flex",
     justifyContent: "center",
     flexDirection: "column",
@@ -136,7 +145,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-// First page statements (default questions)
 const PAGE1_STATEMENTS = [
   "My aim is to completely master the material presented in this class.",
   "I am striving to do well compared to other students.",
@@ -152,7 +160,6 @@ const PAGE1_STATEMENTS = [
   "I am striving to avoid performing worse than others.",
 ];
 
-// Second page statements (different questions)
 const PAGE2_STATEMENTS = [
   "In a class like this, I prefer course material that really challenges me so I can learn new things.",
   "If I study in appropriate ways, then I will be able to learn the material in this course.",
@@ -181,10 +188,11 @@ const PAGE2_STATEMENTS = [
   "Considering the difficulty of this course, the teacher, and my skills, I think I will do well in this class.",
 ];
 
-const PAGE1_INTRO = "The following statements are about your goals for this course. There is no right or wrong answer! Please indicate your level of agreement or disagreement with each item by choosing an option from the list below."
-const PAGE2_INTRO = "This survey asks about your study habits, learning skills, and motivation for work in this course. There are no right or wrong answers to this questionnaire. This is not a test! We want you to respond as accurately as possible, reflecting your own attitudes and behaviors. Please rate each statement based on how true it is of you."
+const PAGE1_INTRO =
+  "The following statements are about your goals for this course. There is no right or wrong answer! Please indicate your level of agreement or disagreement with each item by choosing an option from the list below.";
+const PAGE2_INTRO =
+  "This survey asks about your study habits, learning skills, and motivation for work in this course. There are no right or wrong answers to this questionnaire. This is not a test! We want you to respond as accurately as possible, reflecting your own attitudes and behaviors. Please rate each statement based on how true it is of you.";
 
-// 5-point scale labels (with line breaks for wrapping)
 const SCALE_5_POINT = [
   "Strongly disagree",
   "Disagree",
@@ -193,7 +201,6 @@ const SCALE_5_POINT = [
   "Strong agree",
 ];
 
-// 7-point scale labels (with line breaks for wrapping)
 const SCALE_7_POINT = [
   "Very untrue of me",
   "Untrue of me",
@@ -204,11 +211,37 @@ const SCALE_7_POINT = [
   "Very true of me",
 ];
 
-export default function QueryForm({ scaleType = 5, statements, title = "Learning Preferences Form", introText = "", page = 1 }) {
-  const theme = useContext(ThemeContext)
+const extractAppPath = (returnTo) => {
+  if (!returnTo) return "";
+  const decodedReturnTo = decodeURIComponent(returnTo);
+  const hashMatch = decodedReturnTo.match(/#(.+)$/);
+  return hashMatch ? hashMatch[1] : decodedReturnTo;
+};
+
+const extractLessonIdFromPath = (path) => {
+  if (!path) return null;
+  const match = path.match(/\/lessons\/([^\/\?]+)/);
+  return match ? match[1] : null;
+};
+
+const extractCourseNumFromPath = (path) => {
+  if (!path) return null;
+  const match = path.match(/\/courses\/([^\/\?]+)\/lessons\/[^\/\?]+\/confirm/);
+  return match ? match[1] : null;
+};
+
+export default function QueryForm({
+  scaleType = 5,
+  statements,
+  title = "Learning Preferences Form",
+  introText = "",
+  page = 1,
+}) {
+  const theme = useContext(ThemeContext);
   const firebase = theme?.firebase;
   const classes = useStyles();
   const history = useHistory();
+  const location = useLocation();
   const { courseNum } = useParams();
 
   const [showPopup, setShowPopup] = useState(false);
@@ -217,27 +250,20 @@ export default function QueryForm({ scaleType = 5, statements, title = "Learning
   const [currentPage, setCurrentPage] = useState(page);
 
   const isFirstPage = currentPage === 1;
-
-  // Determine which statements to use based on current page
   const currentStatements = isFirstPage ? PAGE1_STATEMENTS : PAGE2_STATEMENTS;
   const currentResponses = isFirstPage ? page1Responses : page2Responses;
-  const setCurrentResponses = isFirstPage ? setPage1Responses : setPage2Responses;
-
-  // Different intros for each page
+  const setCurrentResponses = isFirstPage
+    ? setPage1Responses
+    : setPage2Responses;
   const intro = isFirstPage ? PAGE1_INTRO : PAGE2_INTRO;
-
-  // Use 5-point scale for page 1, 7-point scale for page 2
-  
   const scaleLabels = isFirstPage ? SCALE_5_POINT : SCALE_7_POINT;
   const scaleValues = isFirstPage ? [1, 2, 3, 4, 5] : [1, 2, 3, 4, 5, 6, 7];
-
-  // Calculate column widths for even distribution
   const numScaleColumns = scaleLabels.length;
-  const statementColumnWidth = 25; // Percentage for statement column
-  const scaleColumnWidth = (100 - statementColumnWidth) / numScaleColumns; // Evenly divide remaining space
-
-  // Check if all statements have been answered
-  const allAnswered = currentStatements.every((_, index) => currentResponses[`q${index + 1}`] !== undefined);
+  const statementColumnWidth = 25;
+  const scaleColumnWidth = (100 - statementColumnWidth) / numScaleColumns;
+  const allAnswered = currentStatements.every(
+    (_, index) => currentResponses[`q${index + 1}`] !== undefined
+  );
 
   const handleChange = (questionKey, value) => {
     setCurrentResponses((prev) => ({
@@ -249,308 +275,239 @@ export default function QueryForm({ scaleType = 5, statements, title = "Learning
   const handleNext = (e) => {
     e.preventDefault();
     if (!allAnswered) return;
-    
-    // Save page 1 responses and move to page 2
+
     if (currentPage === 1) {
       setCurrentPage(2);
-      // Scroll to top of page
       window.scrollTo(0, 0);
     }
   };
 
   const handleBack = () => {
     setCurrentPage(1);
-    // Scroll to top of page
     window.scrollTo(0, 0);
   };
 
   const handleSubmit = async (e, { skip = false } = {}) => {
-    console.log("firebase.db:", firebase.db);
-    console.log("lms_user_id:", firebase.lms_user_id, "oats_user_id:", firebase.oats_user_id);
+    console.log("firebase.db:", firebase?.db);
+    console.log(
+      "lms_user_id:",
+      firebase?.lms_user_id,
+      "oats_user_id:",
+      firebase?.oats_user_id
+    );
     console.log("handleSubmit");
+
     if (e) {
       e.preventDefault();
     }
     if (!skip && !allAnswered) return;
-    console.log("allAnswered or skip");
 
-    // When skipping, construct full response objects filled with -1 so that
-    // it looks like the student answered every question, but with a sentinel value.
-    const buildSkippedResponses = (statements) => {
+    const buildSkippedResponses = (promptStatements) => {
       const responses = {};
-      statements.forEach((_, index) => {
-        const key = `q${index + 1}`;
-        responses[key] = -1;
+      promptStatements.forEach((_, index) => {
+        responses[`q${index + 1}`] = -1;
       });
       return responses;
     };
 
-    const finalPage1Responses = skip ? buildSkippedResponses(PAGE1_STATEMENTS) : page1Responses;
-    const finalPage2Responses = skip ? buildSkippedResponses(PAGE2_STATEMENTS) : page2Responses;
-    
-    const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('token') || theme?.jwt;
-    
+    const finalPage1Responses = skip
+      ? buildSkippedResponses(PAGE1_STATEMENTS)
+      : page1Responses;
+    const finalPage2Responses = skip
+      ? buildSkippedResponses(PAGE2_STATEMENTS)
+      : page2Responses;
+
+    const urlParams = new URLSearchParams(location.search);
+    const token = urlParams.get("token") || theme?.jwt;
+
     try {
       if (firebase && firebase.db) {
-        console.log("firebase");
-        // const userId = firebase.ltiContext?.user_id || firebase.oats_user_id;
-        // console.log("userId: ", userId)
-
-        // if (!userId) {
-        //   console.log("no ID")
-        //   throw new Error("User ID not available");
-        // }
-
         const surveyData = {
-            completed: true,
-            page1: finalPage1Responses,
-            page2: finalPage2Responses
+          completed: true,
+          page1: finalPage1Responses,
+          page2: finalPage2Responses,
+          skipped: skip,
         };
 
-        console.log("surveyData:", surveyData)
-
-        console.log("Calling firebase.submitSurvey...");
+        console.log("surveyData:", surveyData);
         await firebase.submitSurvey(surveyData);
-        console.log("Survey submission completed");
-
-        // submission saved; next-step routing handled after try/catch
       } else {
-          console.warn("Firebase not available, fallback to localStorage");
-          const userId =
-              (window?.appFirebase?.oats_user_id) ||
-              localStorage.getItem(USER_ID_STORAGE_KEY);
+        console.warn("Firebase not available, fallback to localStorage");
+        const userId =
+          window?.appFirebase?.oats_user_id ||
+          localStorage.getItem(USER_ID_STORAGE_KEY);
 
-          localStorage.setItem(
-              `query:${userId}:fallback`,
-              JSON.stringify({
-                  page1: finalPage1Responses,
-                  page2: finalPage2Responses,
-                  ts: Date.now()
-              })
-          );
-          // submission saved locally; next-step routing handled after try/catch
+        localStorage.setItem(
+          `query:${userId}:fallback`,
+          JSON.stringify({
+            page1: finalPage1Responses,
+            page2: finalPage2Responses,
+            ts: Date.now(),
+          })
+        );
       }
     } catch (err) {
-        console.error("Failed to save survey:", err);
+      console.error("Failed to save survey:", err);
     }
-    // After submission, determine next step: only two options
-    // 1. If IntakeForm not submitted → redirect to IntakeForm
-    // 2. If IntakeForm already submitted → redirect to Lesson Confirmation
+
     try {
-      const returnTo = new URLSearchParams(window.location.search).get('returnTo');
-      console.log("QueryForm returnTo:", returnTo);
-      
-      // Determine courseIndex and lessonId
+      const returnTo = urlParams.get("returnTo");
+      const returnToPath = extractAppPath(returnTo);
+
+      let lessonId = firebase?.ltiContext?.linkedLesson || null;
+      let routeCourseNum = extractCourseNumFromPath(returnToPath);
+
+      if (!lessonId) {
+        lessonId = extractLessonIdFromPath(returnToPath);
+      }
+
       let courseIndex = null;
-      let lessonId = null;
-      
-      // PRIMARY SOURCE: Get linkedLesson from JWT token (most reliable)
-      // This is set in index.js and should always be available
-      if (firebase?.ltiContext?.linkedLesson) {
-        lessonId = firebase.ltiContext.linkedLesson;
-        console.log("QueryForm: Got lessonId from JWT token (linkedLesson):", lessonId);
-        
-        // Find courseIndex using the same logic as index.js
-        for (let i = 0; i < coursePlans.length; i++) {
-          const course = coursePlans[i];
-          if (course.lessons && course.lessons.some(lesson => lesson.id === lessonId)) {
-            courseIndex = i;
-            console.log("QueryForm: Found courseIndex from linkedLesson:", courseIndex);
-            break;
-          }
+      if (routeCourseNum != null) {
+        const parsedCourseNum = parseInt(routeCourseNum, 10);
+        if (!Number.isNaN(parsedCourseNum)) {
+          courseIndex = parsedCourseNum;
         }
       }
-      
-      // FALLBACK 1: Try to extract lesson ID from returnTo if not found in JWT
-      if (!lessonId && returnTo) {
-        // Decode the returnTo in case it's URL-encoded
-        const decodedReturnTo = decodeURIComponent(returnTo);
-        console.log("QueryForm decodedReturnTo:", decodedReturnTo);
-        
-        // Extract lesson ID - handle both /lessons/ID/confirm and #/lessons/ID/confirm patterns
-        // Try hash pattern first (#/lessons/ID), then regular pattern (/lessons/ID)
-        let lessonMatch = decodedReturnTo.match(/#\/lessons\/([^\/\?]+)/);
-        if (!lessonMatch) {
-          lessonMatch = decodedReturnTo.match(/\/lessons\/([^\/\?]+)/);
-        }
-        if (lessonMatch) {
-          lessonId = lessonMatch[1];
-          console.log("QueryForm extracted lessonId from returnTo:", lessonId);
-          if (courseIndex === null) {
-            const course = coursePlans.find(c => c.lessons?.some(l => l.id === lessonId));
-            if (course) {
-              courseIndex = coursePlans.indexOf(course);
-              console.log("QueryForm found courseIndex from returnTo:", courseIndex);
-            } else {
-              console.warn("QueryForm: Could not find course for lessonId:", lessonId);
-            }
-          }
-        } else {
-          console.warn("QueryForm: Could not extract lessonId from returnTo:", decodedReturnTo);
+
+      if (courseIndex === null && courseNum != null) {
+        const parsedCourseNum = parseInt(courseNum, 10);
+        if (!Number.isNaN(parsedCourseNum)) {
+          courseIndex = parsedCourseNum;
         }
       }
-      
-      // FALLBACK 2: If we don't have courseIndex yet, try to get it from courseNum
-      if (courseIndex === null && courseNum) {
-        courseIndex = parseInt(courseNum, 10);
-        console.log("QueryForm: Using courseNum for courseIndex:", courseIndex);
-        if (courseIndex !== null && !lessonId) {
-          lessonId = coursePlans?.[courseIndex]?.lessons?.[0]?.id;
-          console.log("QueryForm: Extracted lessonId from courseIndex:", lessonId);
+
+      let decodedToken = null;
+      if (token) {
+        decodedToken = decodeJWT(token);
+      }
+
+      let courseName = decodedToken?.course_name || theme?.user?.course_name || "";
+      const explicitConfirmationMode = decodedToken?.confirmationMode || "";
+      if (courseIndex === null && courseName) {
+        const namedCourse = findCourseByName(courseName);
+        if (namedCourse) {
+          courseIndex = coursePlans.indexOf(namedCourse);
         }
       }
-      
-      // FALLBACK 3: If we still don't have courseIndex, try harder to find it or use fallback
-      // NEVER use history.goBack() in LTI context as it sends users back to Canvas
-      if (courseIndex === null) {
-        console.error("QueryForm: Could not determine courseIndex. returnTo:", returnTo, "courseNum:", courseNum, "lessonId:", lessonId, "ltiContext.linkedLesson:", firebase?.ltiContext?.linkedLesson);
-        
-        // If we have lessonId, try a more thorough search for the course
-        if (lessonId) {
-          console.log("QueryForm: Attempting thorough course search for lessonId:", lessonId);
-          for (let i = 0; i < coursePlans.length; i++) {
-            const course = coursePlans[i];
-            if (course.lessons) {
-              const foundLesson = course.lessons.find(l => l.id === lessonId);
-              if (foundLesson) {
-                courseIndex = i;
-                console.log("QueryForm: Found courseIndex through thorough search:", courseIndex);
-                break;
-              }
-            }
-          }
+
+      if (courseIndex === null && lessonId) {
+        const fallbackIndex = coursePlans.findIndex((course) =>
+          course.lessons?.some((lesson) => lesson.id === lessonId)
+        );
+        if (fallbackIndex > -1) {
+          courseIndex = fallbackIndex;
         }
-        
-        // If we still don't have courseIndex but have returnTo, extract path and redirect
-        // This ensures we stay within the app and don't go back to Canvas
-        if (courseIndex === null && returnTo) {
-          const decodedReturnTo = decodeURIComponent(returnTo);
-          // Extract just the path part after the hash if it's a full URL
-          const hashMatch = decodedReturnTo.match(/#(.+)$/);
-          const pathToUse = hashMatch ? hashMatch[1] : decodedReturnTo;
-          console.log("QueryForm: No courseIndex found, redirecting to returnTo path:", pathToUse);
-          
-          // Extract token for the redirect
-          const urlParams = new URLSearchParams(window.location.search);
-          const token = urlParams.get('token') || theme?.jwt;
-          const search = token ? `?token=${token}` : "";
-          
-          // If pathToUse already has query params, append token; otherwise add it
-          const finalPath = pathToUse.includes('?') 
-            ? `${pathToUse}&token=${token || ''}` 
-            : `${pathToUse}${search}`;
-          
-          history.push(finalPath);
-          return;
-        }
-        
-        // Last resort: if we have lessonId, try to redirect to lesson confirmation directly
-        // This is safer than going back to Canvas
-        if (lessonId) {
-          const search = token ? `?token=${token}` : "";
-          console.log("QueryForm: Last resort - redirecting to lesson confirmation with lessonId:", lessonId);
-          history.push(`/lessons/${lessonId}/confirm${search}`);
-          return;
-        }
-        
-        // Absolute last resort: redirect to a safe page (query form again with error handling)
-        // This should never happen if middleware is working correctly
-        console.error("QueryForm: CRITICAL - No courseIndex, returnTo, or lessonId. This should not happen.");
-        const search = token ? `?token=${token}` : "";
-        // Redirect back to query form - better than going to Canvas
-        history.push(`/query/5point${search}`);
+      }
+
+      if (!lessonId && courseIndex !== null) {
+        lessonId = coursePlans?.[courseIndex]?.lessons?.[0]?.id || null;
+      }
+
+      if (!lessonId) {
+        const fallbackSearch = token ? `?token=${token}` : "";
+        history.push(`/courses/${courseIndex ?? 0}${fallbackSearch}`);
         return;
       }
-      
-      // Check if IntakeForm has been submitted
-      let hasIntake = false;
-      const userId = firebase?.ltiContext?.user_id || (window?.appFirebase?.oats_user_id) || localStorage.getItem(USER_ID_STORAGE_KEY);
-      
-      // Get course code from JWT
-      let courseId = null;
-      if (token) {
-        const decoded = decodeJWT(token);
-        courseId = decoded?.course_id || null;
+
+      if (routeCourseNum == null && courseIndex !== null) {
+        routeCourseNum = String(courseIndex);
       }
-      if (!courseId) {
-        console.error("QueryForm: Missing course_id in token; cannot route to IntakeForm reliably.");
-      }
-      
-      if (userId) {
-        // Check Firebase first
-        if (firebase && firebase.db) {
-          try {
-            const intakeRef = doc(firebase.db, "users", userId, "surveys", `intakeForm_course_${courseId}`);
-            const intakeSnap = await getDoc(intakeRef);
-            hasIntake = intakeSnap.exists() && intakeSnap.data().completed === true;
-          } catch (err) {
-            console.error("Error checking intakeform in Firebase:", err);
-          }
-        }
-        
-        // Also check localStorage as fallback
-        if (!hasIntake) {
-          const intakeKey = `intake:${userId}:course:${courseId}`;
-          hasIntake = !!localStorage.getItem(intakeKey);
-        }
-      }
-      
-      // Prepare search params for redirects (extract token, excluding returnTo)
+
       const search = token ? `?token=${token}` : "";
-      
-      // Two possible redirects:
-      if (!hasIntake) {
-        // Option 1: IntakeForm not submitted → redirect to IntakeForm
-        const confirmUrl = lessonId ? `/lessons/${lessonId}/confirm${search}` : null;
-        let intakeFormUrl = `/intake/${encodeURIComponent(courseId)}`;
-        if (confirmUrl) {
-          intakeFormUrl += `?returnTo=${encodeURIComponent(confirmUrl)}`;
-          if (token) {
-            intakeFormUrl += `&token=${token}`;
-          }
-        } else if (search) {
-          intakeFormUrl += search;
-        }
-        history.push(intakeFormUrl);
-      } else {
-        // Option 2: IntakeForm already submitted → redirect to Lesson Confirmation
-        if (lessonId) {
-          history.push(`/lessons/${lessonId}/confirm${search}`);
-        } else {
-          // Fallback if we don't have lessonId
-          history.push(`/courses/${courseIndex}${search}`);
+      const confirmationMode = getConfirmationModeForLesson(lessonId, {
+        courseNum: routeCourseNum,
+        courseName,
+        confirmationMode: explicitConfirmationMode,
+      });
+
+      if (confirmationMode === CONFIRMATION_MODES.NONE) {
+        history.push(buildLessonPath({ lessonId, search }));
+        return;
+      }
+
+      if (confirmationMode === CONFIRMATION_MODES.GENERIC) {
+        history.push(
+          buildLessonConfirmationPath({
+            lessonId,
+            courseNum: routeCourseNum,
+            search,
+          })
+        );
+        return;
+      }
+
+      const userId =
+        firebase?.ltiContext?.user_id ||
+        window?.appFirebase?.oats_user_id ||
+        localStorage.getItem(USER_ID_STORAGE_KEY);
+      const intakeLookupId = decodedToken?.course_id || String(courseIndex);
+
+      let hasIntake = false;
+      if (userId && intakeLookupId && firebase?.db) {
+        try {
+          const intakeRef = doc(
+            firebase.db,
+            "users",
+            userId,
+            "surveys",
+            `intakeForm_course_${intakeLookupId}`
+          );
+          const intakeSnap = await getDoc(intakeRef);
+          hasIntake =
+            intakeSnap.exists() && intakeSnap.data().completed === true;
+        } catch (err) {
+          console.error("Error checking intake form in Firebase:", err);
         }
       }
+
+      if (!hasIntake && userId && intakeLookupId) {
+        hasIntake = !!localStorage.getItem(
+          `intake:${userId}:course:${intakeLookupId}`
+        );
+      }
+
+      if (!hasIntake) {
+        history.push(
+          buildIntakePath({
+            courseId: intakeLookupId,
+            lessonId,
+            courseNum: routeCourseNum,
+            search,
+          })
+        );
+        return;
+      }
+
+      history.push(
+        buildLessonConfirmationPath({
+          lessonId,
+          courseNum: routeCourseNum,
+          search,
+        })
+      );
     } catch (err) {
       console.error("Error in QueryForm redirect logic:", err);
-      // NEVER use history.goBack() in LTI context - it sends users back to Canvas
-      // Try to extract returnTo and redirect there, or redirect to a safe page
       try {
-        const returnTo = new URLSearchParams(window.location.search).get('returnTo');
+        const returnTo = new URLSearchParams(location.search).get("returnTo");
         if (returnTo) {
-          const decodedReturnTo = decodeURIComponent(returnTo);
-          const hashMatch = decodedReturnTo.match(/#(.+)$/);
-          const pathToUse = hashMatch ? hashMatch[1] : decodedReturnTo;
-          const urlParams = new URLSearchParams(window.location.search);
-          const token = urlParams.get('token') || theme?.jwt;
+          const pathToUse = extractAppPath(returnTo);
+          const urlParams = new URLSearchParams(location.search);
+          const token = urlParams.get("token") || theme?.jwt;
           const search = token ? `?token=${token}` : "";
-          const finalPath = pathToUse.includes('?') 
-            ? `${pathToUse}&token=${token || ''}` 
+          const finalPath = pathToUse.includes("?")
+            ? `${pathToUse}&token=${token || ""}`
             : `${pathToUse}${search}`;
           history.push(finalPath);
         } else {
-          // Last resort: redirect to query form again
-          const urlParams = new URLSearchParams(window.location.search);
-          const token = urlParams.get('token') || theme?.jwt;
+          const urlParams = new URLSearchParams(location.search);
+          const token = urlParams.get("token") || theme?.jwt;
           const search = token ? `?token=${token}` : "";
           history.push(`/query/5point${search}`);
         }
       } catch (fallbackErr) {
         console.error("Error in fallback redirect:", fallbackErr);
-        // Absolute last resort - redirect to root with token if available
-        const urlParams = new URLSearchParams(window.location.search);
-        const token = urlParams.get('token') || theme?.jwt;
+        const urlParams = new URLSearchParams(location.search);
+        const token = urlParams.get("token") || theme?.jwt;
         const search = token ? `?token=${token}` : "";
         history.push(`/${search}`);
       }
@@ -561,8 +518,6 @@ export default function QueryForm({ scaleType = 5, statements, title = "Learning
     if (e) {
       e.preventDefault();
     }
-    // Submit a survey where all responses are -1 instead of 1–5 / 1–7,
-    // but otherwise follow the exact same submission and routing flow.
     handleSubmit(null, { skip: true });
   };
 
@@ -581,19 +536,21 @@ export default function QueryForm({ scaleType = 5, statements, title = "Learning
       </AppBar>
 
       <Container maxWidth="lg" className={classes.container}>
-        {/* Title and Intro in separate box */}
         <Paper className={classes.titleCard} elevation={3}>
           <Box className={classes.sectionTitle}>
             <Typography variant="h5" style={{ fontWeight: 700 }}>
               {title}
             </Typography>
-            <Typography variant="body1" color="textSecondary" className={classes.sectionIntro}>
+            <Typography
+              variant="body1"
+              color="textSecondary"
+              className={classes.sectionIntro}
+            >
               {intro}
             </Typography>
           </Box>
         </Paper>
 
-        {/* Form table in separate box */}
         <Paper
           className={classes.formCard}
           elevation={3}
@@ -604,7 +561,10 @@ export default function QueryForm({ scaleType = 5, statements, title = "Learning
             <Table className={classes.table} size="small">
               <TableHead>
                 <TableRow>
-                  <TableCell className={classes.statementCell} style={{ width: `${statementColumnWidth}%` }}>
+                  <TableCell
+                    className={classes.statementCell}
+                    style={{ width: `${statementColumnWidth}%` }}
+                  >
                     <Typography variant="body2" style={{ fontWeight: 600 }}>
                       Statement
                     </Typography>
@@ -621,19 +581,24 @@ export default function QueryForm({ scaleType = 5, statements, title = "Learning
                   const questionKey = `q${statementIndex + 1}`;
                   const selectedValue = currentResponses[questionKey];
                   const isEven = statementIndex % 2 === 0;
-                  
+
                   return (
-                    <TableRow 
+                    <TableRow
                       key={statementIndex}
                       className={isEven ? classes.rowEven : classes.rowOdd}
                     >
-                      <TableCell className={classes.statementCell} style={{ width: `${statementColumnWidth}%` }}>
-                        <Typography variant="body2">
-                          {statement}
-                        </Typography>
+                      <TableCell
+                        className={classes.statementCell}
+                        style={{ width: `${statementColumnWidth}%` }}
+                      >
+                        <Typography variant="body2">{statement}</Typography>
                       </TableCell>
                       {scaleValues.map((value) => (
-                        <TableCell key={value} className={classes.radioCell} style={{ width: `${scaleColumnWidth}%` }}>
+                        <TableCell
+                          key={value}
+                          className={classes.radioCell}
+                          style={{ width: `${scaleColumnWidth}%` }}
+                        >
                           <Radio
                             checked={selectedValue === value}
                             onChange={() => handleChange(questionKey, value)}
@@ -653,16 +618,14 @@ export default function QueryForm({ scaleType = 5, statements, title = "Learning
 
           <Box display="flex" justifyContent="center" className={classes.nextButton}>
             {!isFirstPage && (
-              <>
-                <Button
-                  variant="outlined"
-                  color="primary"
-                  onClick={handleBack}
-                  style={{ marginRight: 16 }}
-                >
-                  Back
-                </Button>
-              </>
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={handleBack}
+                style={{ marginRight: 16 }}
+              >
+                Back
+              </Button>
             )}
             <Button
               type="submit"
@@ -690,7 +653,10 @@ export default function QueryForm({ scaleType = 5, statements, title = "Learning
           {SHOW_COPYRIGHT && `© ${new Date().getFullYear()} ${SITE_NAME}`}
         </Box>
         <Box className={classes.spacer} />
-        <IconButton onClick={() => setShowPopup(true)} title={`About ${SITE_NAME}`}>
+        <IconButton
+          onClick={() => setShowPopup(true)}
+          title={`About ${SITE_NAME}`}
+        >
           <HelpOutlineOutlinedIcon />
         </IconButton>
       </Box>
@@ -702,7 +668,6 @@ export default function QueryForm({ scaleType = 5, statements, title = "Learning
   );
 }
 
-// Export separate components for 5-point and 7-point scales for convenience
 export function QueryForm5Point(props) {
   return <QueryForm scaleType={5} page={1} {...props} />;
 }
