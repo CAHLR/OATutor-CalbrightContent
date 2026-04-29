@@ -113,6 +113,7 @@ for (let i = 0; i < coursePlans.length; i++) {
             courseOER: course.courseOER != null ? course.courseOER : "",
             courseLicense:
                 course.courseLicense != null ? course.courseLicense : "",
+            confirmationMode: course.confirmationMode || "personalized",
         });
     }
 }

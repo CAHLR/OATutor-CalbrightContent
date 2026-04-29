@@ -16,6 +16,20 @@ const { getFirestore } = require("firebase-admin/firestore");
 const serverless = require("serverless-http");
 const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
 const { DynamoDBDocumentClient, PutCommand, GetCommand} = require("@aws-sdk/lib-dynamodb");
+const coursePlans = require("./coursePlans.json");
+
+/**
+ * Returns the confirmationMode for a course by matching its name against coursePlans.
+ * Falls back to "personalized" if not found.
+ */
+const getConfirmationModeForCourse = (courseName) => {
+  if (!courseName) return "personalized";
+  const normalizedCourseName = courseName.trim().toLowerCase();
+  const course = coursePlans.find(
+    (c) => c.courseName.trim().toLowerCase() === normalizedCourseName
+  );
+  return course?.confirmationMode || "personalized";
+};
 
 
 const consumerKeySecretMap = {
@@ -30,7 +44,8 @@ const consumerKeySecretMap = {
   key: "secret",
 };
 
-const oatsHost = "https://cahlr.github.io/OATutor/#"; //"https://dragoknight777.github.io/dlin-oatutor-test/#"; 
+const oatsHost = "https://cahlr.github.io/OATutor-CalbrightContent/#"; 
+// const oatsHost = "https://dragoknight777.github.io/dlin-oatutor-test/#"; 
 const stagingHost = "https://cahlr.github.io/OATutor-Staging/#";
 const unlinkedPage = "assignment-not-linked";
 const alreadyLinkedPage = "assignment-already-linked";
@@ -40,7 +55,7 @@ const scorePrecision = 3; // how many decimal points to keep
 const client = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(client);
 
-const serviceAccount = require("./oatutor-firebase-adminsdk.json");
+const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON);
 
 firebaseAdmin.initializeApp({
   credential: firebaseAdmin.credential.cert(serviceAccount),
@@ -82,21 +97,29 @@ const getLinkedLesson = async (resource_link_id) => {
   console.log(params);
   try {
     const data = await docClient.send(new GetCommand(params));
-    return data.Item.lesson_id;
+    if (!data.Item) return null;
+    return {
+      lessonId: data.Item.lesson_id,
+      confirmationMode: data.Item.confirmation_mode || null,
+    };
   } catch (error) {
     console.log("getLinkedLesson error: ", error)
     return null;
   }
 };
 
-const setLinkedLesson = async (resource_link_id, lesson_num) => {
+const setLinkedLesson = async (resource_link_id, lesson_num, confirmationMode = null) => {
   console.log("setting linked lesson");
+  const item = {
+    "resource_id": resource_link_id,
+    "lesson_id": lesson_num,
+  };
+  if (confirmationMode) {
+    item["confirmation_mode"] = confirmationMode;
+  }
   const params = {
     TableName: "resource-lesson-linkage",
-    Item: {
-      "resource_id": resource_link_id,
-      "lesson_id": lesson_num,
-    },
+    Item: item,
   }
   console.log(params);
   try {
@@ -176,6 +199,7 @@ const getJWT = (
   consumer_secret,
   consumer_key,
   linkedLesson,
+  confirmationMode = "personalized",
   privileged = false
 ) => {
   return jwt.sign(
@@ -199,6 +223,7 @@ const getJWT = (
       course_code: provider.body.context_label,
       course_id: provider.body.context_id,
       linkedLesson,
+      confirmationMode,
 
       // indicates if user is able to edit the linkage
       privileged,
@@ -229,15 +254,20 @@ app.post("/launch", async (req, res) => {
   const privileged = provider.ta || provider.admin || provider.instructor;
   console.log("privileged: ", privileged);
 
-  let linkedLesson;
-  linkedLesson = await getLinkedLesson(provider.body.resource_link_id);
+  const linkedData = await getLinkedLesson(provider.body.resource_link_id);
+  let linkedLesson = linkedData?.lessonId || null;
+  const storedConfirmationMode = linkedData?.confirmationMode || null;
   linkedLesson = await catchLegacyLessonID(linkedLesson, provider);
 
+  const confirmationMode = storedConfirmationMode || getConfirmationModeForCourse(
+    provider.body.context_title
+  );
   const token = getJWT(
     provider,
     consumer_secret,
     consumer_key,
     linkedLesson,
+    confirmationMode,
     privileged
   );
 
@@ -267,22 +297,44 @@ app.post("/launch", async (req, res) => {
           Location: queryFormUrl,
         });
       } else {
-        // Queryform submitted, check intakeform
+        // Queryform submitted — determine confirmationMode for this course
         const courseId = provider.body.context_id;  // <-- course_id
-        console.log(`[INTAKE CHECK] userId=${userId}, linkedLesson=${linkedLesson}, courseId=${courseId}`);
+        const courseName = provider.body.context_title;
+        console.log(`[CONFIRMATION MODE] courseName=${courseName}, confirmationMode=${confirmationMode}, userId=${userId}, linkedLesson=${linkedLesson}, courseId=${courseId}`);
 
-        if (!courseId) {
+        if (confirmationMode === "none") {
+          // Section 1: skip intake form and confirmation screen entirely.
+          // Write dummy intake values so hasSubmittedIntakeForm returns true on future launches.
+          if (courseId) {
+            try {
+              await firestoredb.collection("users").doc(userId)
+                .collection("surveys").doc(`intakeForm_course_${courseId}`)
+                .set({ q1: "N/A", q2: "N/A", q3: "N/A", completed: true, skipped: true });
+              console.log(`[CONFIRMATION MODE] Wrote dummy intake for userId=${userId}, courseId=${courseId}`);
+            } catch (err) {
+              console.warn(`[CONFIRMATION MODE] Failed to write dummy intake: ${err.message}`);
+            }
+          }
+          res.writeHead(302, { Location: `${host}/lessons/${linkedLesson}?token=${token}` });
+        } else if (confirmationMode === "generic") {
+          // Section 2: skip intake form, but keep the confirmation screen.
           const lessonConfirmUrl = `${host}/lessons/${linkedLesson}/confirm?token=${token}`;
           res.writeHead(302, { Location: lessonConfirmUrl });
         } else {
-          const hasIntakeForm = await hasSubmittedIntakeForm(userId, courseId);
-          if (!hasIntakeForm) {
-            const lessonConfirmUrl = `${host}/lessons/${linkedLesson}/confirm?token=${token}`;
-            const intakeFormUrl = `${host}/intake/${courseId}?returnTo=${encodeURIComponent(lessonConfirmUrl)}&token=${token}`;
-            res.writeHead(302, { Location: intakeFormUrl });
-          } else {
+          // Section 3: require intake form before showing the personalized confirmation screen.
+          if (!courseId) {
             const lessonConfirmUrl = `${host}/lessons/${linkedLesson}/confirm?token=${token}`;
             res.writeHead(302, { Location: lessonConfirmUrl });
+          } else {
+            const hasIntakeForm = await hasSubmittedIntakeForm(userId, courseId);
+            if (!hasIntakeForm) {
+              const lessonConfirmUrl = `${host}/lessons/${linkedLesson}/confirm?token=${token}`;
+              const intakeFormUrl = `${host}/intake/${courseId}?returnTo=${encodeURIComponent(lessonConfirmUrl)}&token=${token}`;
+              res.writeHead(302, { Location: intakeFormUrl });
+            } else {
+              const lessonConfirmUrl = `${host}/lessons/${linkedLesson}/confirm?token=${token}`;
+              res.writeHead(302, { Location: lessonConfirmUrl });
+            }
           }
         }
       }
@@ -382,7 +434,8 @@ app.post(
     }
 
     let validPut, linkedLesson;
-    linkedLesson = await getLinkedLesson(user.resource_link_id);
+    const linkedData = await getLinkedLesson(user.resource_link_id);
+    linkedLesson = linkedData?.lessonId || null;
     console.log("linkedLesson: ", linkedLesson);
 
     if (linkedLesson) {
@@ -398,7 +451,8 @@ app.post(
       return;
     }
 
-    validPut = await setLinkedLesson(user.resource_link_id, req.body.lesson.id);
+    const lessonConfirmationMode = req.body.confirmationMode || null;
+    validPut = await setLinkedLesson(user.resource_link_id, req.body.lesson.id, lessonConfirmationMode);
 
     if (!validPut) {
       res.status(400).send("unknown_error").end();
@@ -437,7 +491,6 @@ app.post(
     }
 
     // TODO: check if this works properly
-    const coursePlans = require("coursePlans.json");
     const _coursePlansNoEditor = coursePlans.filter(({ editor }) => !!!editor);
     let lessonName = null;
 
@@ -699,7 +752,8 @@ app.post("/auth", async (req, res) => {
     res.end();
   } else {
     let err, linkedLesson;
-    linkedLesson = await getLinkedLesson(resource_link_id);
+    const linkedDataAuth = await getLinkedLesson(resource_link_id);
+    linkedLesson = linkedDataAuth?.lessonId || null;
     if (!linkedLesson) {
       err = await setLinkedLesson(resource_link_id, lessonID);
       if (err) {
@@ -713,12 +767,16 @@ app.post("/auth", async (req, res) => {
     }
 
     const privileged = provider.ta || provider.admin || provider.instructor;
+    const confirmationMode = getConfirmationModeForCourse(
+      provider.body.context_title
+    );
 
     const token = getJWT(
       provider,
       consumer_secret,
       consumer_key,
       linkedLesson,
+      confirmationMode,
       privileged
     );
 

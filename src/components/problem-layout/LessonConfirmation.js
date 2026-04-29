@@ -15,15 +15,16 @@ import {
 } from "@material-ui/core";
 import HelpOutlineOutlinedIcon from "@material-ui/icons/HelpOutlineOutlined";
 import { withStyles } from "@material-ui/core/styles";
-import { useHistory, useParams } from "react-router-dom";
+import { useHistory, useLocation, useParams } from "react-router-dom";
 
 import BrandLogoNav from "@components/BrandLogoNav";
 import Popup from "@components/Popup/Popup";
 import About from '../../pages/Posts/About';
 
 import styles from "./common-styles.js";
-import { findLessonById, SHOW_COPYRIGHT, SITE_NAME, USER_ID_STORAGE_KEY, MIDDLEWARE_URL, coursePlans, ThemeContext } from '../../config/config.js';
+import { SHOW_COPYRIGHT, SITE_NAME, USER_ID_STORAGE_KEY, MIDDLEWARE_URL, ThemeContext } from '../../config/config.js';
 import { doc, getDoc } from "firebase/firestore"
+import { resolveLessonContext } from "../../util/lessonFlow.js";
 
 const decodeJWT = (token) => {
   try {
@@ -44,16 +45,25 @@ const TICK_MS = 100;
 
 function LessonConfirmation({ classes, onConfirm, onCancel }) {
   const history = useHistory();
-  const { lessonID } = useParams();
+  const location = useLocation();
+  const { lessonID, courseNum } = useParams();
   const theme = useContext(ThemeContext);
+  const token = theme?.jwt || new URLSearchParams(location.search).get("token");
+  const decodedUser = theme?.user?.course_name ? theme.user : decodeJWT(token);
+  const courseName = decodedUser?.course_name || "";
+  const explicitConfirmationMode = decodedUser?.confirmationMode || "";
 
   const lesson = useMemo(() => {
     try {
-      return findLessonById(lessonID);
+      return resolveLessonContext(lessonID, {
+        courseNum,
+        courseName,
+        confirmationMode: explicitConfirmationMode,
+      }).lesson;
     } catch {
       return null;
     }
-  }, [lessonID]);
+  }, [lessonID, courseNum, courseName, explicitConfirmationMode]);
 
   const [ack, setAck] = useState(false);
   const [elapsed, setElapsed] = useState(0);
@@ -89,10 +99,8 @@ function LessonConfirmation({ classes, onConfirm, onCancel }) {
       if (!userId) return null;
 
       // IMPORTANT: App.js strips `token` from the URL and stores it in ThemeContext as `jwt`
-      const token =
-        theme?.jwt || new URLSearchParams(window.location.search).get("token");
-      const decoded = theme?.user || decodeJWT(token);
-      const courseId = decoded?.course_id;
+      const decoded = decodedUser || decodeJWT(token);
+      const courseId = decoded?.course_id || courseNum;
       if (!courseId) return null;
 
       // Try to load from Firebase first
@@ -161,6 +169,17 @@ function LessonConfirmation({ classes, onConfirm, onCancel }) {
   };
 
   /**
+   * Generates a static baseline message for the lesson without an API call.
+   * Used for courses configured with confirmationMode "generic".
+   */
+  const generateBaselineMessage = (lessonObj, description) => {
+    const topic = lessonObj.topics ? ` on ${lessonObj.topics}` : "";
+    const name = lessonObj.name || "this lesson";
+    const descPart = description ? `${description} ` : "";
+    return `In ${name}${topic}, you will build practical skills that support your career goals. ${descPart}Engaging with this material will help you develop a strong foundation for success in your chosen field.`;
+  };
+
+  /**
    * Fetches personalized lesson message and industry from the backend API.
    * Uses student intake responses to generate personalized orientation content.
    * 
@@ -226,10 +245,18 @@ function LessonConfirmation({ classes, onConfirm, onCancel }) {
   }, [lesson]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    if (lesson) {
+    if (!lesson) return;
+    if (lesson.confirmationMode === "generic") {
+      const msg = generateBaselineMessage(lesson, buildLessonSummary());
+      setPersonalizedMessage(msg);
+      setExtractedIndustry("");
+      setPersonalizationError(null);
+      setPersonalizationLoading(false);
+      setHasIntakeData(false);
+    } else if (lesson.confirmationMode === "personalized") {
       fetchPersonalizedMessage();
     }
-  }, [lesson, fetchPersonalizedMessage]);
+  }, [lesson, fetchPersonalizedMessage]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     // Only start timer after both LLM messages have loaded (or loading is complete)
@@ -276,8 +303,8 @@ function LessonConfirmation({ classes, onConfirm, onCancel }) {
 
   const handleStart = () => {
     if (!canStart) return;
-    if (onConfirm) onConfirm(lessonID, window.location.search);
-    else history.push(`/lessons/${lessonID}${window.location.search}`);
+    if (onConfirm) onConfirm(lessonID, location.search);
+    else history.push(`/lessons/${lessonID}${location.search}`);
   };
 
   const handleBack = () => {
@@ -317,6 +344,9 @@ function LessonConfirmation({ classes, onConfirm, onCancel }) {
             <Typography variant="h5" gutterBottom>
               {lesson?.name || `Lesson ${lessonID}`}
             </Typography>
+            <Typography variant="body2" color="textSecondary" gutterBottom>
+              The career guidance is generated by OATutor and not provided by Calbright’s Career Services team
+            </Typography>
             {lesson?.topics && (
               <Typography variant="h4" style={{ fontWeight: 700 }} gutterBottom>
                 {lesson.topics}
@@ -330,7 +360,7 @@ function LessonConfirmation({ classes, onConfirm, onCancel }) {
               align="center"
               style={{ fontWeight: 700, marginBottom: 8 }}
             >
-              How This Lesson Supports Your Career in {extractedIndustry ? ` in ${extractedIndustry}` : ""}
+              How This Lesson Supports Your Career{extractedIndustry ? ` in ${extractedIndustry}` : ""}
             </Typography>
             {personalizationLoading ? (
               <Box display="flex" alignItems="center" justifyContent="center" py={2}>

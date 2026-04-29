@@ -24,6 +24,7 @@ import ErrorBoundary from "@components/ErrorBoundary";
 import { CONTENT_SOURCE } from "@common/global-config";
 import withTranslation from '../util/withTranslation';
 import { doc, getDoc } from "firebase/firestore"
+import { getConfirmationModeForLesson } from "../util/lessonFlow.js";
 
 let problemPool = require(`@generated/processed-content-pool/${CONTENT_SOURCE}.json`);
 
@@ -196,6 +197,11 @@ class Platform extends React.Component {
         if (this.isPrivileged) {
             // from canvas or other LTI Consumers
             console.log("valid privilege")
+            const urlSearch = new URLSearchParams(this.props.location?.search || window.location.search);
+            const urlCourseNum = urlSearch.get("courseNum") ?? (this.props.courseNum != null ? String(this.props.courseNum) : null);
+            const confirmationMode = (urlCourseNum != null && lesson?.id)
+                ? getConfirmationModeForLesson(lesson.id, { courseNum: urlCourseNum })
+                : null;
             let err, response;
             [err, response] = await to(
                 fetch(`${MIDDLEWARE_URL}/setLesson`, {
@@ -206,6 +212,7 @@ class Platform extends React.Component {
                     body: JSON.stringify({
                         token: context?.jwt || this.context?.jwt || "",
                         lesson,
+                        confirmationMode,
                     }),
                 })
             );

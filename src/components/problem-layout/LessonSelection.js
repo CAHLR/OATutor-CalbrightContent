@@ -17,6 +17,7 @@ import withTranslation from "../../util/withTranslation.js";
 import Popup from '../Popup/Popup.js';
 import About from '../../pages/Posts/About.js';
 import MenuBookIcon from '@material-ui/icons/MenuBook';
+import { buildLessonLaunchPath } from "../../util/lessonFlow.js";
 
 class LessonSelection extends React.Component {
     static contextType = ThemeContext;
@@ -166,7 +167,21 @@ class LessonSelection extends React.Component {
           variant="contained"
           color="primary"
           className={classes.button}
-          onClick={() => this.props.history.push(`/confirm/${lesson.id}`)}
+          onClick={() => {
+            // Instructors are selecting a lesson to link to an LMS assignment.
+            // They should NOT be routed through the learner "LessonConfirmation" flow.
+            if (this.isPrivileged) {
+              const q = courseNum != null ? `?courseNum=${courseNum}` : "";
+              this.props.history.push(`/lessons/${lesson.id}${q}`);
+            } else {
+              this.props.history.push(
+                buildLessonLaunchPath({
+                  lessonId: lesson.id,
+                  courseNum: this.props.courseNum,
+                })
+              );
+            }
+          }}
         >
           {translate('lessonSelection.onlyselect')}
         </Button>
