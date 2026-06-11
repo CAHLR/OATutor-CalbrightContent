@@ -22,11 +22,39 @@ const coursePlans = require("./coursePlans.json");
  * Returns the confirmationMode for a course by matching its name against coursePlans.
  * Falls back to "personalized" if not found.
  */
+
+// testing
+const normalizeCourseName = (courseName) =>
+  typeof courseName === "string"
+    ? courseName.trim().toLowerCase().replace(/\s+/g, " ")
+    : "";
+
+const inferConfirmationModeFromCourseName = (courseName) => {
+  const normalizedCourseName = normalizeCourseName(courseName);
+  if (!normalizedCourseName) return null;
+  if (normalizedCourseName.includes("section 1")) return "none";
+  if (normalizedCourseName.includes("section 2")) return "generic";
+  if (normalizedCourseName.includes("section 3")) return "personalized";
+  return null;
+};
+
 const getConfirmationModeForCourse = (courseName) => {
   if (!courseName) return "personalized";
-  const normalizedCourseName = courseName.trim().toLowerCase();
+  // const normalizedCourseName = courseName.trim().toLowerCase();
+
+    //testing
+  const inferredMode = inferConfirmationModeFromCourseName(courseName);
+  if (inferredMode) {
+    return inferredMode;
+  }
+
+  const normalizedCourseName = normalizeCourseName(courseName);
+
+    //
+
   const course = coursePlans.find(
-    (c) => c.courseName.trim().toLowerCase() === normalizedCourseName
+    // (c) => c.courseName.trim().toLowerCase() === normalizedCourseName
+    (c) => normalizeCourseName(c.courseName) === normalizedCourseName
   );
   return course?.confirmationMode || "personalized";
 };
