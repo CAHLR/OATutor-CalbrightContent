@@ -434,10 +434,7 @@ class Platform extends React.Component {
             console.debug("problem information", chosenProblem);
             this.context.firebase.startedProblem(
                 chosenProblem.id,
-                // chosenProblem.courseName,
-                
-                this.lesson?.courseName || chosenProblem.courseName,
-                
+                chosenProblem.courseName,
                 chosenProblem.lesson,
                 this.lesson.learningObjectives
             );
