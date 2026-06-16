@@ -22,12 +22,14 @@ import {
   SHOW_COPYRIGHT,
   SITE_NAME,
   USER_ID_STORAGE_KEY,
+  coursePlans,
 } from "../../config/config.js";
 import { ThemeContext } from "../../config/config.js";
 import {
   buildLessonConfirmationPath,
   buildLessonPath,
   CONFIRMATION_MODES,
+  findCourseByName,
   getConfirmationModeForLesson,
 } from "../../util/lessonFlow.js";
 
@@ -121,10 +123,49 @@ export default function IntakeForm() {
   const persistIntakeAndRoute = async ({ intakePayload, skipped = false }) => {
     const token = theme?.jwt || new URLSearchParams(location.search).get("token");
     let courseNumFromJWT = courseNum;
+    let decodedForSection = null;
     if (token) {
       const decoded = decodeJWT(token);
+      decodedForSection = decoded;
       courseNumFromJWT = decoded?.course_id || courseNum;
     }
+
+    // Resolve the section name + confirmation mode this intake belongs to, so
+    // the submission records the correct Content + message type.
+    const sectionCourseName =
+      decodedForSection?.course_name || theme?.user?.course_name || "";
+    const sectionLessonId = decodedForSection?.linkedLesson || null;
+    const sectionExplicitMode = decodedForSection?.confirmationMode || "";
+    let sectionCourseIndex = -1;
+    if (sectionCourseName) {
+      const namedCourse = findCourseByName(sectionCourseName);
+      if (namedCourse) sectionCourseIndex = coursePlans.indexOf(namedCourse);
+    }
+    if (sectionCourseIndex < 0 && courseNum != null) {
+      const parsed = parseInt(courseNum, 10);
+      if (!Number.isNaN(parsed)) sectionCourseIndex = parsed;
+    }
+    const sectionName =
+      (sectionCourseIndex >= 0 &&
+        coursePlans?.[sectionCourseIndex]?.courseName) ||
+      sectionCourseName ||
+      "n/a";
+    let sectionConfirmationMode = "none";
+    if (sectionLessonId) {
+      sectionConfirmationMode = getConfirmationModeForLesson(sectionLessonId, {
+        courseNum,
+        courseName: sectionCourseName,
+        confirmationMode: sectionExplicitMode,
+      });
+    } else if (sectionCourseIndex >= 0) {
+      sectionConfirmationMode =
+        coursePlans?.[sectionCourseIndex]?.confirmationMode || "none";
+    }
+
+    const sectionMeta = {
+      Content: sectionName,
+      confirmationMode: sectionConfirmationMode,
+    };
 
     try {
       const userId =
@@ -140,7 +181,7 @@ export default function IntakeForm() {
       if (firebase && firebase.db && firebase.submitIntakeForm) {
         try {
           await firebase.submitIntakeForm(
-            { ...intakePayload, skipped },
+            { ...intakePayload, skipped, ...sectionMeta },
             courseNumFromJWT
           );
           console.log("Intake form submitted to Firebase successfully");
@@ -154,6 +195,7 @@ export default function IntakeForm() {
         JSON.stringify({
           ...intakePayload,
           skipped,
+          ...sectionMeta,
           ts: Date.now(),
           completed: true,
         })

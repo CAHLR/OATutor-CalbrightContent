@@ -320,6 +320,89 @@ export default function QueryForm({
     const urlParams = new URLSearchParams(location.search);
     const token = urlParams.get("token") || theme?.jwt;
 
+    // Resolve which course/section + confirmation mode this survey belongs to,
+    // so the submission records the correct Content + message type. Resolved up
+    // front (before submitting) and reused by the redirect logic below.
+    let lessonId = firebase?.ltiContext?.linkedLesson || null;
+    let routeCourseNum = null;
+    let courseIndex = null;
+    let decodedToken = null;
+    let resolvedCourseName = "";
+    let explicitConfirmationMode = "";
+    let confirmationMode = "none";
+    try {
+      const returnToPath = extractAppPath(urlParams.get("returnTo"));
+      routeCourseNum = extractCourseNumFromPath(returnToPath);
+
+      if (!lessonId) {
+        lessonId = extractLessonIdFromPath(returnToPath);
+      }
+
+      if (routeCourseNum != null) {
+        const parsedCourseNum = parseInt(routeCourseNum, 10);
+        if (!Number.isNaN(parsedCourseNum)) {
+          courseIndex = parsedCourseNum;
+        }
+      }
+
+      if (courseIndex === null && courseNum != null) {
+        const parsedCourseNum = parseInt(courseNum, 10);
+        if (!Number.isNaN(parsedCourseNum)) {
+          courseIndex = parsedCourseNum;
+        }
+      }
+
+      if (token) {
+        decodedToken = decodeJWT(token);
+      }
+
+      resolvedCourseName =
+        decodedToken?.course_name || theme?.user?.course_name || "";
+      explicitConfirmationMode = decodedToken?.confirmationMode || "";
+      if (courseIndex === null && resolvedCourseName) {
+        const namedCourse = findCourseByName(resolvedCourseName);
+        if (namedCourse) {
+          courseIndex = coursePlans.indexOf(namedCourse);
+        }
+      }
+
+      if (courseIndex === null && lessonId) {
+        const fallbackIndex = coursePlans.findIndex((course) =>
+          course.lessons?.some((lesson) => lesson.id === lessonId)
+        );
+        if (fallbackIndex > -1) {
+          courseIndex = fallbackIndex;
+        }
+      }
+
+      if (!lessonId && courseIndex !== null) {
+        lessonId = coursePlans?.[courseIndex]?.lessons?.[0]?.id || null;
+      }
+
+      if (lessonId) {
+        confirmationMode = getConfirmationModeForLesson(lessonId, {
+          courseNum:
+            routeCourseNum != null
+              ? routeCourseNum
+              : courseIndex !== null
+              ? String(courseIndex)
+              : undefined,
+          courseName: resolvedCourseName,
+          confirmationMode: explicitConfirmationMode,
+        });
+      } else if (courseIndex !== null) {
+        confirmationMode =
+          coursePlans?.[courseIndex]?.confirmationMode || "none";
+      }
+    } catch (resolveErr) {
+      console.error("Error resolving section for survey:", resolveErr);
+    }
+
+    const sectionName =
+      (courseIndex !== null && coursePlans?.[courseIndex]?.courseName) ||
+      resolvedCourseName ||
+      "n/a";
+
     try {
       if (firebase && firebase.db) {
         const surveyData = {
@@ -327,6 +410,8 @@ export default function QueryForm({
           page1: finalPage1Responses,
           page2: finalPage2Responses,
           skipped: skip,
+          Content: sectionName,
+          confirmationMode,
         };
 
         console.log("surveyData:", surveyData);
@@ -351,58 +436,6 @@ export default function QueryForm({
     }
 
     try {
-      const returnTo = urlParams.get("returnTo");
-      const returnToPath = extractAppPath(returnTo);
-
-      let lessonId = firebase?.ltiContext?.linkedLesson || null;
-      let routeCourseNum = extractCourseNumFromPath(returnToPath);
-
-      if (!lessonId) {
-        lessonId = extractLessonIdFromPath(returnToPath);
-      }
-
-      let courseIndex = null;
-      if (routeCourseNum != null) {
-        const parsedCourseNum = parseInt(routeCourseNum, 10);
-        if (!Number.isNaN(parsedCourseNum)) {
-          courseIndex = parsedCourseNum;
-        }
-      }
-
-      if (courseIndex === null && courseNum != null) {
-        const parsedCourseNum = parseInt(courseNum, 10);
-        if (!Number.isNaN(parsedCourseNum)) {
-          courseIndex = parsedCourseNum;
-        }
-      }
-
-      let decodedToken = null;
-      if (token) {
-        decodedToken = decodeJWT(token);
-      }
-
-      let courseName = decodedToken?.course_name || theme?.user?.course_name || "";
-      const explicitConfirmationMode = decodedToken?.confirmationMode || "";
-      if (courseIndex === null && courseName) {
-        const namedCourse = findCourseByName(courseName);
-        if (namedCourse) {
-          courseIndex = coursePlans.indexOf(namedCourse);
-        }
-      }
-
-      if (courseIndex === null && lessonId) {
-        const fallbackIndex = coursePlans.findIndex((course) =>
-          course.lessons?.some((lesson) => lesson.id === lessonId)
-        );
-        if (fallbackIndex > -1) {
-          courseIndex = fallbackIndex;
-        }
-      }
-
-      if (!lessonId && courseIndex !== null) {
-        lessonId = coursePlans?.[courseIndex]?.lessons?.[0]?.id || null;
-      }
-
       if (!lessonId) {
         const fallbackSearch = token ? `?token=${token}` : "";
         history.push(`/courses/${courseIndex ?? 0}${fallbackSearch}`);
@@ -414,11 +447,6 @@ export default function QueryForm({
       }
 
       const search = token ? `?token=${token}` : "";
-      const confirmationMode = getConfirmationModeForLesson(lessonId, {
-        courseNum: routeCourseNum,
-        courseName,
-        confirmationMode: explicitConfirmationMode,
-      });
 
       if (confirmationMode === CONFIRMATION_MODES.NONE) {
         history.push(buildLessonPath({ lessonId, search }));

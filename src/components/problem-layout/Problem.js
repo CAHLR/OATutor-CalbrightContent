@@ -348,6 +348,36 @@ class Problem extends React.Component {
         }
     };
 
+    /**
+     * Computes the current BKT mastery for logging. Reads the live (in-place
+     * mutated) bktParams, so call this AFTER answerMade has applied the update
+     * for the step to capture the post-step mastery.
+     * @param {string[]} kcArray knowledge components for the specific step
+     * @returns {{ masteryScore: number|null, kcMastery: Object }}
+     */
+    getMasteryData = (kcArray = []) => {
+        const { lesson } = this.props;
+        const objectives = Object.keys(lesson?.learningObjectives || {});
+
+        let masteryScore = null;
+        if (objectives.length) {
+            const sum = objectives.reduce(
+                (acc, kc) => acc + (this.bktParams[kc]?.probMastery ?? 0),
+                0
+            );
+            masteryScore = sum / objectives.length;
+        }
+
+        const kcMastery = {};
+        cleanArray(kcArray || []).forEach((kc) => {
+            if (this.bktParams[kc]) {
+                kcMastery[kc] = this.bktParams[kc].probMastery;
+            }
+        });
+
+        return { masteryScore, kcMastery };
+    };
+
     clickNextProblem = async () => {
         scroll.scrollToTop({ duration: 900, smooth: true });
 
@@ -363,7 +393,7 @@ class Problem extends React.Component {
     };
 
     submitFeedback = () => {
-        const { problem } = this.props;
+        const { problem, lesson } = this.props;
 
         console.debug("problem when submitting feedback", problem);
         this.context.firebase.submitFeedback(
@@ -371,9 +401,10 @@ class Problem extends React.Component {
             this.state.feedback,
             this.state.problemFinished,
             chooseVariables(problem.variabilization, this.props.seed),
-            problem.courseName,
+            lesson.courseName,
             problem.steps,
-            problem.lesson
+            problem.lesson,
+            lesson?.confirmationMode || "none"
         );
         this.setState({ feedback: "", feedbackSubmitted: true });
     };
@@ -577,7 +608,12 @@ class Problem extends React.Component {
                                     seed={seed}
                                     problemVars={problem.variabilization}
                                     lesson={problem.lesson}
-                                    courseName={problem.courseName}
+                                    courseName={this.props.lesson.courseName}
+                                    confirmationMode={
+                                        this.props.lesson?.confirmationMode ||
+                                        "none"
+                                    }
+                                    getMasteryData={this.getMasteryData}
                                     problemTitle={problem.title}
                                     problemSubTitle={problem.body}
                                     giveStuFeedback={this.giveStuFeedback}
