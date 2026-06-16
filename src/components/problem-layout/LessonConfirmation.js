@@ -303,6 +303,28 @@ function LessonConfirmation({ classes, onConfirm, onCancel }) {
 
   const handleStart = () => {
     if (!canStart) return;
+
+    // Record the personalized message alongside the student's free-response
+    // intake answers. Only personalized-mode lessons with a generated message
+    // store a real value; everything else stores "n/a".
+    try {
+      const firebase = theme?.firebase;
+      const courseId = decodedUser?.course_id || courseNum;
+      if (firebase?.savePersonalizedMessage && courseId) {
+        const isPersonalized =
+          lesson?.confirmationMode === "personalized" && !!personalizedMessage;
+        firebase.savePersonalizedMessage(courseId, {
+          personalizedMessage: isPersonalized ? personalizedMessage : "n/a",
+          personalizedIndustry: isPersonalized
+            ? extractedIndustry || "n/a"
+            : "n/a",
+          confirmationMode: lesson?.confirmationMode || "none",
+        });
+      }
+    } catch (err) {
+      console.error("Failed to save personalized message:", err);
+    }
+
     if (onConfirm) onConfirm(lessonID, location.search);
     else history.push(`/lessons/${lessonID}${location.search}`);
   };

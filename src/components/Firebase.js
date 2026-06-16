@@ -216,7 +216,10 @@ class Firebase {
         courseName,
         hintType,
         dynamicHint,
-        bioInfo
+        bioInfo,
+        masteryScore = null,
+        kcMastery = null,
+        confirmationMode = "none"
     ) {
         if (!DO_LOG_DATA) {
             console.debug("Not using firebase for logging (2)");
@@ -241,6 +244,9 @@ class Firebase {
             variabilization,
             lesson,
             Content: courseName,
+            confirmationMode,
+            masteryScore,
+            kcMastery,
             knowledgeComponents: step?.knowledgeComponents,
             hintType,
             dynamicHint,
@@ -262,7 +268,10 @@ class Firebase {
         courseName,
         hintType,
         dynamicHint,
-        bioInfo
+        bioInfo,
+        masteryScore = null,
+        kcMastery = null,
+        confirmationMode = "none"
     ) {
         if (!DO_LOG_DATA) return;
         console.debug("step", step);
@@ -282,6 +291,9 @@ class Firebase {
             bioInfo: "abcedf",
             variabilization,
             Content: courseName,
+            confirmationMode,
+            masteryScore,
+            kcMastery,
             lesson,
             knowledgeComponents: step?.knowledgeComponents,
             hintType,
@@ -331,7 +343,7 @@ class Firebase {
         return this.writeData("mouseMovement", data);
     }
 
-    startedProblem(problemID, courseName, lesson, lessonObjectives) {
+    startedProblem(problemID, courseName, lesson, lessonObjectives, confirmationMode = "none") {
         if (!DO_LOG_DATA) return;
         console.debug(
             `Logging that the problem has been started (${problemID})`
@@ -339,6 +351,7 @@ class Firebase {
         const data = {
             problemID,
             Content: courseName,
+            confirmationMode,
             lesson,
             lessonObjectives,
         };
@@ -377,7 +390,8 @@ class Firebase {
         variables,
         courseName,
         steps,
-        lesson
+        lesson,
+        confirmationMode = "none"
     ) {
         const data = {
             problemID,
@@ -386,6 +400,7 @@ class Firebase {
             lesson,
             status: "open",
             Content: courseName,
+            confirmationMode,
             variables,
             steps: steps.map(
                 ({
@@ -492,6 +507,42 @@ class Firebase {
         } catch (error) {
             console.error("Error submitting intake form:", error);
             throw error; // Re-throw so the UI can handle it if needed
+        }
+    }
+
+    async savePersonalizedMessage(courseCode, messageData) {
+        if (!ENABLE_FIREBASE) return;
+
+        const userId = this.ltiContext?.user_id;
+        if (!userId) {
+            console.error("Cannot save personalized message: No valid User ID found.");
+            return;
+        }
+        if (!courseCode) {
+            console.error("Cannot save personalized message: Course code is required.");
+            return;
+        }
+
+        // Merge alongside the free-response intake answers for this course.
+        const payload = {
+            ...messageData,
+            personalizedMessageSavedAt: serverTimestamp(),
+            time_stamp: Date.now(),
+        };
+
+        const intakeRef = doc(
+            this.db,
+            "users",
+            userId,
+            "surveys",
+            `intakeForm_course_${courseCode}`
+        );
+
+        try {
+            await setDoc(intakeRef, payload, { merge: true });
+            console.debug("Personalized message saved successfully.");
+        } catch (error) {
+            console.error("Error saving personalized message:", error);
         }
     }
 }
