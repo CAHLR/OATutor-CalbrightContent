@@ -16,6 +16,7 @@ import {
     setDoc,
 } from "firebase/firestore";
 import daysSinceEpoch from "../util/daysSinceEpoch";
+import { resolveContentName } from "../util/lessonFlow.js";
 import {
     IS_PRODUCTION,
     IS_STAGING_CONTENT,
@@ -172,6 +173,10 @@ class Firebase {
                   }),
 
             ...data,
+
+            // Authoritative "Content" label, resolved from the launching Canvas course title.
+            // Placed after ...data so it cannot be overridden by a stale caller-supplied value.
+            Content: resolveContentName(this.ltiContext?.course_name),
         };
         return Object.fromEntries(
             Object.entries(_payload).map(([key, val]) => [
@@ -243,7 +248,6 @@ class Firebase {
             hintsFinished,
             variabilization,
             lesson,
-            Content: courseName,
             confirmationMode,
             masteryScore,
             kcMastery,
@@ -290,7 +294,6 @@ class Firebase {
             dynamicHint: "abc",
             bioInfo: "abcedf",
             variabilization,
-            Content: courseName,
             confirmationMode,
             masteryScore,
             kcMastery,
@@ -350,7 +353,6 @@ class Firebase {
         );
         const data = {
             problemID,
-            Content: courseName,
             confirmationMode,
             lesson,
             lessonObjectives,
@@ -399,7 +401,6 @@ class Firebase {
             feedback,
             lesson,
             status: "open",
-            Content: courseName,
             confirmationMode,
             variables,
             steps: steps.map(
@@ -435,9 +436,15 @@ class Firebase {
         }
 
         // 2. Prepare the payload
-        // We handle the timestamps here to ensure import consistency
+        // We handle the timestamps here to ensure import consistency.
+        // submitSurvey writes via setDoc directly (not through addMetaData), so resolve the
+        // authoritative Content/course identity here too, overriding any caller-supplied value.
         const payload = {
             ...surveyData,
+            Content: resolveContentName(this.ltiContext?.course_name),
+            course_name: this.ltiContext?.course_name ?? "n/a",
+            course_id: this.ltiContext?.course_id ?? "n/a",
+            confirmationMode: this.ltiContext?.confirmationMode ?? "none",
             completedAt: serverTimestamp(),
             time_stamp: Date.now(),
         };
@@ -481,9 +488,14 @@ class Firebase {
             return;
         }
 
-        // 2. Prepare the payload
+        // 2. Prepare the payload. Like submitSurvey, this writes via setDoc directly (not
+        // through addMetaData), so resolve the authoritative Content/course identity here too,
+        // overriding any caller-supplied value.
         const payload = {
             ...intakeData,
+            Content: resolveContentName(this.ltiContext?.course_name),
+            course_name: this.ltiContext?.course_name ?? "n/a",
+            course_id: this.ltiContext?.course_id ?? "n/a",
             completed: true,
             completedAt: serverTimestamp(),
             time_stamp: Date.now(),
