@@ -20,15 +20,6 @@ export const normalizeConfirmationMode = (confirmationMode) => {
   return VALID_CONFIRMATION_MODES.has(normalized) ? normalized : null;
 };
 
-export const inferConfirmationModeFromCourseName = (courseName) => {
-  const normalized = normalizeCourseName(courseName);
-  if (!normalized) return null;
-  if (normalized.includes("section 1")) return CONFIRMATION_MODES.NONE;
-  if (normalized.includes("section 2")) return CONFIRMATION_MODES.GENERIC;
-  if (normalized.includes("section 3")) return CONFIRMATION_MODES.PERSONALIZED;
-  return null;
-};
-
 export const normalizeSearch = (search = "") => {
   if (!search) return "";
   return search.startsWith("?") ? search : `?${search}`;
@@ -51,6 +42,13 @@ export const findCourseByName = (courseName) => {
     ) || null
   );
 };
+
+// Canonical course label for logging (the "Content" column). Exact-match the Canvas course
+// title against the course plans (same contract the LTI middleware uses), and fall back to the
+// raw Canvas title so a name mismatch is recorded truthfully — never silently collapsed to the
+// first course. Count-agnostic and free of hardcoded section names.
+export const resolveContentName = (canvasCourseName) =>
+  findCourseByName(canvasCourseName)?.courseName || canvasCourseName || "n/a";
 
 export const findCourseForLesson = (lessonId, options = {}) => {
   const { courseNum, courseName } = options;
@@ -110,11 +108,6 @@ export const getConfirmationModeForLesson = (lessonId, options = {}) => {
   const explicitMode = normalizeConfirmationMode(options.confirmationMode);
   if (explicitMode) {
     return explicitMode;
-  }
-
-  const inferredMode = inferConfirmationModeFromCourseName(options.courseName);
-  if (inferredMode) {
-    return inferredMode;
   }
 
   const { lesson, course } = resolveLessonContext(lessonId, options);

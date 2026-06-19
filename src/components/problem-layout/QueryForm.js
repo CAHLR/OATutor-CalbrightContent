@@ -320,9 +320,9 @@ export default function QueryForm({
     const urlParams = new URLSearchParams(location.search);
     const token = urlParams.get("token") || theme?.jwt;
 
-    // Resolve which course/section + confirmation mode this survey belongs to,
-    // so the submission records the correct Content + message type. Resolved up
-    // front (before submitting) and reused by the redirect logic below.
+    // Resolve the confirmation mode + course index for this survey, used to drive the
+    // redirect logic below. (The logged "Content" value is resolved centrally in Firebase
+    // from the authoritative Canvas course title, so it is intentionally not computed here.)
     let lessonId = firebase?.ltiContext?.linkedLesson || null;
     let routeCourseNum = null;
     let courseIndex = null;
@@ -398,11 +398,6 @@ export default function QueryForm({
       console.error("Error resolving section for survey:", resolveErr);
     }
 
-    const sectionName =
-      (courseIndex !== null && coursePlans?.[courseIndex]?.courseName) ||
-      resolvedCourseName ||
-      "n/a";
-
     try {
       if (firebase && firebase.db) {
         const surveyData = {
@@ -410,8 +405,6 @@ export default function QueryForm({
           page1: finalPage1Responses,
           page2: finalPage2Responses,
           skipped: skip,
-          Content: sectionName,
-          confirmationMode,
         };
 
         console.log("surveyData:", surveyData);

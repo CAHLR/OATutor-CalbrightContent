@@ -4,8 +4,10 @@ import {
   buildLessonPath,
   CONFIRMATION_MODES,
   getConfirmationModeForLesson,
+  resolveContentName,
   resolveLessonContext,
 } from "./lessonFlow";
+import { coursePlans } from "../config/config.js";
 
 describe("lessonFlow", () => {
   const sharedLessonId = "1cSXQ5Df-5PHn-jeatrYLxjl";
@@ -58,5 +60,28 @@ describe("lessonFlow", () => {
         courseNum: "1",
       })
     );
+  });
+
+  describe("resolveContentName", () => {
+    it("returns the canonical course-plan name for an exact (normalized) Canvas title match", () => {
+      // Iterate every configured course so the test holds regardless of how many courses a
+      // release defines or what they are named.
+      coursePlans.forEach((course) => {
+        expect(
+          resolveContentName(`  ${course.courseName.trim().toUpperCase()}  `)
+        ).toBe(course.courseName);
+      });
+    });
+
+    it("falls back to the raw Canvas title when no course plan matches", () => {
+      const unmatched = "Some Real Canvas Course That Is Not A Course Plan";
+      expect(resolveContentName(unmatched)).toBe(unmatched);
+    });
+
+    it("returns 'n/a' when there is no Canvas course title", () => {
+      expect(resolveContentName(undefined)).toBe("n/a");
+      expect(resolveContentName("")).toBe("n/a");
+      expect(resolveContentName(null)).toBe("n/a");
+    });
   });
 });

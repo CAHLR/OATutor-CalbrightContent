@@ -130,8 +130,9 @@ export default function IntakeForm() {
       courseNumFromJWT = decoded?.course_id || courseNum;
     }
 
-    // Resolve the section name + confirmation mode this intake belongs to, so
-    // the submission records the correct Content + message type.
+    // Resolve the confirmation mode this intake belongs to (drives message type). The logged
+    // "Content" value is resolved centrally in Firebase from the authoritative Canvas course
+    // title, so it is intentionally not computed here.
     const sectionCourseName =
       decodedForSection?.course_name || theme?.user?.course_name || "";
     const sectionLessonId = decodedForSection?.linkedLesson || null;
@@ -145,11 +146,6 @@ export default function IntakeForm() {
       const parsed = parseInt(courseNum, 10);
       if (!Number.isNaN(parsed)) sectionCourseIndex = parsed;
     }
-    const sectionName =
-      (sectionCourseIndex >= 0 &&
-        coursePlans?.[sectionCourseIndex]?.courseName) ||
-      sectionCourseName ||
-      "n/a";
     let sectionConfirmationMode = "none";
     if (sectionLessonId) {
       sectionConfirmationMode = getConfirmationModeForLesson(sectionLessonId, {
@@ -163,7 +159,6 @@ export default function IntakeForm() {
     }
 
     const sectionMeta = {
-      Content: sectionName,
       confirmationMode: sectionConfirmationMode,
     };
 
