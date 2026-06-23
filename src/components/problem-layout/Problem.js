@@ -67,7 +67,8 @@ class Problem extends React.Component {
         this.keepMCOrder = keepMCOrder != null && keepMCOrder;
         this.keyboardType = keyboardType != null && keyboardType;
         this.giveStuHints = giveStuHints == null || giveStuHints;
-        this.isSurvey = isSurvey == null || isSurvey;
+        // this.isSurvey = isSurvey == null || isSurvey;
+        this.isSurvey = isSurvey == null ? false : isSurvey;
         this.doMasteryUpdate = doMasteryUpdate == null || doMasteryUpdate;
         this.unlockFirstHint = unlockFirstHint != null && unlockFirstHint;
         this.giveStuBottomHint = giveStuBottomHint == null || giveStuBottomHint;
