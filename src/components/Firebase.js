@@ -159,7 +159,7 @@ class Firebase {
             ...(this.ltiContext?.user_id
                 ? {
                       course_id: this.ltiContext.course_id,
-                      course_name: this.ltiContext.course_name,
+                      course_name: resolveContentName(this.ltiContext?.course_name),
                       course_code: this.ltiContext.course_code,
 
                       lms_user_id: this.ltiContext.user_id,
@@ -442,7 +442,7 @@ class Firebase {
         const payload = {
             ...surveyData,
             Content: resolveContentName(this.ltiContext?.course_name),
-            course_name: this.ltiContext?.course_name ?? "n/a",
+            course_name: resolveContentName(this.ltiContext?.course_name) ?? "n/a",
             course_id: this.ltiContext?.course_id ?? "n/a",
             confirmationMode: this.ltiContext?.confirmationMode ?? "none",
             completedAt: serverTimestamp(),
@@ -494,7 +494,7 @@ class Firebase {
         const payload = {
             ...intakeData,
             Content: resolveContentName(this.ltiContext?.course_name),
-            course_name: this.ltiContext?.course_name ?? "n/a",
+            course_name: resolveContentName(this.ltiContext?.course_name) ?? "n/a",
             course_id: this.ltiContext?.course_id ?? "n/a",
             completed: true,
             completedAt: serverTimestamp(),

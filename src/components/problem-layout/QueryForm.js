@@ -38,6 +38,7 @@ import {
   buildLessonPath,
   CONFIRMATION_MODES,
   findCourseByName,
+  resolveContentName,
   getConfirmationModeForLesson,
 } from "../../util/lessonFlow.js";
 
@@ -356,8 +357,9 @@ export default function QueryForm({
         decodedToken = decodeJWT(token);
       }
 
-      resolvedCourseName =
-        decodedToken?.course_name || theme?.user?.course_name || "";
+      resolvedCourseName = resolveContentName(
+        decodedToken?.course_name || theme?.user?.course_name || ""
+      );
       explicitConfirmationMode = decodedToken?.confirmationMode || "";
       if (courseIndex === null && resolvedCourseName) {
         const namedCourse = findCourseByName(resolvedCourseName);

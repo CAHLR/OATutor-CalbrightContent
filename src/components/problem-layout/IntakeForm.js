@@ -30,6 +30,7 @@ import {
   buildLessonPath,
   CONFIRMATION_MODES,
   findCourseByName,
+  resolveContentName,
   getConfirmationModeForLesson,
 } from "../../util/lessonFlow.js";
 
@@ -130,11 +131,11 @@ export default function IntakeForm() {
       courseNumFromJWT = decoded?.course_id || courseNum;
     }
 
-    // Resolve the confirmation mode this intake belongs to (drives message type). The logged
-    // "Content" value is resolved centrally in Firebase from the authoritative Canvas course
-    // title, so it is intentionally not computed here.
-    const sectionCourseName =
-      decodedForSection?.course_name || theme?.user?.course_name || "";
+    // Resolve the confirmation mode this intake belongs to (drives message type).
+    // Normalize the course label to the canonical `coursePlans` `courseName` when possible.
+    const sectionCourseName = resolveContentName(
+      decodedForSection?.course_name || theme?.user?.course_name || ""
+    );
     const sectionLessonId = decodedForSection?.linkedLesson || null;
     const sectionExplicitMode = decodedForSection?.confirmationMode || "";
     let sectionCourseIndex = -1;
@@ -210,12 +211,12 @@ export default function IntakeForm() {
     }
 
     let lessonId = null;
-    let courseName = theme?.user?.course_name || "";
+    let courseName = resolveContentName(theme?.user?.course_name || "");
     let explicitConfirmationMode = "";
     if (token) {
       const decoded = decodeJWT(token);
       lessonId = decoded?.linkedLesson || lessonId;
-      courseName = decoded?.course_name || courseName;
+      courseName = resolveContentName(decoded?.course_name || courseName);
       explicitConfirmationMode = decoded?.confirmationMode || "";
     }
 
