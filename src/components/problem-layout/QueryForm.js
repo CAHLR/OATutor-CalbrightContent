@@ -409,23 +409,6 @@ export default function QueryForm({
           skipped: skip,
         };
 
-            // Determine the canonical Content label for the survey based on the
-            // selected course index (the textbook/section clicked). Prefer the
-            // explicit course index derived from the route or token; fall back
-            // to the course that contains the lessonId; otherwise use the
-            // resolved course name from the token/theme.
-            let contentName = "n/a";
-            if (courseIndex !== null && coursePlans?.[courseIndex]) {
-              contentName = coursePlans[courseIndex].courseName;
-            } else if (lessonId) {
-              const fallback = coursePlans.find((course) =>
-                course.lessons?.some((lesson) => lesson.id === lessonId)
-              );
-              contentName = fallback?.courseName || resolvedCourseName || "n/a";
-            } else {
-              contentName = resolvedCourseName || "n/a";
-            }
-            surveyData.Content = contentName;
 
         console.log("surveyData:", surveyData);
         await firebase.submitSurvey(surveyData);
