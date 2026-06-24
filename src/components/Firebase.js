@@ -159,7 +159,10 @@ class Firebase {
             ...(this.ltiContext?.user_id
                 ? {
                       course_id: this.ltiContext.course_id,
-                      course_name: resolveContentName(this.ltiContext?.course_name),
+                      // Store the raw Canvas course title in `course_name` so the
+                      // original LMS name is preserved. The authoritative
+                      // canonical label from `coursePlans` is written to `Content`.
+                      course_name: this.ltiContext?.course_name ?? "n/a",
                       course_code: this.ltiContext.course_code,
 
                       lms_user_id: this.ltiContext.user_id,
@@ -174,9 +177,12 @@ class Firebase {
 
             ...data,
 
-            // Authoritative "Content" label, resolved from the launching Canvas course title.
-            // Placed after ...data so it cannot be overridden by a stale caller-supplied value.
-            Content: resolveContentName(this.ltiContext?.course_name),
+            // Authoritative "Content" label. Prefer an explicit caller-supplied
+            // `Content` or `courseName` (these indicate which course/folder the
+            // user selected in the UI). Fall back to resolving from the Canvas
+            // course title so older flows still work.
+            Content:
+                data?.Content ?? data?.courseName ?? resolveContentName(this.ltiContext?.course_name),
         };
         return Object.fromEntries(
             Object.entries(_payload).map(([key, val]) => [
@@ -248,6 +254,7 @@ class Firebase {
             hintsFinished,
             variabilization,
             lesson,
+            courseName,
             confirmationMode,
             masteryScore,
             kcMastery,
@@ -298,6 +305,7 @@ class Firebase {
             masteryScore,
             kcMastery,
             lesson,
+            courseName,
             knowledgeComponents: step?.knowledgeComponents,
             hintType,
             dynamicHint,
@@ -355,6 +363,7 @@ class Firebase {
             problemID,
             confirmationMode,
             lesson,
+            courseName,
             lessonObjectives,
         };
         return this.writeData(problemStartLogOutput, data);
@@ -400,6 +409,7 @@ class Firebase {
             problemFinished,
             feedback,
             lesson,
+            courseName,
             status: "open",
             confirmationMode,
             variables,
@@ -441,8 +451,11 @@ class Firebase {
         // authoritative Content/course identity here too, overriding any caller-supplied value.
         const payload = {
             ...surveyData,
-            Content: resolveContentName(this.ltiContext?.course_name),
-            course_name: resolveContentName(this.ltiContext?.course_name) ?? "n/a",
+            // Allow caller to supply `Content` (preferred). Fall back to
+            // resolving from Canvas title.
+            Content: surveyData?.Content ?? resolveContentName(this.ltiContext?.course_name),
+            // Preserve raw Canvas title in `course_name` for traceability.
+            course_name: this.ltiContext?.course_name ?? "n/a",
             course_id: this.ltiContext?.course_id ?? "n/a",
             confirmationMode: this.ltiContext?.confirmationMode ?? "none",
             completedAt: serverTimestamp(),
@@ -493,8 +506,11 @@ class Firebase {
         // overriding any caller-supplied value.
         const payload = {
             ...intakeData,
-            Content: resolveContentName(this.ltiContext?.course_name),
-            course_name: resolveContentName(this.ltiContext?.course_name) ?? "n/a",
+            // Allow caller to supply `Content` (preferred). Fall back to
+            // resolving from Canvas title.
+            Content: intakeData?.Content ?? resolveContentName(this.ltiContext?.course_name),
+            // Preserve raw Canvas title in `course_name` for traceability.
+            course_name: this.ltiContext?.course_name ?? "n/a",
             course_id: this.ltiContext?.course_id ?? "n/a",
             completed: true,
             completedAt: serverTimestamp(),

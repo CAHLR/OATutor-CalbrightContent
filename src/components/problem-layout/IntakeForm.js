@@ -176,8 +176,14 @@ export default function IntakeForm() {
 
       if (firebase && firebase.db && firebase.submitIntakeForm) {
         try {
+          // Ensure `Content` reflects the selected course/section when available.
+          const contentName =
+            sectionCourseIndex >= 0 && coursePlans?.[sectionCourseIndex]
+              ? coursePlans[sectionCourseIndex].courseName
+              : sectionCourseName || "n/a";
+
           await firebase.submitIntakeForm(
-            { ...intakePayload, skipped, ...sectionMeta },
+            { ...intakePayload, skipped, ...sectionMeta, Content: contentName },
             courseNumFromJWT
           );
           console.log("Intake form submitted to Firebase successfully");
