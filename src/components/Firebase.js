@@ -233,13 +233,13 @@ class Firebase {
         dynamicHint,
         bioInfo,
         masteryScore = null,
-        kcMastery = null,
-        confirmationMode = "none"
+        kcMastery = null
     ) {
         if (!DO_LOG_DATA) {
             console.debug("Not using firebase for logging (2)");
             return;
         }
+        const confirmationMode = this.ltiContext?.confirmationMode ?? "none";
         console.debug("trying to log hint: ", hint, "step", step);
         if (Array.isArray(hintsFinished) && Array.isArray(hintsFinished[0])) {
             hintsFinished = hintsFinished.map((step) => step.join(", "));
@@ -258,7 +258,6 @@ class Firebase {
             hintsFinished,
             variabilization,
             lesson,
-            confirmationMode,
             masteryScore,
             kcMastery,
             knowledgeComponents: step?.knowledgeComponents,
@@ -284,10 +283,10 @@ class Firebase {
         dynamicHint,
         bioInfo,
         masteryScore = null,
-        kcMastery = null,
-        confirmationMode = "none"
+        kcMastery = null
     ) {
         if (!DO_LOG_DATA) return;
+        const confirmationMode = this.ltiContext?.confirmationMode ?? "none";
         console.debug("step", step);
         const data = {
             eventType: "hintScaffoldLog",
@@ -304,7 +303,6 @@ class Firebase {
             dynamicHint,
             bioInfo,
             variabilization,
-            confirmationMode,
             masteryScore,
             kcMastery,
             lesson,
@@ -354,8 +352,9 @@ class Firebase {
         return this.writeData("mouseMovement", data);
     }
 
-    startedProblem(problemID, courseName, lesson, lessonObjectives, confirmationMode = "none") {
+    startedProblem(problemID, courseName, lesson, lessonObjectives) {
         if (!DO_LOG_DATA) return;
+        const confirmationMode = this.ltiContext?.confirmationMode ?? "none";
         console.debug(
             `Logging that the problem has been started (${problemID})`
         );
@@ -400,9 +399,9 @@ class Firebase {
         variables,
         courseName,
         steps,
-        lesson,
-        confirmationMode = "none"
+        lesson
     ) {
+        const confirmationMode = this.ltiContext?.confirmationMode ?? "none";
         const data = {
             problemID,
             problemFinished,
