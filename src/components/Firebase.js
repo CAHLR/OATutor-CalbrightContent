@@ -258,6 +258,7 @@ class Firebase {
             hintsFinished,
             variabilization,
             lesson,
+            confirmationMode,
             masteryScore,
             kcMastery,
             knowledgeComponents: step?.knowledgeComponents,
@@ -303,6 +304,7 @@ class Firebase {
             dynamicHint,
             bioInfo,
             variabilization,
+            confirmationMode,
             masteryScore,
             kcMastery,
             lesson,
@@ -359,6 +361,7 @@ class Firebase {
         );
         const data = {
             problemID,
+            confirmationMode,
             lesson,
             lessonObjectives,
         };
@@ -406,6 +409,7 @@ class Firebase {
             feedback,
             lesson,
             status: "open",
+            confirmationMode,
             variables,
             steps: steps.map(
                 ({
