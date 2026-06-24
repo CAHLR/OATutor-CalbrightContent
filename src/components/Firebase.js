@@ -16,7 +16,6 @@ import {
     setDoc,
 } from "firebase/firestore";
 import daysSinceEpoch from "../util/daysSinceEpoch";
-import { resolveContentName } from "../util/lessonFlow.js";
 import {
     IS_PRODUCTION,
     IS_STAGING_CONTENT,
@@ -30,6 +29,16 @@ const GPTExperimentOutput = "GPTExperimentOutput";
 const feedbackOutput = "feedbacks";
 const siteLogOutput = "siteLogs";
 const focusStatus = "focusStatus";
+
+/**
+ * Maps confirmationMode to the corresponding section label for the Content field.
+ */
+const getContentFromConfirmationMode = (confirmationMode) => {
+  if (confirmationMode === "none") return "Section 1";
+  if (confirmationMode === "generic") return "Section 2";
+  if (confirmationMode === "personalized") return "Section 3";
+  return "n/a";
+};
 
 class Firebase {
     constructor(oats_user_id, credentials, treatment, siteVersion, ltiContext) {
@@ -159,7 +168,7 @@ class Firebase {
             ...(this.ltiContext?.user_id
                 ? {
                       course_id: this.ltiContext.course_id,
-                      course_name: resolveContentName(this.ltiContext?.course_name),
+                      course_name: this.ltiContext?.course_name,
                       course_code: this.ltiContext.course_code,
 
                       lms_user_id: this.ltiContext.user_id,
@@ -174,9 +183,10 @@ class Firebase {
 
             ...data,
 
-            // Authoritative "Content" label, resolved from the launching Canvas course title.
+            // Authoritative "Content" label: the section folder (Section 1, 2, or 3)
+            // derived from the confirmationMode.
             // Placed after ...data so it cannot be overridden by a stale caller-supplied value.
-            Content: resolveContentName(this.ltiContext?.course_name),
+            Content: getContentFromConfirmationMode(this.ltiContext?.confirmationMode) ?? "n/a",
         };
         return Object.fromEntries(
             Object.entries(_payload).map(([key, val]) => [
@@ -345,7 +355,7 @@ class Firebase {
         return this.writeData("mouseMovement", data);
     }
 
-    startedProblem(problemID, courseName, lesson, lessonObjectives, confirmationMode = "none") {
+    startedProblem(problemID, lesson, lessonObjectives, confirmationMode = "none") {
         if (!DO_LOG_DATA) return;
         console.debug(
             `Logging that the problem has been started (${problemID})`
@@ -354,7 +364,6 @@ class Firebase {
             problemID,
             confirmationMode,
             lesson,
-            courseName,
             lessonObjectives,
         };
         return this.writeData(problemStartLogOutput, data);
@@ -441,8 +450,8 @@ class Firebase {
         // authoritative Content/course identity here too, overriding any caller-supplied value.
         const payload = {
             ...surveyData,
-            Content: resolveContentName(this.ltiContext?.course_name),
-            course_name: resolveContentName(this.ltiContext?.course_name) ?? "n/a",
+            Content: getContentFromConfirmationMode(this.ltiContext?.confirmationMode) ?? "n/a",
+            course_name: this.ltiContext?.course_name ?? "n/a",
             course_id: this.ltiContext?.course_id ?? "n/a",
             confirmationMode: this.ltiContext?.confirmationMode ?? "none",
             completedAt: serverTimestamp(),
@@ -493,8 +502,8 @@ class Firebase {
         // overriding any caller-supplied value.
         const payload = {
             ...intakeData,
-            Content: resolveContentName(this.ltiContext?.course_name),
-            course_name: resolveContentName(this.ltiContext?.course_name) ?? "n/a",
+            Content: getContentFromConfirmationMode(this.ltiContext?.confirmationMode) ?? "n/a",
+            course_name: this.ltiContext?.course_name ?? "n/a",
             course_id: this.ltiContext?.course_id ?? "n/a",
             completed: true,
             completedAt: serverTimestamp(),
