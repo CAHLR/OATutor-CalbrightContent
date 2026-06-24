@@ -233,6 +233,7 @@ class Firebase {
         bioInfo,
         masteryScore = null,
         kcMastery = null,
+        confirmationMode = "none"
     ) {
         if (!DO_LOG_DATA) {
             console.debug("Not using firebase for logging (2)");
@@ -256,6 +257,7 @@ class Firebase {
             hintsFinished,
             variabilization,
             lesson,
+            confirmationMode,
             masteryScore,
             kcMastery,
             knowledgeComponents: step?.knowledgeComponents,
@@ -276,12 +278,12 @@ class Firebase {
         hintsFinished,
         variabilization,
         lesson,
-        courseName,
         hintType,
         dynamicHint,
         bioInfo,
         masteryScore = null,
         kcMastery = null,
+        confirmationMode = "none"
     ) {
         if (!DO_LOG_DATA) return;
         console.debug("step", step);
@@ -297,16 +299,15 @@ class Firebase {
             hintAnswer: hint?.hintAnswer?.toString(),
             hintIsCorrect: isCorrect,
             hintsFinished,
-            dynamicHint: "abc",
-            bioInfo: "abcedf",
+            dynamicHint,
+            bioInfo,
             variabilization,
+            confirmationMode,
             masteryScore,
             kcMastery,
             lesson,
             knowledgeComponents: step?.knowledgeComponents,
             hintType,
-            dynamicHint,
-            bioInfo,
         };
         // return this.writeData(GPTExperimentOutput, data);
         return this.writeData(problemSubmissionsOutput, data);
@@ -395,7 +396,6 @@ class Firebase {
         feedback,
         problemFinished,
         variables,
-        courseName,
         steps,
         lesson,
         confirmationMode = "none"
