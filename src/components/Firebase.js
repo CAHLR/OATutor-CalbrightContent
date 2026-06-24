@@ -228,6 +228,7 @@ class Firebase {
         eventType,
         variabilization,
         lesson,
+        courseName,
         hintType,
         dynamicHint,
         bioInfo,
@@ -257,7 +258,6 @@ class Firebase {
             hintsFinished,
             variabilization,
             lesson,
-            confirmationMode,
             masteryScore,
             kcMastery,
             knowledgeComponents: step?.knowledgeComponents,
@@ -278,6 +278,7 @@ class Firebase {
         hintsFinished,
         variabilization,
         lesson,
+        courseName,
         hintType,
         dynamicHint,
         bioInfo,
@@ -302,7 +303,6 @@ class Firebase {
             dynamicHint,
             bioInfo,
             variabilization,
-            confirmationMode,
             masteryScore,
             kcMastery,
             lesson,
@@ -352,14 +352,13 @@ class Firebase {
         return this.writeData("mouseMovement", data);
     }
 
-    startedProblem(problemID, lesson, lessonObjectives, confirmationMode = "none") {
+    startedProblem(problemID, courseName, lesson, lessonObjectives, confirmationMode = "none") {
         if (!DO_LOG_DATA) return;
         console.debug(
             `Logging that the problem has been started (${problemID})`
         );
         const data = {
             problemID,
-            confirmationMode,
             lesson,
             lessonObjectives,
         };
@@ -396,6 +395,7 @@ class Firebase {
         feedback,
         problemFinished,
         variables,
+        courseName,
         steps,
         lesson,
         confirmationMode = "none"
@@ -406,7 +406,6 @@ class Firebase {
             feedback,
             lesson,
             status: "open",
-            confirmationMode,
             variables,
             steps: steps.map(
                 ({
