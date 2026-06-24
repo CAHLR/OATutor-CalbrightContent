@@ -233,7 +233,6 @@ class Firebase {
         bioInfo,
         masteryScore = null,
         kcMastery = null,
-        confirmationMode = "none"
     ) {
         if (!DO_LOG_DATA) {
             console.debug("Not using firebase for logging (2)");
@@ -257,7 +256,6 @@ class Firebase {
             hintsFinished,
             variabilization,
             lesson,
-            confirmationMode,
             masteryScore,
             kcMastery,
             knowledgeComponents: step?.knowledgeComponents,
@@ -284,7 +282,6 @@ class Firebase {
         bioInfo,
         masteryScore = null,
         kcMastery = null,
-        confirmationMode = "none"
     ) {
         if (!DO_LOG_DATA) return;
         console.debug("step", step);
@@ -303,7 +300,6 @@ class Firebase {
             dynamicHint: "abc",
             bioInfo: "abcedf",
             variabilization,
-            confirmationMode,
             masteryScore,
             kcMastery,
             lesson,
