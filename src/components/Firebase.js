@@ -187,6 +187,7 @@ class Firebase {
             // derived from the confirmationMode.
             // Placed after ...data so it cannot be overridden by a stale caller-supplied value.
             Content: getContentFromConfirmationMode(this.ltiContext?.confirmationMode) ?? "n/a",
+            confirmationMode: this.ltiContext?.confirmationMode ?? "none", 
         };
         return Object.fromEntries(
             Object.entries(_payload).map(([key, val]) => [
@@ -239,7 +240,6 @@ class Firebase {
             console.debug("Not using firebase for logging (2)");
             return;
         }
-        const confirmationMode = this.ltiContext?.confirmationMode ?? "none";
         console.debug("trying to log hint: ", hint, "step", step);
         if (Array.isArray(hintsFinished) && Array.isArray(hintsFinished[0])) {
             hintsFinished = hintsFinished.map((step) => step.join(", "));
@@ -286,7 +286,6 @@ class Firebase {
         kcMastery = null
     ) {
         if (!DO_LOG_DATA) return;
-        const confirmationMode = this.ltiContext?.confirmationMode ?? "none";
         console.debug("step", step);
         const data = {
             eventType: "hintScaffoldLog",
@@ -354,13 +353,11 @@ class Firebase {
 
     startedProblem(problemID, courseName, lesson, lessonObjectives) {
         if (!DO_LOG_DATA) return;
-        const confirmationMode = this.ltiContext?.confirmationMode ?? "none";
         console.debug(
             `Logging that the problem has been started (${problemID})`
         );
         const data = {
             problemID,
-            confirmationMode,
             lesson,
             lessonObjectives,
         };
@@ -401,14 +398,12 @@ class Firebase {
         steps,
         lesson
     ) {
-        const confirmationMode = this.ltiContext?.confirmationMode ?? "none";
         const data = {
             problemID,
             problemFinished,
             feedback,
             lesson,
             status: "open",
-            confirmationMode,
             variables,
             steps: steps.map(
                 ({
@@ -503,6 +498,7 @@ class Firebase {
             Content: getContentFromConfirmationMode(this.ltiContext?.confirmationMode) ?? "n/a",
             course_name: this.ltiContext?.course_name ?? "n/a",
             course_id: this.ltiContext?.course_id ?? "n/a",
+            confirmationMode: this.ltiContext?.confirmationMode ?? "none",
             completed: true,
             completedAt: serverTimestamp(),
             time_stamp: Date.now(),
