@@ -120,6 +120,8 @@ class Problem extends React.Component {
     updateCanvas = async (mastery, components) => {
         if (this.context.jwt) {
             console.debug("updating canvas with problem score");
+            console.log("DEBUG mastery:", mastery);
+            console.log("DEBUG components:", components);
 
             let err, response;
             [err, response] = await to(
@@ -135,6 +137,9 @@ class Problem extends React.Component {
                     }),
                 })
             );
+            const bodyText = await response?.text();
+            console.log("DEBUG response status:", response?.status);
+            console.log("DEBUG response body:", bodyText);
             if (err || !response) {
                 toast.error(
                     `An unknown error occurred trying to submit this problem. If reloading does not work, please contact us.`,
